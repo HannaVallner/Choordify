@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service'; 
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-
 
 
 @Component({
@@ -14,7 +11,7 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   message: any;
 
-  constructor(private apiService: ApiService, private router: Router, private http: HttpClient) { }; 
+  constructor(private apiService: ApiService) { }; 
 
 	ngOnInit() { 
 		this.apiService.getMessage().subscribe(data => { 

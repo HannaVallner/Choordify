@@ -8,7 +8,8 @@ export class SpotifyService {
 
   constructor(private http: HttpClient) { }
 
-  getUser(token: string) {
+  
+  async getUserInfo(token: string) {
     return this.http.get('https://api.spotify.com/v1/me', {
       headers: { Authorization: 'Bearer ' + token },
     })
