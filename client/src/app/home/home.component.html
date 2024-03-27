@@ -1,8 +1,16 @@
-<p>home works!</p>
 <p *ngIf="message"> 
     {{ message.message }} 
 </p>
+<div *ngIf="userInfo">
+    <h1>Welcome, {{ userInfo.display_name }}</h1>
+    <p>Email: {{ userInfo.email }}</p>
+    <p>Country: {{ userInfo.country }}</p>
+</div>
 
-    <h1>Welcome</h1>
-    <p *ngIf="userInfo">Email: {{ userInfo.display_name }}</p>
-    <!-- Display other user info as needed -->
+<div class="outer-container">
+    <div class="inner-container">
+        <button mat-button color="primary"> Sort playlists </button>
+        <button mat-button color="primary"> Add new song </button>
+    </div>
+</div>
+

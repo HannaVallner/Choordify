@@ -31,7 +31,7 @@ app.get("/spotify/auth", function (req, res) {
   res.cookie(stateKey, state);
   // redirects user to Spotify login page with scopes of information access
   var scope =
-    "user-read-private user-top-read playlist-read-private playlist-read-collaborative playlist-modify-public";
+    "user-read-private user-read-email user-top-read playlist-read-private playlist-read-collaborative playlist-modify-public";
   res.redirect(
     "https://accounts.spotify.com/authorize?" +
       querystring.stringify({

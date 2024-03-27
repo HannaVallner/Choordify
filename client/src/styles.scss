@@ -3,11 +3,39 @@
     src: url('/assets/fonts/Nunito-ExtraBold.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
-  }
+}
   
-
 body {
     background-color: #191414;
     color: #fff; 
     font-family: 'Nunito', sans-serif; 
-  }
+}
+
+button {
+    width: 300px;
+    background-color: #1db954; 
+    color: #000; 
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif; 
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #1ed760;
+}
+
+.outer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #191414; 
+}
+
+.inner-container {
+  text-align: center;
+}
