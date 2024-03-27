@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SpotifyService } from '../spotify.service';
-import { ApiService } from '../api.service'; 
 
 @Component({
   selector: 'app-home',
@@ -16,13 +15,9 @@ export class HomeComponent implements OnInit{
   displayName = '';
 
 
-  constructor(private spotify: SpotifyService, private api: ApiService, private router: Router) {}
+  constructor(private spotify: SpotifyService, private router: Router) {}
 
   ngOnInit() {
-    this.api.getMessage().subscribe(data => { 
-			this.message = data; 
-		});
-
     const storedToken = sessionStorage.getItem('token');
 
     if (storedToken != null) {

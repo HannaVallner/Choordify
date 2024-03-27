@@ -8,14 +8,15 @@ import { HomeComponent } from './home/home.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ProfileComponent } from './profile/profile.component';
 import { AddComponent } from './add/add.component';
-import { SortComponent } from './sort/sort.component'; 
+import { SortComponent } from './sort/sort.component';
+import { AboutComponent } from './about/about.component'; 
 
 @NgModule({ 
 	declarations: [ 
 		AppComponent, LoginComponent, 
 		HomeComponent, NavbarComponent, 
 		ProfileComponent, AddComponent, 
-		SortComponent 
+		SortComponent, AboutComponent 
 	], 
 	imports: [ 
 		BrowserModule, 

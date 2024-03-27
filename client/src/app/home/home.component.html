@@ -1,6 +1,4 @@
-<p *ngIf="message"> 
-    {{ message.message }} 
-</p>
+<app-navbar></app-navbar>
 <div *ngIf="userInfo">
     <h1>Welcome, {{ userInfo.display_name }}</h1>
     <p>Email: {{ userInfo.email }}</p>
@@ -11,9 +9,9 @@
     <div class="inner-container">
         
         <a href="/sort"
-        ><button> Sort playlists </button></a>
+        ><button type="button"> Sort playlists </button></a>
         <a href="/add"
-        ><button> Add new song </button></a>
+        ><button type="button"> Add new song </button></a>
 
     </div>
 </div>
