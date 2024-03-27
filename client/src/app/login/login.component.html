@@ -1,1 +1,14 @@
-<p>login works!</p>
+<div class="outer-container">
+    <div class="inner-container">
+      <h1>Choordify </h1>
+      <h2>Harmonize new favourite tracks in your playlists.</h2>
+
+      <a href="http://localhost:3000/spotify/auth"
+      ><button mat-button color="primary">LOG IN WITH SPOTIFY</button></a>
+
+        <p *ngIf="message"> 
+            {{ message.message }} 
+        </p>
+  
+    </div>
+  </div>

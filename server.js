@@ -9,7 +9,7 @@ const app = express();
 var client_id = 'a52b1c6ae851463b8614c146866ecf5d';
 var client_secret = '19aff404760f490db5e964da47134a3d';
 var redirect_uri = 'http://localhost:3000/callback'; 
-var basePath = "http://localhost:4200"
+var basePath = "http://localhost:4200/home"
 
 const generateRandomString = (length) => {
     return crypto
@@ -26,10 +26,9 @@ app.use(express.static(__dirname + '/client'))
    .use(cookieParser());
 
 
-app.get("/login", function (req, res) {
+app.get("/spotify/auth", function (req, res) {
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
-
   // redirects user to Spotify login page with scopes of information access
   var scope =
     "user-read-private user-top-read playlist-read-private playlist-read-collaborative playlist-modify-public";
