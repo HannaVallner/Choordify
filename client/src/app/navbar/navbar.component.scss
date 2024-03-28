@@ -1,37 +1,73 @@
-navbar {
-    background-color: #333;
-    color: #fff;
+.navbar {
+    background-color: #555;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
     padding: 10px 20px;
-}
-
-.container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
+    z-index: 999;
 
-.navbar-brand {
-    font-size: 1.5rem;
-    text-decoration: none;
-    color: #fff;
-}
+    .navbar-brand {
+        font-size: 1.5rem;
+        text-decoration: none;
+        color: #fff;
+    }
 
-.navbar-nav {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-}
+    .nav-items {
+        display: flex;
+        align-items: center;
+    }
 
-.nav-item {
-    margin-right: 15px;
-}
+    .nav-link {
+        padding: 5px 10px;
+        margin: 0 8px;
+        opacity: 0.6;
+        color: #fff;
+        text-decoration: none;
+    }
 
-.nav-link {
-    text-decoration: none;
-    color: #fff;
-}
+    .nav-link:hover {
+        opacity: 1;
+        border-bottom: 4px solid #fff;
+    }
 
-.nav-link:hover {
-    text-decoration: underline;
+    .profile {
+        display: flex;
+        align-items: center;
+        position: relative;
+        margin-left: auto; 
+    }
+
+    .profile p {
+        margin-left: 5px;
+        color: #fff;
+    }
+
+    .dropdown-menu {
+        background-color: #343131;
+        position: absolute;
+        top: calc(100% + 5px);
+        right: 0;
+        width: 150px;
+        z-index: 1000;
+        border-radius: 10px;
+    }
+
+    .profile:hover .dropdown-menu {
+        display: block; /* Show dropdown on profile hover */
+    }
+
+    .dropdown-item {
+        display: block;
+        color: #fff;
+        text-decoration: none;
+        padding: 10px;
+    }
+
+    .dropdown-item:hover {
+        background-color: #555;
+    }
 }

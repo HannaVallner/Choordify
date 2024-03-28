@@ -1,4 +1,4 @@
-import { Component, OnInit, Injectable } from '@angular/core'; 
+import { Component, OnInit } from '@angular/core'; 
 import { Router } from '@angular/router';
 
 @Component({ 
@@ -13,13 +13,16 @@ export class AppComponent implements OnInit {
 	rawParams = '';
 	params = '';
 	token = '';
+
 	constructor(private router: Router) {}
+
 	ngOnInit() {
 		this.url = window.location.href;
 		if (this.url.includes('?')) {
 			this.setAuthorized();
 		}
 	}
+
 	setAuthorized() {
 		this.rawParams = this.url.split('?')[1];
 		this.params = this.rawParams.split('#')[0];
