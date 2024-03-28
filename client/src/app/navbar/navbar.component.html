@@ -7,9 +7,9 @@
         <a routerLink="/about" class="nav-link">
             <img src="assets/svg/about.svg" alt="About">
         </a>
-        <div class="profile" (click)="toggleDropdown()">
+        <div *ngIf="userInfo" class="profile" (click)="toggleDropdown()">
             <img src="assets/svg/profile.svg" alt="Profile"> 
-            <p>Hanna Vallner</p>
+            <p>{{userInfo.display_name}}</p>
             <div class="dropdown-menu" *ngIf="isDropdown">
                 <a class="dropdown-item" href="/profile">Profile</a>
                 <a class="dropdown-item" href="#">Log out</a>
