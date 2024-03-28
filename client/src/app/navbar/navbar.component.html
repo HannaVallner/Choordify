@@ -12,7 +12,7 @@
             <p>{{userInfo.display_name}}</p>
             <div class="dropdown-menu" *ngIf="isDropdown">
                 <a class="dropdown-item" href="/profile">Profile</a>
-                <a class="dropdown-item" href="#">Log out</a>
+                <a class="dropdown-item" (click)="logout()">Log out</a>
             </div>
         </div>
     </div>

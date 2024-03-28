@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../spotify.service';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -11,7 +12,7 @@ export class NavbarComponent implements OnInit {
   token = '';
   userInfo: any;
   isDropdown = false;
-  constructor(private spotify: SpotifyService) { }
+  constructor(private spotify: SpotifyService, private authService: AuthService) { }
 
   ngOnInit() {
     const storedToken = sessionStorage.getItem('token');
@@ -23,6 +24,10 @@ export class NavbarComponent implements OnInit {
       });
     });
   }
+  }
+
+  logout() {
+    this.authService.logout();
   }
 
   toggleDropdown() {
