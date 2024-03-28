@@ -52,7 +52,6 @@ app.get("/callback/", function (req, res) {
     var storedState = req.cookies ? req.cookies[stateKey] : null;
   
     if (state === null || state !== storedState) {
-      // if state does not match, error
       res.redirect(
         "/#" +
           querystring.stringify({

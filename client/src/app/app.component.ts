@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core'; 
+import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 
 @Component({ 
@@ -10,26 +11,16 @@ import { Router } from '@angular/router';
 export class AppComponent implements OnInit { 
 	title = 'Choordify'; 
 	url = '';
-	rawParams = '';
-	params = '';
-	token = '';
 
-	constructor(private router: Router) {}
+	constructor(private authService: AuthService, private router: Router) {}
 
 	ngOnInit() {
 		this.url = window.location.href;
 		if (this.url.includes('?')) {
-			this.setAuthorized();
+			this.authService.setAuthenticated();
 		}
-	}
-
-	setAuthorized() {
-		this.rawParams = this.url.split('?')[1];
-		this.params = this.rawParams.split('#')[0];
-		if (this.params == 'authorized=true') {
-			this.token = this.url.split('#')[1];
-			sessionStorage.setItem('token', this.token);
-			this.router.navigate(['/home'])
+		else if (!this.authService.checkAuthenticated()){
+			this.router.navigate(['']);
 		}
 	}
 
