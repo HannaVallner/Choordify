@@ -53,6 +53,4 @@ export class AddComponent implements OnInit {
     this.input = result.artists[0].name + ' - ' + result.name;
     this.searchResults = [];
   }
-
-  
 }

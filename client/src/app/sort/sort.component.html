@@ -1,6 +1,8 @@
 <app-navbar></app-navbar>
-<p>sort works!</p>
-<div class="outer-container">
-    <div class="inner-container">
-    </div>
+<div class="playlists" *ngIf="playlists.length > 0">
+    <ul>
+    <li *ngFor="let playlist of playlists">
+        {{ playlist.name }}
+    </li>
+    </ul>
 </div>

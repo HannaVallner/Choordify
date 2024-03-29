@@ -1,0 +1,30 @@
+
+.playlists {
+    margin-top: 100px;
+    width: 1000px; 
+    max-height: 73vh;
+    overflow-y: auto; 
+    background-color: #837c7c; 
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    background-color: #3b3838;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease-in-out;
+}
+
+li:hover {
+    transform: translateY(-5px);
+}
