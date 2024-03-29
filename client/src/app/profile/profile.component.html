@@ -1,18 +1,18 @@
 <app-navbar></app-navbar>
-        <div *ngIf="userInfo" class="profile">
-            <section id="profile">
-                <div class="profile-info">
-                    <img src="{{ userInfo.images[0].url }}" alt="Profile Picture" class="profile-picture">
-                    <div class="user-details">
-                        <h2>Logged in as {{ userInfo.display_name }}</h2>
-                        <ul>
-                            <li>User ID: {{ userInfo.id }}</li>
-                            <li>Email: {{ userInfo.email }}</li>
-                            <li>Total Playlists: {{ userInfo.total_playlists }}</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-        <button type="button" (click)="logout()">LOG OUT</button>
+<div *ngIf="userInfo" class="profile">
+    <section id="profile">
+        <div class="profile-info">
+            <img src="{{ userInfo.images[0].url }}" alt="Profile Picture" class="profile-picture">
+            <div class="user-details">
+                <h2>Logged in as {{ userInfo.display_name }}</h2>
+                <ul>
+                    <li>User ID: {{ userInfo.id }}</li>
+                    <li>Email: {{ userInfo.email }}</li>
+                    <li>Total Playlists:</li>
+                </ul>
+            </div>
         </div>
+    </section>
+<button type="button" (click)="logout()">LOG OUT</button>
+</div>
  

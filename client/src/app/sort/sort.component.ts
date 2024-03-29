@@ -23,5 +23,8 @@ export class SortComponent implements OnInit {
       );
     }
   }
+  toggleColour(event: any) {
+    event.target.classList.toggle('select')
+  }
 
 }
