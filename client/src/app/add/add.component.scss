@@ -10,8 +10,32 @@
 
 form {
     margin-top: 50px;
+    position: relative;
 }
 
 button {
     width: 150px !important; 
+}
+
+.dropdown {
+    margin-top: 5px;
+    position: absolute;
+    background-color: #6d6868;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    padding: 10px;
+}
+
+li:hover {
+    background-color: #bdb9b9;
 }

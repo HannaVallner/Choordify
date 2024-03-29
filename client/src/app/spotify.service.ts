@@ -20,4 +20,10 @@ export class SpotifyService {
       headers: { Authorization: 'Bearer ' + token},
     })
   }
+
+  searchForTracks(token: string, input: string) {
+    return this.http.get('https://api.spotify.com/v1/search?q=' + input + '&type=track', {
+      headers: { Authorization: 'Bearer ' + token},
+    })
+  }
 }

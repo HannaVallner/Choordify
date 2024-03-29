@@ -11,7 +11,7 @@ import { SpotifyService } from '../spotify.service';
 export class ProfileComponent implements OnInit {
   userInfo: any;
   token = '';
-
+  results = [];
   constructor(private spotify: SpotifyService) {
   }
 

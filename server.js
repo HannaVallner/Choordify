@@ -29,7 +29,6 @@ app.use(express.static(__dirname + '/client'))
 app.get("/spotify/auth", function (req, res) {
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
-  // redirects user to Spotify login page with scopes of information access
   var scope =
     "user-read-private user-read-email user-top-read playlist-read-private playlist-read-collaborative playlist-modify-public";
   res.redirect(
@@ -98,7 +97,6 @@ app.get("/callback/", function (req, res) {
 
 
 app.get('/refresh_token', function(req, res) {
-
     var refresh_token = req.query.refresh_token;
     var authOptions = {
       url: 'https://accounts.spotify.com/api/token',
@@ -125,7 +123,6 @@ app.get('/refresh_token', function(req, res) {
     });
 });
 
-// route for handling requests from the Angular client 
 app.get('/api/message', (req, res) => { 
 	res.json({ message: 
 			'Hello from the Express server!' }); 
