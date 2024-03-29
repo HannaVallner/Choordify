@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../spotify.service';
+import { AuthService } from '../auth.service';
 
 
 @Component({
@@ -12,7 +13,7 @@ export class ProfileComponent implements OnInit {
   userInfo: any;
   token = '';
   results = [];
-  constructor(private spotify: SpotifyService) {
+  constructor(private spotify: SpotifyService, private authService: AuthService) {
   }
 
   ngOnInit() {
@@ -25,5 +26,9 @@ export class ProfileComponent implements OnInit {
       });
     });
     }
+  }
+
+  logout() {
+    this.authService.logout();
   }
 }
