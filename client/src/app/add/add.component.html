@@ -2,8 +2,9 @@
 <div class="outer-container">
     <div class="inner-container">
         <form>
-            <input type="text" placeholder="Search for a track" [(ngModel)]="input" name="input" class="search-input">
-            <button type="button" (click)="submitSearch()"> SEARCH </button>
+            <input type="text" placeholder="Search for a track" [(ngModel)]="input" name="input" 
+            class="search-input" (input)="onInput($event)">
+            <button type="button"> SUBMIT </button>
         </form>
         <div class="dropdown" *ngIf="searchResults.length > 0">
             <ul>

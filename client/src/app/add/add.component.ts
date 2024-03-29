@@ -23,7 +23,12 @@ export class AddComponent implements OnInit {
     }
   }
 
-  submitSearch() {
+  onInput(event: any) {
+    this.input = event.target.value;
+    this.toggleSearch();
+  }
+
+  toggleSearch() {
     if (this.input != '') {
       this.spotify.searchForTracks(this.token, this.input).subscribe(
         (response: any) => {
@@ -31,6 +36,8 @@ export class AddComponent implements OnInit {
           this.filterResults();
         },
       );
+    } else {
+      this.searchResults = [];
     }
   }
   
