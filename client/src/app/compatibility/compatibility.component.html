@@ -1,12 +1,12 @@
 <app-navbar></app-navbar>
 <div class="outer-container">
-    <div class="track-info">
+    <div class="track-info" *ngIf="trackInfo">
         <img class="track-cover" *ngIf="track.album && track.album.images && track.album.images.length > 0"
              [src]="track.album.images[0].url" 
              alt="Track cover">
-        <p> Name: {{ track.name }} </p>
-        <p> Album: {{ track.album.name }} </p>
-        <p> Artist: 
+        <p> {{ track.name }} </p>
+        <p> {{ track.album.name }} </p>
+        <p>
             <span *ngFor="let artist of track.artists; let last = last">
                 {{ artist.name }}{{ !last ? ', ' : '' }}
             </span>

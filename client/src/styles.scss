@@ -18,6 +18,10 @@ body {
     font-family: 'Nunito-Light', sans-serif; 
 }
 
+h1 {
+  font-family: 'Nunito-Bold', sans-serif;
+}
+
 
 button {
     width: 300px;
@@ -27,7 +31,7 @@ button {
     border: none;
     border-radius: 20px;
     font-family: 'Nunito-Bold', sans-serif; 
-    font-size: 1rem;
+    font-size: 0.9rem;
     transition: background-color 0.3s ease;
 }
 
@@ -38,4 +42,8 @@ button:hover {
 
 .inner-container {
   text-align: center;
+}
+
+.playlist-name {
+  font-family: 'Nunito-Bold', sans-serif;
 }
