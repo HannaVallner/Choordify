@@ -10,6 +10,7 @@ import { SpotifyService } from '../spotify.service';
 export class AddComponent implements OnInit {
   token = '';
   input = '';
+  selectedTrack: any;
   searchResults: any[] = [];
   filteredResults: any[] = [];
   isSelected = false;
@@ -26,6 +27,7 @@ export class AddComponent implements OnInit {
 
   onInput(event: any) {
     this.isSelected = false;
+    sessionStorage.setItem('trackId', '');
     this.input = event.target.value;
     this.toggleSearch();
   }
@@ -55,5 +57,6 @@ export class AddComponent implements OnInit {
     this.input = result.artists[0].name + ' - ' + result.name;
     this.searchResults = [];
     this.isSelected = true;
+    sessionStorage.setItem('trackId', result.id);
   }
 }

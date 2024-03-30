@@ -1,4 +1,21 @@
 <app-navbar></app-navbar>
 <div class="outer-container">
-    <p>compatibility works!</p>
+    <div class="track-info">
+        <p>Track Info:</p>
+        <ul>
+            <li *ngFor="let keyValuePair of trackInfo | keyvalue">
+                <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
+            </li>
+        </ul>
+    </div>
+    <div class="playlists-container" *ngIf="playlists.length > 0">
+        <ul class="playlist-list">
+        <li class="playlist-container" *ngFor="let playlist of playlists">
+                <img class="playlist-cover" [src]="playlist.images[0]?.url" alt="Playlist cover">
+                <p class="playlist-name">{{ playlist.name }}</p>
+                <p class="playlist-tracks">{{ playlist.tracks["total"] }} songs </p>
+                <button type="button">Details</button>
+        </li>
+        </ul>
+    </div>
 </div>

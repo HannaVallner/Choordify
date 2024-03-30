@@ -11,16 +11,14 @@ import { AuthService } from '../auth.service';
 
 export class ProfileComponent implements OnInit {
   userInfo: any;
-  token = '';
   results = [];
   constructor(private spotify: SpotifyService, private authService: AuthService) {
   }
 
   ngOnInit() {
-    const storedToken = sessionStorage.getItem('token');
-    if (storedToken != null) {
-      this.token = storedToken; 
-      this.spotify.getUserInfo(this.token).then(userInfoObservable => {
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      this.spotify.getUserInfo(token).then(userInfoObservable => {
         userInfoObservable.subscribe(userInfo => {
         this.userInfo = userInfo;
       });

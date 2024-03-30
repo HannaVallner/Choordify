@@ -31,14 +31,14 @@ export class SpotifyService {
   }
 
   // Returns a track's features
-  getTrackFeatures(token: string, trackId: string) {
+  async getTrackFeatures(token: string, trackId: string) {
     return this.http.get('https://api.spotify.com/v1/audio-features/' + trackId, {
       headers: { Authorization: 'Bearer ' + token },
     })
   }
 
   // Returns several tracks' features
-  getTracksFeaturer(token: string, trackIds: string) {
+  getTracksFeatures(token: string, trackIds: string) {
     return this.http.get('https://api.spotify.com/v1/audio-features?' + trackIds, {
       headers: { Authorization: 'Bearer ' + token },
     })
