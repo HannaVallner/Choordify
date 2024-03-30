@@ -30,7 +30,7 @@ app.get("/spotify/auth", function (req, res) {
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
   var scope =
-    "user-read-private user-read-email user-top-read playlist-read-private playlist-read-collaborative playlist-modify-public";
+    "user-read-private user-read-email user-top-read playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private";
   res.redirect(
     "https://accounts.spotify.com/authorize?" +
       querystring.stringify({

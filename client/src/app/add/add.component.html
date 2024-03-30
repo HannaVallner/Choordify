@@ -3,7 +3,7 @@
     <div class="inner-container">
         <form>
             <input type="text" placeholder="Search for a track" [(ngModel)]="input" name="input" 
-            class="search-input" (input)="onInput($event)">
+            class="search-input" (input)="onInput($event)" autocomplete="off">
             <button type="button"> SUBMIT </button>
         </form>
         <div class="dropdown" *ngIf="searchResults.length > 0">
