@@ -58,7 +58,6 @@ app.get("/callback/", function (req, res) {
           })
       );
     } else {
-      // gets and returns authentication token
       res.clearCookie(stateKey);
       var authOptions = {
         url: "https://accounts.spotify.com/api/token",
@@ -80,7 +79,6 @@ app.get("/callback/", function (req, res) {
           var access_token = body.access_token,
             refresh_token = body.refresh_token;
   
-          // redirects back to browser frontend
           res.redirect(basePath + "/?authorized=true#" + access_token);
         } else {
           res.redirect(

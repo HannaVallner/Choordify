@@ -6,6 +6,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { AddComponent } from './add/add.component';
 import { SortComponent } from './sort/sort.component';
 import { AboutComponent } from './about/about.component';
+import { CompatibilityComponent } from './compatibility/compatibility.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -13,7 +14,8 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent },
   { path: 'add', component: AddComponent },
   { path: 'sort', component: SortComponent },
-  { path: 'about', component: AboutComponent}
+  { path: 'about', component: AboutComponent },
+  { path: 'compatibility', component: CompatibilityComponent }
 ];
 
 @NgModule({

@@ -12,6 +12,7 @@ export class AddComponent implements OnInit {
   input = '';
   searchResults: any[] = [];
   filteredResults: any[] = [];
+  isSelected = false;
 
   constructor(private spotify: SpotifyService) {
   }
@@ -24,6 +25,7 @@ export class AddComponent implements OnInit {
   }
 
   onInput(event: any) {
+    this.isSelected = false;
     this.input = event.target.value;
     this.toggleSearch();
   }
@@ -52,5 +54,6 @@ export class AddComponent implements OnInit {
   selectResult(result: any) {
     this.input = result.artists[0].name + ' - ' + result.name;
     this.searchResults = [];
+    this.isSelected = true;
   }
 }

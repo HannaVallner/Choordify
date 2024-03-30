@@ -17,6 +17,11 @@ button {
     width: 150px !important; 
 }
 
+.disabled-button {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
 .dropdown {
     margin-top: 5px;
     position: absolute;

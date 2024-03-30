@@ -10,14 +10,14 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { ProfileComponent } from './profile/profile.component';
 import { AddComponent } from './add/add.component';
 import { SortComponent } from './sort/sort.component';
-import { AboutComponent } from './about/about.component'; 
-
+import { AboutComponent } from './about/about.component';
+import { CompatibilityComponent } from './compatibility/compatibility.component';
 @NgModule({ 
 	declarations: [ 
 		AppComponent, LoginComponent, 
 		HomeComponent, NavbarComponent, 
 		ProfileComponent, AddComponent, 
-		SortComponent, AboutComponent 
+		SortComponent, AboutComponent, CompatibilityComponent 
 	], 
 	imports: [ 
 		BrowserModule, 
