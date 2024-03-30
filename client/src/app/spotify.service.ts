@@ -47,7 +47,7 @@ export class SpotifyService {
 
   // Returns several tracks' features
   getTracksFeatures(token: string, trackIds: string) {
-    return this.http.get('https://api.spotify.com/v1/audio-features?' + trackIds, {
+    return this.http.get('https://api.spotify.com/v1/audio-features?ids=' + trackIds, {
       headers: { Authorization: 'Bearer ' + token },
     })
   }
