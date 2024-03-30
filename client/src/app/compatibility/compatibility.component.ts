@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../spotify.service';
-import { response } from 'express';
+
 @Component({
   selector: 'app-compatibility',
   templateUrl: './compatibility.component.html',
@@ -9,8 +9,10 @@ import { response } from 'express';
 export class CompatibilityComponent implements OnInit {
   playlists: any[] = [];
   trackInfo: any;
+  track: any;
   trackId = '';
   hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri'];
+  displayFeatures = false;
   
   constructor(private spotify: SpotifyService) {}
 
@@ -31,6 +33,11 @@ export class CompatibilityComponent implements OnInit {
             this.filterTrackInfo();
           });
         });
+
+        this.spotify.getTrack(token, this.trackId).then(trackObservable => 
+          {trackObservable.subscribe(track => {
+            this.track = track;
+          })})
       }
     }
   }
@@ -43,6 +50,9 @@ export class CompatibilityComponent implements OnInit {
     }
   }
 
+  toggleFeatures() {
+    this.displayFeatures = !this.displayFeatures;
+  }
 
   toggleColour(event: any) {
     event.target.classList.toggle('select')

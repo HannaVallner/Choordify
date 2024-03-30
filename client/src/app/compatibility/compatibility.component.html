@@ -1,9 +1,19 @@
 <app-navbar></app-navbar>
 <div class="outer-container">
     <div class="track-info">
-        <p>Track Info:</p>
-        <ul>
-            <li *ngFor="let keyValuePair of trackInfo | keyvalue">
+        <img class="track-cover" *ngIf="track.album && track.album.images && track.album.images.length > 0"
+             [src]="track.album.images[0].url" 
+             alt="Track cover">
+        <p> Name: {{ track.name }} </p>
+        <p> Album: {{ track.album.name }} </p>
+        <p> Artist: 
+            <span *ngFor="let artist of track.artists; let last = last">
+                {{ artist.name }}{{ !last ? ', ' : '' }}
+            </span>
+        </p>
+        <button type="button" (click)="toggleFeatures()">Details</button>
+        <ul class="track-features" *ngIf="displayFeatures">
+            <li class="track-feature" *ngFor="let keyValuePair of trackInfo | keyvalue">
                 <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
             </li>
         </ul>

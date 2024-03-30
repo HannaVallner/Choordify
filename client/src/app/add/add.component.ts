@@ -57,6 +57,11 @@ export class AddComponent implements OnInit {
     this.input = result.artists[0].name + ' - ' + result.name;
     this.searchResults = [];
     this.isSelected = true;
+    this.selectedTrack = result;
     sessionStorage.setItem('trackId', result.id);
+  }
+
+  getSelectedTrack() {
+    return this.selectedTrack;
   }
 }

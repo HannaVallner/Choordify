@@ -2,19 +2,31 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 97vh;
+    padding-top: 15vh;
+    height: 82vh;
     background-color: #191414; 
 }
 
-.track-info{
+.track-info {
     background-color: #353232;
     width: 500px;
 }
 
+.track-cover {
+    border-radius: 10px;
+    width: 100px; 
+    height: auto;
+    margin-right: 20px;
+}
+
+.track-features {
+    list-style: none;
+    font-size: 0.8rem;
+}
+
 .playlists-container {
-    margin-top: 70px;
     width: 1000px; 
-    max-height: 73vh;
+    max-height: 78vh;
     overflow-y: auto; 
     background-color: #353232; 
     padding: 20px;
@@ -22,20 +34,20 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.playlists::-webkit-scrollbar {
+.playlists-container::-webkit-scrollbar {
     width: 6px; 
 }
 
-.playlists::-webkit-scrollbar-thumb {
+.playlists-container::-webkit-scrollbar-thumb {
     background-color: #6d6868; 
     border-radius: 4px; 
 }
 
-.playlists::-webkit-scrollbar-track {
+.playlists-container::-webkit-scrollbar-track {
     background-color: #3b3838; 
 }
 
-.playlists::-webkit-scrollbar-thumb:hover {
+.playlists-container::-webkit-scrollbar-thumb:hover {
     background-color: #494646; 
 }
 .playlist-cover {
@@ -68,7 +80,6 @@
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 15px;
-    margin-bottom: 15px;
     transition: transform 0.3s ease-in-out;
 }
  

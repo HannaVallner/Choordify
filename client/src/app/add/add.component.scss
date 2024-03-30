@@ -1,3 +1,11 @@
+.outer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 97vh;
+    background-color: #191414; 
+}
+
 .search-input {
     width: 400px;
     height: 40px;
