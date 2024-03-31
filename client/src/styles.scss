@@ -20,8 +20,19 @@ body {
 
 h1 {
   font-family: 'Nunito-Bold', sans-serif;
+  cursor: default;
 }
 
+h2 {
+  cursor: default;
+}
+p {
+  cursor: default;
+}
+
+li {
+  cursor: default;
+}
 
 button {
     width: 300px;
@@ -33,6 +44,8 @@ button {
     font-family: 'Nunito-Bold', sans-serif; 
     font-size: 0.9rem;
     transition: background-color 0.3s ease;
+    cursor: pointer;
+  
 }
 
 button:hover {
