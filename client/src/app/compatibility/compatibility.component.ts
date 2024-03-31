@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../spotify.service';
+import { PlaylistService } from '../playlist.service';
 
 @Component({
   selector: 'app-compatibility',
@@ -14,7 +15,7 @@ export class CompatibilityComponent implements OnInit {
   hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri'];
   displayFeatures = false;
   
-  constructor(private spotify: SpotifyService) {}
+  constructor(private spotify: SpotifyService, private playlistService: PlaylistService) {}
 
   ngOnInit() {
     const token = sessionStorage.getItem('token');
@@ -22,6 +23,9 @@ export class CompatibilityComponent implements OnInit {
       this.spotify.getPlaylists(token).subscribe(
         (response: any) => {
           this.playlists = response.items;
+          this.playlists.forEach(playlist => {
+            this.playlistService.getPlaylistAverages(playlist);
+          });
         },
       );
       const selectedTrackId = sessionStorage.getItem('trackId');

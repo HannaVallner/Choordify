@@ -11,7 +11,7 @@
                 {{ artist.name }}{{ !last ? ', ' : '' }}
             </span>
         </p>
-        <button type="button" (click)="toggleFeatures()">Details</button>
+        <button type="button" (click)="toggleFeatures()"> Details</button>
         <ul class="track-features" *ngIf="displayFeatures">
             <li class="track-feature" *ngFor="let keyValuePair of trackInfo | keyvalue">
                 <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
@@ -24,6 +24,7 @@
                 <img class="playlist-cover" [src]="playlist.images[0]?.url" alt="Playlist cover">
                 <p class="playlist-name">{{ playlist.name }}</p>
                 <p class="playlist-tracks">{{ playlist.tracks["total"] }} songs </p>
+                <p class="averages"> {{ playlist.averages }}</p> 
                 <button type="button">Details</button>
         </li>
         </ul>
