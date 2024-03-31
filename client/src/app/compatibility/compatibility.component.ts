@@ -12,7 +12,7 @@ export class CompatibilityComponent implements OnInit {
   trackInfo: any;
   track: any;
   trackId = '';
-  hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri'];
+  hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
   displayFeatures = false;
   
   constructor(private spotify: SpotifyService, private playlistService: PlaylistService) {}
@@ -35,6 +35,7 @@ export class CompatibilityComponent implements OnInit {
           {trackInfoObservable.subscribe(trackInfo => {
             this.trackInfo = trackInfo;
             this.filterTrackInfo();
+            this.trackInfo = this.playlistService.normalizeFeatures(trackInfo);
           });
         });
 

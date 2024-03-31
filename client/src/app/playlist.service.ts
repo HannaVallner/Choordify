@@ -6,7 +6,7 @@ import { SpotifyService } from './spotify.service';
 })
 export class PlaylistService {
   token = '';
-  hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri'];
+  hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
 
   constructor(private spotify: SpotifyService) { 
     const storedToken = sessionStorage.getItem('token');
@@ -25,9 +25,10 @@ export class PlaylistService {
         (featuresResponse: any) => {
           const featuresArray = this.filterFeatures(featuresResponse.audio_features);
           const playlistAverages = this.calculatePlaylistAverages(featuresArray);
-          playlist.averages = playlistAverages;
-        }
-        )
+          const normalizedAverages = this.normalizeFeatures(playlistAverages)
+          playlist.averages = normalizedAverages;
+          console.log(playlist.averages);
+        })
       }
     );
   }
@@ -64,4 +65,43 @@ export class PlaylistService {
     return averageFeatures;
   }
 
+  normalizeFeatures(features: any): any {
+    const normalizedFeatures: any = {};
+    const minMaxValues: any = {
+        "acousticness": [0, 1],
+        "danceability": [0, 1],
+        "energy": [0, 1],
+        "instrumentalness": [0, 1],
+
+        //integer
+        "key": [-1, 11],
+
+        "liveness": [0, 1],
+        "loudness": [-60, 0], 
+
+        //integer
+        "mode": [0, 1],
+
+        "speechiness": [0, 1],
+
+        // no real limit
+        "tempo": [70, 169], 
+
+        //integer
+        "time_signature": [3, 7],
+
+        "valence": [0, 1]
+    };
+    for (const feature of Object.keys(features)) {
+      const value = features[feature];
+      const [min, max] = minMaxValues[feature];
+      if (value < min) {
+        normalizedFeatures[feature] = min;
+      } else if (value > max) {
+        normalizedFeatures[feature] = max;
+      }
+      normalizedFeatures[feature] = (value - min) / (max - min);
+    }
+    return normalizedFeatures;
+  }
 }
