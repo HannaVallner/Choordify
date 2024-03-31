@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { PlaylistService } from '../playlist.service';
 
 
 @Component({
@@ -6,10 +7,12 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit{
-  constructor() {}
+export class HomeComponent implements OnInit {
+  constructor(private playlistService: PlaylistService) {}
 
   ngOnInit() {
+    // Initiate necessary playlist operations
+    this.playlistService.togglePlaylists();
   }
 
 }

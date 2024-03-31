@@ -7,6 +7,7 @@ import { SpotifyService } from './spotify.service';
 export class PlaylistService {
   token = '';
   hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
+  playlists: any[] = [];
 
   constructor(private spotify: SpotifyService) { 
     const storedToken = sessionStorage.getItem('token');
@@ -15,7 +16,17 @@ export class PlaylistService {
     }
   }
 
-  // s
+  togglePlaylists() {
+    // get playlists
+    this.spotify.getPlaylists(this.token).subscribe((response: any) => {
+      this.playlists = response.items;
+      this.playlists.forEach(playlist => {
+        //calculate playlists' averages (filtered and normalized)
+        this.getPlaylistAverages(playlist);
+      });
+    });
+  }
+
   getPlaylistAverages(playlist: any) {
     this.spotify.getPlaylistTracks(this.token, playlist.id, '0').subscribe(
       (response: any) => {
@@ -27,7 +38,7 @@ export class PlaylistService {
           const playlistAverages = this.calculatePlaylistAverages(featuresArray);
           const normalizedAverages = this.normalizeFeatures(playlistAverages)
           playlist.averages = normalizedAverages;
-          console.log(playlist.averages);
+          playlist.displayAverages = false;
         })
       }
     );
