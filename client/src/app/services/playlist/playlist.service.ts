@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SpotifyService } from './spotify.service';
+import { SpotifyService } from '../spotify/spotify.service';
 
 @Injectable({
   providedIn: 'root'

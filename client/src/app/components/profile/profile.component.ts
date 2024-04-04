@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { SpotifyService } from '../spotify.service';
-import { AuthService } from '../auth.service';
+import { SpotifyService } from '../../services/spotify/spotify.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 
 @Component({

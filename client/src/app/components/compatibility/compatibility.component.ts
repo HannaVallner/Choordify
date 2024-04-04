@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { SpotifyService } from '../spotify.service';
-import { PlaylistService } from '../playlist.service';
+import { SpotifyService } from '../../services/spotify/spotify.service';
+import { PlaylistService } from '../../services/playlist/playlist.service';
 
 @Component({
   selector: 'app-compatibility',
@@ -26,6 +26,7 @@ export class CompatibilityComponent implements OnInit {
       const selectedTrackId = sessionStorage.getItem('trackId');
       if (selectedTrackId) {
         this.trackId = selectedTrackId;
+        // Get main details of selected track
         this.spotify.getTrack(this.token, this.trackId).subscribe((track: any) => {
           this.track = track;
         });

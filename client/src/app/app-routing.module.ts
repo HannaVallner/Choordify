@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { HomeComponent } from './home/home.component';
-import { ProfileComponent } from './profile/profile.component';
-import { AddComponent } from './add/add.component';
-import { SortComponent } from './sort/sort.component';
-import { AboutComponent } from './about/about.component';
-import { CompatibilityComponent } from './compatibility/compatibility.component';
+import { LoginComponent } from './components/login/login.component';
+import { HomeComponent } from './components/home/home.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { AddComponent } from './components/add/add.component';
+import { SortComponent } from './components/sort/sort.component';
+import { AboutComponent } from './components/about/about.component';
+import { CompatibilityComponent } from './components/compatibility/compatibility.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },

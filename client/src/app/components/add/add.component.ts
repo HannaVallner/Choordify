@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { SpotifyService } from '../spotify.service';
-import { PlaylistService } from '../playlist.service';
+import { SpotifyService } from '../../services/spotify/spotify.service';
+import { PlaylistService } from '../../services/playlist/playlist.service';
 
 @Component({
   selector: 'app-add',
