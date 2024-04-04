@@ -23,28 +23,14 @@ export class CompatibilityComponent implements OnInit {
     if (storedToken) {
       this.token = storedToken;
       this.playlists = this.playlistService.playlists;
-      
-        // Get main details of selected track
-        this.track = this.trackService.track;
-        // Other info for selected song
+      // Get main details and features of selected track
+      this.track = this.trackService.track;
         /** 
         // Calculating selected track's compatibility with each playlist
           this.playlists.forEach(playlist => {
             this.calculateCompatibility(this.trackInfo, playlist);
         });
         */
-    }
-  }
-
-
-  
-
-  // Filter chosen track's features (remove unnecessary ones)
-  filterTrackInfo() {
-    for (const key in this.trackInfo) {
-      if (this.trackInfo.hasOwnProperty(key) && this.hiddenFeatures.includes(key)) {
-        delete this.trackInfo[key];
-      }
     }
   }
 

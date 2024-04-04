@@ -28,8 +28,10 @@ export class PlaylistService {
   }
 
   getPlaylistAverages(playlist: any) {
+    // Get all track's on the playlist
     this.spotify.getPlaylistTracks(this.token, playlist.id, '0').subscribe(
       (response: any) => {
+        // Join the tracks' id's to receive their features in a bundle
         const tracks = response.items.map((item: any) => item.track.id);
         const trackIds = tracks.join(',');
         this.spotify.getTracksFeatures(this.token, trackIds).subscribe(

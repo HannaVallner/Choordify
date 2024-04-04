@@ -11,8 +11,8 @@ export class HomeComponent implements OnInit {
   constructor(private playlistService: PlaylistService) {}
 
   ngOnInit() {
-    // If the user's playlists havent been received yet,
-    if (this.playlistService.playlists.length > 0) {
+    // If the user's playlists havent been set yet,
+    if (this.playlistService.playlists.length == 0) {
     // initialize user's playlists (with their average features calculated, filtered and normalized)
       this.playlistService.togglePlaylists();
     }
