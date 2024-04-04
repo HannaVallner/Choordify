@@ -41,7 +41,7 @@ export class PlaylistService {
           // Normalize averages
           const normalizedAverages = this.normalizeFeatures(playlistAverages)
           playlist.averages = normalizedAverages;
-          // Initialize displayAverages variable as false
+          // Initialize displayAverages variable as false (changes on button click)
           playlist.displayAverages = false;
         })
       }

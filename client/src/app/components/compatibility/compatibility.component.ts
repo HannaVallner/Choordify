@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../../services/spotify/spotify.service';
 import { PlaylistService } from '../../services/playlist/playlist.service';
+import { TrackService } from '../../services/track/track.service';
 
 @Component({
   selector: 'app-compatibility',
@@ -11,25 +12,20 @@ export class CompatibilityComponent implements OnInit {
   playlists: any[] = [];
   trackInfo: any;
   track: any;
-  trackId = '';
   token = '';
   hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
   displayFeatures = false;
   
-  constructor(private spotify: SpotifyService, private playlistService: PlaylistService) {}
+  constructor(private spotify: SpotifyService, private playlistService: PlaylistService, private trackService: TrackService) {}
 
   ngOnInit() {
     const storedToken = sessionStorage.getItem('token');
     if (storedToken) {
       this.token = storedToken;
       this.playlists = this.playlistService.playlists;
-      const selectedTrackId = sessionStorage.getItem('trackId');
-      if (selectedTrackId) {
-        this.trackId = selectedTrackId;
+      
         // Get main details of selected track
-        this.spotify.getTrack(this.token, this.trackId).subscribe((track: any) => {
-          this.track = track;
-        });
+        this.track = this.trackService.track;
         // Other info for selected song
         /** 
         // Calculating selected track's compatibility with each playlist
@@ -37,7 +33,6 @@ export class CompatibilityComponent implements OnInit {
             this.calculateCompatibility(this.trackInfo, playlist);
         });
         */
-      }
     }
   }
 
