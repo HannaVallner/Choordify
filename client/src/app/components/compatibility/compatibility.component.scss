@@ -85,6 +85,17 @@
     background-color: #484444;
 }
 
+
+.compatibility-bar {
+    height: 20px; /* Height of the compatibility bar */
+    background-color:#4caf50;; /* Default background color */
+    max-width: 100px;
+}
+
+.compatibility-percentage {
+    font-size: 12px; /* Font size of the percentage text */
+}
+
 button {
     width: 100px; 
     height: 40px;

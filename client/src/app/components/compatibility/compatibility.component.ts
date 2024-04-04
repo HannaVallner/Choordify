@@ -10,7 +10,6 @@ import { TrackService } from '../../services/track/track.service';
 })
 export class CompatibilityComponent implements OnInit {
   playlists: any[] = [];
-  trackInfo: any;
   track: any;
   token = '';
   hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
@@ -25,12 +24,10 @@ export class CompatibilityComponent implements OnInit {
       this.playlists = this.playlistService.playlists;
       // Get main details and features of selected track
       this.track = this.trackService.track;
-        /** 
         // Calculating selected track's compatibility with each playlist
-          this.playlists.forEach(playlist => {
-            this.calculateCompatibility(this.trackInfo, playlist);
-        });
-        */
+      this.playlists.forEach(playlist => {
+        playlist.compatibility = this.calculateCompatibility(this.track.features, playlist.averages)
+    });
     }
   }
 
@@ -48,16 +45,11 @@ export class CompatibilityComponent implements OnInit {
   }
 
   // Calculate similarity of a track's and a playlist's features
-  calculateCompatibility(trackFeatures: any, playlist: any) {
-    const playlistFeatures = playlist.averages;
-    console.log('Track Features:', trackFeatures);
-    console.log('Playlist Features:', playlistFeatures);
-    console.log('danceability playlist: ' + playlistFeatures['danceability']);
-    let sum = 0;
+  calculateCompatibility(trackFeatures: any, playlistAverages: any) {
+    let sum = 0; 
     for (const feature of Object.keys(trackFeatures)) {
-      sum += Math.pow(trackFeatures[feature] - playlistFeatures[feature], 2);
+      sum += Math.pow(trackFeatures[feature] - playlistAverages[feature], 2);
     }
-    playlist.compatibility = Math.round((1 - Math.sqrt(sum / Object.keys(trackFeatures).length)) * 100);
-    console.log(playlist.compatibility);
+    return Math.round((1 - Math.sqrt(sum / Object.keys(trackFeatures).length)) * 100);
   }
 }
