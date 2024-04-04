@@ -31,7 +31,7 @@ export class SpotifyService {
   }
 
   // Returns a track
-  async getTrack(token: string, trackId: string) {
+  getTrack(token: string, trackId: string) {
     return this.http.get('https://api.spotify.com/v1/tracks/' + trackId, {
       headers: { Authorization: 'Bearer ' + token },
     })
@@ -39,7 +39,7 @@ export class SpotifyService {
 
 
   // Returns a track's features
-  async getTrackFeatures(token: string, trackId: string) {
+  getTrackFeatures(token: string, trackId: string) {
     return this.http.get('https://api.spotify.com/v1/audio-features/' + trackId, {
       headers: { Authorization: 'Bearer ' + token },
     })

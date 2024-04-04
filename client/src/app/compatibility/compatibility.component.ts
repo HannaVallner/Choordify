@@ -22,14 +22,14 @@ export class CompatibilityComponent implements OnInit {
     const storedToken = sessionStorage.getItem('token');
     if (storedToken) {
       this.token = storedToken;
+      this.playlists = this.playlistService.playlists;
       const selectedTrackId = sessionStorage.getItem('trackId');
       if (selectedTrackId) {
         this.trackId = selectedTrackId;
-        this.getTrackInfo();
-        //this.getTrackInfo();
-        //console.log(this.trackInfo);
+        this.spotify.getTrack(this.token, this.trackId).subscribe((track: any) => {
+          this.track = track;
+        });
         // Other info for selected song
-        this.playlists = this.playlistService.playlists;
         /** 
         // Calculating selected track's compatibility with each playlist
           this.playlists.forEach(playlist => {
@@ -40,19 +40,8 @@ export class CompatibilityComponent implements OnInit {
     }
   }
 
-  async getTrackInfo() {
-    // Features for selected song
-    //const trackInfo = this.spotify.getTrackFeatures(this.token, this.trackId);
-    //this.trackInfo = this.playlistService.normalizeFeatures(trackInfo);
-    this.track = await this.spotify.getTrack(this.token, this.trackId);
-    console.log(this.track);
-    //this.filterTrackInfo();
-    /** 
-    this.playlists.forEach(playlist => {
-      this.calculateCompatibility(this.trackInfo, playlist);
-    });
-    */
-  }
+
+  
 
   // Filter chosen track's features (remove unnecessary ones)
   filterTrackInfo() {

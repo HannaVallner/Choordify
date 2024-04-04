@@ -27,7 +27,7 @@
                 <p>{{ playlist.compatibility }}</p>
                 <button type="button" (click)="toggleAverages(playlist)">Details</button>
                 <ul class="averages" *ngIf="playlist.displayAverages"> 
-                    <li class="playlist-featue" *ngFor="let keyValuePair of playlist.averages | keyvalue">
+                    <li class="playlist-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">
                         <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
                     </li>
                 </ul> 
