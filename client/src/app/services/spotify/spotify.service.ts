@@ -53,11 +53,19 @@ export class SpotifyService {
   }
 
   // Adds tracks to a given playlist
-  addPlaylistTracks(token: string, playlistId: string, trackURIs: string) {
-    return this.http.post('https://api.spotify.com/v1/playlists/' + playlistId + '/tracks', {
-      uris: trackURIs },
-      { headers: { Authorization: 'Bearer ' + token },
+  addPlaylistTracks(token: string, playlistId: string, trackURIs: string[]) {
+    return this.http.post('https://api.spotify.com/v1/playlists/' + playlistId + '/tracks', 
+    { uris: trackURIs }, 
+    { headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' } 
     })
+      .subscribe(
+        (response) => {
+          console.log("Tracks added successfully:", response);
+        },
+        (error) => {
+          console.error("Error adding tracks to playlist:", error);
+        }
+      );
   }
 
   // Removes tracks from a given playlist

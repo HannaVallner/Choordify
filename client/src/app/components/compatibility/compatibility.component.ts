@@ -52,4 +52,9 @@ export class CompatibilityComponent implements OnInit {
     }
     return Math.round((1 - Math.sqrt(sum / Object.keys(trackFeatures).length)) * 100);
   }
+
+  addToPlaylist(playlist: any) {
+    this.spotify.addPlaylistTracks(this.token, playlist.id, [this.track.uri]);
+    console.log("token: "+ this.token +"playlist id: " + playlist.id + "track uri: " + [this.track.uri]);
+  }
 }

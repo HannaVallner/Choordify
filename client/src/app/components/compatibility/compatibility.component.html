@@ -28,6 +28,7 @@
                     <span class="compatibility-percentage">{{ playlist.compatibility }}%</span>
                 </div>
                 <button type="button" (click)="toggleAverages(playlist)">Details</button>
+                <button type="button" (click)="addToPlaylist(playlist)">Add to playlist</button>
                 <ul class="averages" *ngIf="playlist.displayAverages"> 
                     <li class="playlist-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">
                         <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
