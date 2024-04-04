@@ -6,7 +6,12 @@
             <img class="playlist-cover" [src]="playlist.images[0]?.url" alt="Playlist Cover">
             <p class="playlist-name">{{ playlist.name }}</p>
             <p class="playlist-tracks">{{ playlist.tracks["total"] }} songs </p>
-            <p class="averages"> {{ playlist.averages }}</p> 
+            <button type="button" (click)="toggleAverages(playlist)"> Details</button>
+            <ul class="track-features" *ngIf="playlist.displayAverages">
+                <li class="track-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">
+                    <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
+                </li>
+            </ul>
         </li>
         </ul>
     </div>

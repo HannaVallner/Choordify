@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 <div class="outer-container">
-    <div class="track-info" *ngIf="trackInfo">
+    <div class="track-info" *ngIf="track">
         <img class="track-cover" *ngIf="track.album && track.album.images && track.album.images.length > 0"
              [src]="track.album.images[0].url" 
              alt="Track cover">

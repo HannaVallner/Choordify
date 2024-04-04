@@ -21,7 +21,7 @@ export class PlaylistService {
     this.spotify.getPlaylists(this.token).subscribe((response: any) => {
       this.playlists = response.items;
       this.playlists.forEach(playlist => {
-        //calculate playlists' averages (filtered and normalized)
+        // calculate playlists' averages (filtered and normalized)
         this.getPlaylistAverages(playlist);
       });
     });
@@ -34,10 +34,14 @@ export class PlaylistService {
         const trackIds = tracks.join(',');
         this.spotify.getTracksFeatures(this.token, trackIds).subscribe(
         (featuresResponse: any) => {
+          // Filter out unnecessary features
           const featuresArray = this.filterFeatures(featuresResponse.audio_features);
+          // Calculate the average of the playlist's each feature
           const playlistAverages = this.calculatePlaylistAverages(featuresArray);
+          // Normalize averages
           const normalizedAverages = this.normalizeFeatures(playlistAverages)
           playlist.averages = normalizedAverages;
+          // Initialize displayAverages variable as false
           playlist.displayAverages = false;
         })
       }

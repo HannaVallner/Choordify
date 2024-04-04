@@ -12,38 +12,46 @@ export class CompatibilityComponent implements OnInit {
   trackInfo: any;
   track: any;
   trackId = '';
+  token = '';
   hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
   displayFeatures = false;
   
   constructor(private spotify: SpotifyService, private playlistService: PlaylistService) {}
 
   ngOnInit() {
-    const token = sessionStorage.getItem('token');
-    if (token) {
+    const storedToken = sessionStorage.getItem('token');
+    if (storedToken) {
+      this.token = storedToken;
       const selectedTrackId = sessionStorage.getItem('trackId');
       if (selectedTrackId) {
-        // Features for selected song
         this.trackId = selectedTrackId;
-        this.spotify.getTrackFeatures(token, this.trackId).then(trackInfoObservable =>
-          {trackInfoObservable.subscribe(trackInfo => {
-            this.trackInfo = trackInfo;
-            this.filterTrackInfo();
-            this.trackInfo = this.playlistService.normalizeFeatures(trackInfo);
-          });
-        });
+        this.getTrackInfo();
+        //this.getTrackInfo();
+        //console.log(this.trackInfo);
         // Other info for selected song
-        this.spotify.getTrack(token, this.trackId).then(trackObservable => 
-          {trackObservable.subscribe(track => {
-            this.track = track;
-          });
-        });
         this.playlists = this.playlistService.playlists;
+        /** 
         // Calculating selected track's compatibility with each playlist
           this.playlists.forEach(playlist => {
             this.calculateCompatibility(this.trackInfo, playlist);
         });
+        */
       }
     }
+  }
+
+  async getTrackInfo() {
+    // Features for selected song
+    //const trackInfo = this.spotify.getTrackFeatures(this.token, this.trackId);
+    //this.trackInfo = this.playlistService.normalizeFeatures(trackInfo);
+    this.track = await this.spotify.getTrack(this.token, this.trackId);
+    console.log(this.track);
+    //this.filterTrackInfo();
+    /** 
+    this.playlists.forEach(playlist => {
+      this.calculateCompatibility(this.trackInfo, playlist);
+    });
+    */
   }
 
   // Filter chosen track's features (remove unnecessary ones)
@@ -73,7 +81,7 @@ export class CompatibilityComponent implements OnInit {
     const playlistFeatures = playlist.averages;
     console.log('Track Features:', trackFeatures);
     console.log('Playlist Features:', playlistFeatures);
-    console.log('danceability playtlist: ' + playlistFeatures['danceability']);
+    console.log('danceability playlist: ' + playlistFeatures['danceability']);
     let sum = 0;
     for (const feature of Object.keys(trackFeatures)) {
       sum += Math.pow(trackFeatures[feature] - playlistFeatures[feature], 2);

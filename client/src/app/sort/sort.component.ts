@@ -19,21 +19,17 @@ export class SortComponent implements OnInit {
     const token = sessionStorage.getItem('token');
     if (token) {
       this.token = token;
-      this.spotify.getPlaylists(token).subscribe(
-        (response: any) => {
-          this.playlists = response.items;
-          this.playlists.forEach(playlist => {
-            this.playlistService.getPlaylistAverages(playlist);
-          });
-        },
-      );
     }
+    this.playlists = this.playlistService.playlists;
   }
 
   toggleColour(event: any) {
     event.target.classList.toggle('select')
   }
 
+  toggleAverages(playlist: any) {
+    playlist.displayAverages = !playlist.displayAverages
+  }
 
 
 }
