@@ -22,7 +22,7 @@ export class PlaylistService {
       this.playlists = response.items;
       this.playlists.forEach(playlist => {
         // calculate playlists' averages (filtered and normalized)
-        this.getPlaylistAverages(playlist);
+        //this.getPlaylistAverages(playlist);
       });
     });
   }

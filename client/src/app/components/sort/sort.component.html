@@ -1,18 +1,20 @@
 <app-navbar></app-navbar>
 <div class="outer-container">
-    <div class="playlists" *ngIf="playlists.length > 0">
-        <ul>
-        <li *ngFor="let playlist of playlists" (click)="toggleColour($event)">   
-            <img class="playlist-cover" [src]="playlist.images[0]?.url" alt="Playlist Cover">
-            <p class="playlist-name">{{ playlist.name }}</p>
-            <p class="playlist-tracks">{{ playlist.tracks["total"] }} songs </p>
-            <button type="button" (click)="toggleAverages(playlist)"> Details</button>
+    <ul class="playlists-container">
+        <li class="playlist" *ngFor="let playlist of playlists" (click)="toggleColour($event)">   
+            <div class="playlist-content">
+                <img class="playlist-cover" [src]="playlist.images[0]?.url" alt="Playlist Cover">
+                <div class="playlist-details">
+                    <p class="playlist-name">{{ playlist.name }}</p>
+                    <p class="playlist-tracks">{{ playlist.tracks["total"] }} songs </p>
+                </div>
+            </div>
+            <button class="details-button" type="button" (click)="toggleAverages(playlist)"> Details</button>
             <ul class="track-features" *ngIf="playlist.displayAverages">
                 <li class="track-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">
                     <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
                 </li>
-            </ul>
+            </ul> 
         </li>
-        </ul>
-    </div>
+    </ul>
 </div>

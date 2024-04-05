@@ -24,10 +24,8 @@ export class TrackService {
       (featuresResponse: any) => {
         // Filter out unnecessary features
         this.filterTrackInfo(featuresResponse);
-        this.track.features = this.normalizeFeatures(featuresResponse);
         // Normalize features
-
-
+        this.track.features = this.normalizeFeatures(featuresResponse);
     });
     // Initialize displayFeatures as false (changes on button click)
     track.displayFeatures = false;

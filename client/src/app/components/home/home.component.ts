@@ -17,5 +17,4 @@ export class HomeComponent implements OnInit {
       this.playlistService.togglePlaylists();
     }
   }
-
 }
