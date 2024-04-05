@@ -20,10 +20,12 @@ export class PlaylistService {
     // get playlists
     this.spotify.getPlaylists(this.token).subscribe((response: any) => {
       this.playlists = response.items;
+    /** 
       this.playlists.forEach(playlist => {
         // calculate playlists' averages (filtered and normalized)
-        //this.getPlaylistAverages(playlist);
-      });
+        this.getPlaylistAverages(playlist);
+        });
+        */
     });
   }
 

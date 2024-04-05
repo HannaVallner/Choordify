@@ -60,6 +60,7 @@ export class AddComponent implements OnInit {
     this.isSelected = true;
     this.selectedTrack = result;
     this.trackService.toggleTrack(result);
+    
   }
 
  

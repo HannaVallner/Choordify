@@ -13,7 +13,6 @@ export class CompatibilityComponent implements OnInit {
   track: any;
   token = '';
   hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
-  displayFeatures = false;
   
   constructor(private spotify: SpotifyService, private playlistService: PlaylistService, private trackService: TrackService) {}
 
@@ -25,15 +24,24 @@ export class CompatibilityComponent implements OnInit {
       // Get main details and features of selected track
       this.track = this.trackService.track;
         // Calculating selected track's compatibility with each playlist
-      this.playlists.forEach(playlist => {
-        playlist.compatibility = this.calculateCompatibility(this.track.features, playlist.averages)
-    });
+     // this.playlists.forEach(playlist => {
+      //  playlist.compatibility = this.calculateCompatibility(this.track.features, playlist.averages)
+    //});
     }
   }
 
   // for chosen track
   toggleFeatures() {
-    this.displayFeatures = !this.displayFeatures;
+    this.spotify.getTrackFeatures(this.token, this.track.id).subscribe((response: any) => {
+      this.track.features = response.items;
+    /** 
+      this.playlists.forEach(playlist => {
+        // calculate playlists' averages (filtered and normalized)
+        this.getPlaylistAverages(playlist);
+        });
+        */
+    });
+    this.track.displayFeatures = !this.track.displayFeatures;
   }
 
   // for playlist
@@ -42,6 +50,10 @@ export class CompatibilityComponent implements OnInit {
   }
   toggleColour(event: any) {
     event.target.classList.toggle('select')
+  }
+
+  getCompatibility(track: any, playlist: any) {
+  
   }
 
   // Calculate similarity of a track's and a playlist's features

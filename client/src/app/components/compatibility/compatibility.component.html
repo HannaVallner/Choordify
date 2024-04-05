@@ -12,7 +12,7 @@
         </p>
         <p class="track-details"> {{ track.album.name }} </p>
         <button type="button" (click)="toggleFeatures()"> Details</button>
-        <ul class="track-features" *ngIf="displayFeatures">
+        <ul class="track-features" *ngIf="track.displayFeatures">
             <li class="track-feature" *ngFor="let keyValuePair of track.features | keyvalue">
                 <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
             </li>
@@ -30,7 +30,7 @@
             <div class="compatibility-bar" [style.width.%]="playlist.compatibility">
                 <span class="compatibility-percentage">{{ playlist.compatibility }}%</span>
             </div>
-            <button type="button" (click)="toggleAverages(playlist)">Calculate compatibility</button>
+            <button type="button" (click)="getCompatibility(track, playlist)">Calculate compatibility</button>
             <button type="button" (click)="addToPlaylist(playlist)">Add to playlist</button>
             <ul class="averages" *ngIf="playlist.displayAverages"> 
                 <li class="playlist-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">

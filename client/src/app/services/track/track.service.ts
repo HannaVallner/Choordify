@@ -20,16 +20,22 @@ export class TrackService {
   toggleTrack(track: any) {
     this.track = track;
     // Get selected track's features
-    this.spotify.getTrackFeatures(this.token, this.track.id).subscribe(
+    //track.features = this.spotify.getTrackFeatures(this.token, this.track.id)
+     /**
+    .t(
       (featuresResponse: any) => {
         // Filter out unnecessary features
         this.filterTrackInfo(featuresResponse);
         // Normalize features
         this.track.features = this.normalizeFeatures(featuresResponse);
-    });
+        
+        this.track.features = featuresResponse;
+    }); 
+     */
     // Initialize displayFeatures as false (changes on button click)
     track.displayFeatures = false;
   }
+
 
   // Filter chosen track's features (remove unnecessary ones)
   filterTrackInfo(trackInfo: any) {

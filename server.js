@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const cors = require('cors');
 const querystring = require('querystring');
 const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
 const app = express(); 
 
 var client_id = 'a52b1c6ae851463b8614c146866ecf5d';
@@ -20,10 +21,17 @@ const generateRandomString = (length) => {
 
 var stateKey = 'spotify_auth_state';
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Max 100 requests per IP
+  message: 'Too many requests from this IP, please try again later.'
+});
+
 
 app.use(express.static(__dirname + '/client'))
    .use(cors())
-   .use(cookieParser());
+   .use(cookieParser())
+  . use(limiter);
 
 
 app.get("/spotify/auth", function (req, res) {
@@ -119,6 +127,80 @@ app.get('/refresh_token', function(req, res) {
         });
       }
     });
+});
+
+// Get playlists
+app.get('/api/playlists/:token', (req, res) => {
+  const token = req.params.token;
+  const options = {
+      url: 'https://api.spotify.com/v1/me/playlists?limit=50&offset=0',
+      headers: {
+          'Authorization': 'Bearer ' + token
+      }
+  };
+  request.get(options, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+          res.send(body);
+      } else {
+          res.status(response.statusCode).send(error);
+      }
+  });
+});
+
+// Get playlist's tracks
+app.get('/api/playlists/:playlistId/tracks', (req, res) => {
+  const { playlistId } = req.params;
+  const { token, offset } = req.query;
+  const options = {
+    url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50&offset=${offset || 0}`,
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  };
+  request.get(options, (error, response, body) => {
+    if (!error && response.statusCode === 200) {
+      res.send(body);
+    } else {
+      res.status(response.statusCode).send(error);
+    }
+  });
+});
+
+// Get tracks' features
+app.get('/api/tracks/features', (req, res) => {
+  const { token, trackIds } = req.query;
+  const options = {
+    url: `https://api.spotify.com/v1/audio-features?ids=${trackIds}`,
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  };
+  request.get(options, (error, response, body) => {
+    if (!error && response.statusCode === 200) {
+      res.send(body);
+    } else {
+      res.status(response.statusCode).send(error);
+    }
+  });
+});
+
+// Get a track's features
+app.get('/api/audio-features/:trackId', (req, res) => {
+  const { trackId } = req.params;
+  const { token } = req.query;
+  const options = {
+    url: `https://api.spotify.com/v1/audio-features/${trackId}`,
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  };
+  request.get(options, (error, response, body) => {
+    if (!error && response.statusCode === 200) {
+      res.send(body);
+    } else {
+      res.status(response.statusCode).send(error);
+    }
+  });
 });
 
 app.listen(3000, () => { 
