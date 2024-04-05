@@ -4,13 +4,13 @@
         <img class="track-cover" *ngIf="track.album && track.album.images && track.album.images.length > 0"
              [src]="track.album.images[0].url" 
              alt="Track cover">
-        <p> {{ track.name }} </p>
-        <p> {{ track.album.name }} </p>
-        <p>
+        <p class="track-title"> {{ track.name }} </p>
+        <p class="track-details">
             <span *ngFor="let artist of track.artists; let last = last">
                 {{ artist.name }}{{ !last ? ', ' : '' }}
             </span>
         </p>
+        <p class="track-details"> {{ track.album.name }} </p>
         <button type="button" (click)="toggleFeatures()"> Details</button>
         <ul class="track-features" *ngIf="displayFeatures">
             <li class="track-feature" *ngFor="let keyValuePair of track.features | keyvalue">
@@ -18,23 +18,25 @@
             </li>
         </ul>
     </div>
-    <div class="playlists-container" *ngIf="playlists.length > 0">
-        <ul class="playlist-list">
+    <ul class="playlists-container" *ngIf="playlists.length > 0">
         <li class="playlist-container" *ngFor="let playlist of playlists">
+            <div class="playlist-content">
                 <img class="playlist-cover" [src]="playlist.images[0]?.url" alt="Playlist cover">
-                <p class="playlist-name">{{ playlist.name }}</p>
-                <p class="playlist-tracks">{{ playlist.tracks["total"] }} songs </p>
-                <div class="compatibility-bar" [style.width.%]="playlist.compatibility">
-                    <span class="compatibility-percentage">{{ playlist.compatibility }}%</span>
+                <div class="playlist-details">
+                    <p class="playlist-name">{{ playlist.name }}</p>
+                    <p class="playlist-tracks">{{ playlist.tracks["total"] }} songs </p>
                 </div>
-                <button type="button" (click)="toggleAverages(playlist)">Details</button>
-                <button type="button" (click)="addToPlaylist(playlist)">Add to playlist</button>
-                <ul class="averages" *ngIf="playlist.displayAverages"> 
-                    <li class="playlist-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">
-                        <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
-                    </li>
-                </ul> 
+            </div>
+            <div class="compatibility-bar" [style.width.%]="playlist.compatibility">
+                <span class="compatibility-percentage">{{ playlist.compatibility }}%</span>
+            </div>
+            <button type="button" (click)="toggleAverages(playlist)">Calculate compatibility</button>
+            <button type="button" (click)="addToPlaylist(playlist)">Add to playlist</button>
+            <ul class="averages" *ngIf="playlist.displayAverages"> 
+                <li class="playlist-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">
+                    <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
+                </li>
+            </ul> 
         </li>
-        </ul>
-    </div>
+    </ul>
 </div>

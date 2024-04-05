@@ -1,20 +1,37 @@
 .outer-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: 15vh;
+    background-color: #353232;
     height: 82vh;
+    width: 1200px;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 0 20px;
+    display: flex; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .track-info {
-    background-color: #353232;
-    width: 500px;
+    width: 400px;
     padding: 15px;
+}
+
+.track-title { 
+    font-family: 'Nunito-Bold';
+    font-size: 1.1rem;
+}
+
+.track-details {
+    font-size: 0.9rem;
+    color: #bababa;
 }
 
 .track-cover {
     width: 100px; 
     height: auto;
+
 }
 
 .track-features {
@@ -23,13 +40,10 @@
 }
 
 .playlists-container {
-    width: 1000px; 
-    max-height: 78vh;
-    overflow-y: auto; 
-    background-color: #353232; 
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding-top: 10px;
+    width: 900px;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .playlists-container::-webkit-scrollbar {
@@ -48,21 +62,30 @@
 .playlists-container::-webkit-scrollbar-thumb:hover {
     background-color: #494646; 
 }
+
+.playlist-content {
+    display: flex;
+    align-items: center;
+}
+
 .playlist-cover {
-    width: 100px; 
-    height: auto;
+    width: 80px; 
+    height: 80px;
     margin-right: 20px;
+}
+
+.playlist-details {
+    flex-grow: 1;
 }
 
 .playlist-name {
     margin-top: 0;
     text-decoration: none;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
 }
 
 .playlist-tracks {
-    margin-top: 60px;
-    margin-left: 0;
+    margin-top: 5px;
     font-size: 0.8rem;
 }
 
@@ -72,11 +95,12 @@
 }
 
 .playlist-container {
-    display: flex; 
+    display: flex;
     background-color: #282626;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 15px;
+    padding: 10px;
+    margin-bottom: 10px;
     transition: transform 0.3s ease-in-out;
 }
  
@@ -96,6 +120,9 @@
 }
 
 button {
-    width: 100px; 
-    height: 40px;
+    margin-left: auto;
+    align-self: flex-end;
+    width: 100px;
+    height: 30px;
+    text-align: center;
 }
