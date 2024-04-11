@@ -1,0 +1,25 @@
+.outer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    background-color: #191414; 
+    margin-top: 40px;
+    margin-left: 50px; 
+    margin-right: 100px; 
+}
+
+.app-name {
+    font-size: 1.5rem;
+    color: #1db954; 
+}
+
+
+.intro-text li {
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.intro-text strong {
+    color: #1db954; 
+}
