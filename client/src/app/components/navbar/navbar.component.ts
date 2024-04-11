@@ -19,7 +19,7 @@ export class NavbarComponent implements OnInit {
     if (storedToken != null) {
       this.token = storedToken; 
       this.spotify.getUserInfo(this.token).then(userInfoObservable => {
-        userInfoObservable.subscribe(userInfo => {
+        userInfoObservable.subscribe((userInfo: any) => {
         this.userInfo = userInfo;
       });
     });

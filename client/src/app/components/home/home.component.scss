@@ -5,3 +5,20 @@
     height: 97vh;
     background-color: #191414; 
 }
+
+.inner-container {
+    display: flex;
+    justify-content: space-between; 
+}
+
+.button-wrapper {
+    text-align: center;
+    display: flex;
+    flex-direction: column; 
+    margin: 80px;
+}
+
+button {
+    width: 200px;
+}
+

@@ -19,7 +19,7 @@ export class ProfileComponent implements OnInit {
     const token = sessionStorage.getItem('token');
     if (token) {
       this.spotify.getUserInfo(token).then(userInfoObservable => {
-        userInfoObservable.subscribe(userInfo => {
+        userInfoObservable.subscribe((userInfo:any) => {
         this.userInfo = userInfo;
       });
     });

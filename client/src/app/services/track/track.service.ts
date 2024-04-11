@@ -22,7 +22,6 @@ export class TrackService {
     // Get selected track's features
     //track.features = this.spotify.getTrackFeatures(this.token, this.track.id)
      /**
-    .t(
       (featuresResponse: any) => {
         // Filter out unnecessary features
         this.filterTrackInfo(featuresResponse);
