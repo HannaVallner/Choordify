@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SpotifyService } from '../spotify/spotify.service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -9,17 +10,26 @@ export class PlaylistService {
   hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
   playlists: any[] = [];
 
-  constructor(private spotify: SpotifyService) { 
+  constructor(private spotify: SpotifyService, private http: HttpClient) { 
     const storedToken = sessionStorage.getItem('token');
     if (storedToken) {
       this.token = storedToken;
     }
   }
 
+  getPlaylistCount() {
+    return this.playlists.length;
+  }
+
+
   togglePlaylists() {
-    // get playlists
+    // toggle playlists
     this.spotify.getPlaylists(this.token).subscribe((response: any) => {
       this.playlists = response.items;
+    console.log("playlists at home" + this.playlists);
+    this.playlists.forEach(element => {
+      console.log("playlistnames at home: " + element.name);
+    });
     /** 
       this.playlists.forEach(playlist => {
         // calculate playlists' averages (filtered and normalized)

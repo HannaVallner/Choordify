@@ -13,16 +13,22 @@ import { PlaylistService } from '../../services/playlist/playlist.service';
 export class ProfileComponent implements OnInit {
   userInfo: any;
   results = [];
-  playLists = 0;
+  playLists: any;
+  token = '';
   
-  constructor(private spotify: SpotifyService, private authService: AuthService) {
+  constructor(private spotify: SpotifyService, private authService: AuthService, private playListService: PlaylistService) {
   }
 
   ngOnInit() {
     if (!this.userInfo) {
-      const token = sessionStorage.getItem('token');
-      if (token) {
-        this.userInfo = this.spotify.getUserInfo(token);
+      const storedToken = sessionStorage.getItem('token');
+      if (storedToken != null) {
+        this.token = storedToken; 
+        this.spotify.getUserInfo(this.token).then(userInfoObservable => {
+          userInfoObservable.subscribe(userInfo => {
+          this.userInfo = userInfo;
+         });
+        });
       }
     }
   }

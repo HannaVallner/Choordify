@@ -2,7 +2,7 @@
 <div *ngIf="userInfo" class="profile">
     <section id="profile">
         <div class="profile-info">
-            <img src="{{ userInfo.images[0].url }}" alt="Profile Picture" class="profile-picture">
+            <img *ngIf="userInfo.images" src="{{ userInfo.images[0].url }}" alt="Profile Picture" class="profile-picture">
             <div class="user-details">
                 <h2>Logged in as {{ userInfo.display_name }}</h2>
                 <ul>

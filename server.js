@@ -2,6 +2,7 @@ const express = require('express');
 const request = require('request');
 const crypto = require('crypto');
 const cors = require('cors');
+const session = require('express-session');
 const querystring = require('querystring');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
@@ -33,6 +34,12 @@ app.use(express.static(__dirname + '/client'))
    .use(cookieParser())
   . use(limiter);
 
+  app.use(session({
+    secret: client_secret,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+  }));
 
 app.get("/spotify/auth", function (req, res) {
   var state = generateRandomString(16);
@@ -132,19 +139,26 @@ app.get('/refresh_token', function(req, res) {
 // Get playlists
 app.get('/api/playlists/:token', (req, res) => {
   const token = req.params.token;
-  const options = {
-      url: 'https://api.spotify.com/v1/me/playlists?limit=50&offset=0',
-      headers: {
-          'Authorization': 'Bearer ' + token
-      }
-  };
-  request.get(options, (error, response, body) => {
-      if (!error && response.statusCode === 200) {
-          res.send(body);
-      } else {
-          res.status(response.statusCode).send(error);
-      }
-  });
+   // Check if playlists data exists in the session
+   if (req.session.playlists) {
+    // If playlists data exists, send it directly from the session
+    res.send(req.session.playlists);
+  } else {
+    const options = {
+        url: 'https://api.spotify.com/v1/me/playlists?limit=50&offset=0',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    };
+    request.get(options, (error, response, body) => {
+        if (!error && response.statusCode === 200) {
+            req.session.playlists = JSON.parse(body);
+            res.send(body);
+        } else {
+            res.status(response.statusCode).send(error);
+        }
+    });
+  }
 });
 
 // Get playlist's tracks
