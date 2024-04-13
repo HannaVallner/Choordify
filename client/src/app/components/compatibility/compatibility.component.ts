@@ -12,9 +12,12 @@ export class CompatibilityComponent implements OnInit {
   playlists: any[] = [];
   track: any;
   token = '';
+  input = '';
+  inputField = false;
   hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
   
-  constructor(private spotify: SpotifyService, private playlistService: PlaylistService, private trackService: TrackService) {}
+  constructor(private spotify: SpotifyService, private playlistService: PlaylistService, 
+    private trackService: TrackService) {}
 
   ngOnInit() {
     const storedToken = sessionStorage.getItem('token');
@@ -52,10 +55,6 @@ export class CompatibilityComponent implements OnInit {
     event.target.classList.toggle('select')
   }
 
-  getCompatibility(track: any, playlist: any) {
-  
-  }
-
   // Calculate similarity of a track's and a playlist's features
   calculateCompatibility(trackFeatures: any, playlistAverages: any) {
     let sum = 0; 
@@ -67,5 +66,19 @@ export class CompatibilityComponent implements OnInit {
 
   addToPlaylist(playlist: any) {
     this.spotify.addPlaylistTracks(this.token, playlist.id, [this.track.uri]);
+  }
+
+  toggleInputField() {
+    this.inputField = !this.inputField;
+  }
+
+  createPlaylist() {
+    /** 
+    this.spotify.getUserInfo(this.token).then(userInfoObservable => {
+      userInfoObservable.subscribe((userInfo:any) => {
+      this.spotify.createPlaylist(this.token, userInfo.id, this.input);
+      });
+    });
+    */
   }
 }

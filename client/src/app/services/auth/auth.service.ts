@@ -14,6 +14,8 @@ export class AuthService {
 
   constructor(private router: Router) { }
 
+
+  
   setAuthenticated() {
     this.url = window.location.href;
 		this.rawParams = this.url.split('?')[1];

@@ -21,6 +21,9 @@ export class SortComponent implements OnInit {
       this.token = token;
     }
     this.playlists = this.playlistService.playlists;
+    this.playlists.forEach(playlist => {
+      console.log(playlist.name);
+    });
   }
 
   toggleColour(event: any) {

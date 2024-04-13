@@ -7,18 +7,14 @@ import { Observable } from 'rxjs';
 })
 
 export class SpotifyService {
-  userInfo: any;
 
   constructor(private http: HttpClient) { }
 
   // Returns user's info  
   async getUserInfo(token: string) {
-    if (this.userInfo == null) {
-      this.userInfo = this.http.get('https://api.spotify.com/v1/me', {
-        headers: { Authorization: 'Bearer ' + token },
-      })
-   }
-    return this.userInfo;
+    return this.http.get('https://api.spotify.com/v1/me', {
+      headers: { Authorization: 'Bearer ' + token },
+    })
   }
 
   /** 

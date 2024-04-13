@@ -8,7 +8,8 @@
                 <ul>
                     <li>User ID: {{ userInfo.id }}</li>
                     <li>Email: {{ userInfo.email }}</li>
-                    <li>Total Playlists:</li>
+                    <li>Total Playlists: {{ playLists }}</li>
+                    <li> Spotify account: {{userInfo.external_urls["spotify"]}}</li>
                 </ul>
             </div>
         </div>

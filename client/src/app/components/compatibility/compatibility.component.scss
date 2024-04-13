@@ -14,6 +14,7 @@
 }
 
 .track-info {
+    margin-top: 20px;
     width: 400px;
     padding: 15px;
 }
@@ -122,7 +123,54 @@
 button {
     margin-left: auto;
     align-self: flex-end;
-    width: 100px;
+    width: auto;
     height: 30px;
     text-align: center;
+    line-height: 0;
+}
+
+.create-playlist {
+    position: absolute;
+    bottom: 0; 
+    left: 0;
+}
+
+.create-button {
+    margin-left: auto;
+    width: 200;
+    height: 50px;
+    margin-left: 220px;
+    margin-bottom: 70px;
+    text-align: center;
+    line-height: 0;
+    background-color: #5a5858; 
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.create-button:hover {
+    background-color: #7a7a7a;
+}
+
+.input-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.input-container input {
+    width: 200px;
+    height: 30px;
+    padding: 5px;
+    margin: 10px;
+    font-size: 0.8rem;
+    border-radius: 10px; 
+    padding: 5px 10px;
+    text-indent: 10px;
+}
+
+.input-container button {
+    height: 30px;
+    padding: 0 10px;
+    font-size: 1rem;
 }

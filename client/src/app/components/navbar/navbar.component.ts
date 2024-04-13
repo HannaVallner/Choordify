@@ -18,8 +18,9 @@ export class NavbarComponent implements OnInit {
     const storedToken = sessionStorage.getItem('token');
     if (storedToken != null) {
       this.token = storedToken; 
+      console.log("token: " + this.token);
       this.spotify.getUserInfo(this.token).then(userInfoObservable => {
-        userInfoObservable.subscribe((userInfo: any) => {
+        userInfoObservable.subscribe(userInfo => {
         this.userInfo = userInfo;
       });
     });
