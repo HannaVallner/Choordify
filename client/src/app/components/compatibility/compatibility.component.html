@@ -29,6 +29,7 @@
         <li class="playlist-container" *ngFor="let playlist of playlists">
             <div class="playlist-content">
                 <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist cover">
+                <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
                 <div class="playlist-details">
                     <p class="playlist-name">{{ playlist.name.length > 20 ? playlist.name.slice(0, 20) + '...' : playlist.name }}</p>
                     <p class="playlist-tracks">{{ playlist.tracks["total"] }} songs </p>
