@@ -10,11 +10,11 @@ export class SpotifyService {
 
   constructor(private http: HttpClient) { }
 
-  // Returns user's info  
-  async getUserInfo(token: string) {
-    return this.http.get('https://api.spotify.com/v1/me', {
-      headers: { Authorization: 'Bearer ' + token },
-    })
+  getUserInfo(token: string) {
+    return this.http.get('http://localhost:3000/api/user/info', {
+      params: { token: token },
+      withCredentials: true
+    });
   }
 
   // Returns user's playlists

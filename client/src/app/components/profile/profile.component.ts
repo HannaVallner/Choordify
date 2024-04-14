@@ -20,17 +20,16 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!this.userInfo) {
-      const storedToken = sessionStorage.getItem('token');
-      if (storedToken != null) {
-        this.token = storedToken; 
-        this.spotify.getUserInfo(this.token).then(userInfoObservable => {
-          userInfoObservable.subscribe(userInfo => {
-          this.userInfo = userInfo;
-         });
-        });
-      }
+    const storedToken = sessionStorage.getItem('token');
+    if (storedToken != null) {
+      this.token = storedToken; 
     }
+    this.spotify.getUserInfo(this.token).subscribe((response: any) => {
+      this.userInfo = response;
+    });
+    this.spotify.getPlaylists(this.token).subscribe((response: any) => {
+      this.playLists = response.items.length;
+    })
   }
 
   logout() {

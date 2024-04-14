@@ -247,7 +247,8 @@ app.get('/api/tracks/:trackId', function(req, res) {
     // If playlists data exists, send it directly from the session
     console.log("got track from session");
     res.send(req.session.track);
-  }else {
+  } 
+  else {
   const options = {
     url: `https://api.spotify.com/v1/tracks/${trackId}`,
     headers: {
@@ -261,7 +262,33 @@ app.get('/api/tracks/:trackId', function(req, res) {
         req.session.save();
         console.log("got track from api call")
         res.send(body);
-      
+      } else {
+        res.status(response.statusCode).send(error);
+      }
+    });
+  }
+});
+
+
+// Get user info
+app.get('/api/user/info', function(req, res) {
+  const token = req.query.token;
+  if (req.session.user) {
+    console.log("got user from session");
+    res.send(req.session.user);
+  } else {
+    const options = {
+      url: 'https://api.spotify.com/v1/me',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    };
+    request.get(options, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        req.session.user = JSON.parse(body);
+        req.session.save();
+        console.log("got user from api call")
+        res.send(body);
       } else {
         res.status(response.statusCode).send(error);
       }
