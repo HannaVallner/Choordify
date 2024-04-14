@@ -142,7 +142,14 @@ app.get('/api/playlists/:token', function(req, res) {
   if (req.session.playlists) {
     // If playlists data exists, send it directly from the session
     console.log("got playlists from session");
+
+    const playlists = req.session.playlists;
+    // Sort playlists based on compatibility
+    playlists.sort((a, b) => b.compatibility - a.compatibility);
+    req.session.playlists = playlists;
+
     res.send(req.session.playlists);
+    
   } else {
     const options = {
       url: 'https://api.spotify.com/v1/me/playlists?limit=50&offset=0',
