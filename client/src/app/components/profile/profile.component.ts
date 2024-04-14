@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../../services/spotify/spotify.service';
 import { AuthService } from '../../services/auth/auth.service';
-import { PlaylistService } from '../../services/playlist/playlist.service';
 
 
 @Component({
@@ -16,7 +15,7 @@ export class ProfileComponent implements OnInit {
   playLists: any;
   token = '';
   
-  constructor(private spotify: SpotifyService, private authService: AuthService, private playListService: PlaylistService) {
+  constructor(private spotify: SpotifyService, private authService: AuthService) {
   }
 
   ngOnInit() {

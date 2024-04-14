@@ -37,7 +37,6 @@
             <div class="compatibility-bar" [style.width.%]="playlist.compatibility">
                 <span class="compatibility-percentage">{{ playlist.compatibility }}%</span>
             </div>
-            <button type="button" >Calculate compatibility</button>
             <button type="button" (click)="addToPlaylist(playlist)">Add to playlist</button>
             <ul class="averages" *ngIf="playlist.displayAverages"> 
                 <li class="playlist-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">

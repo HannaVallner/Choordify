@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../../services/spotify/spotify.service';
-import { TrackService } from '../../services/track/track.service';
 
 @Component({
   selector: 'app-add',
@@ -16,7 +15,7 @@ export class AddComponent implements OnInit {
   filteredResults: any[] = [];
   isSelected = false;
 
-  constructor(private spotify: SpotifyService, private trackService: TrackService) {
+  constructor(private spotify: SpotifyService) {
   }
 
   ngOnInit() {
@@ -60,7 +59,7 @@ export class AddComponent implements OnInit {
     this.isSelected = true;
     this.selectedTrack = result;
     sessionStorage.setItem("trackId", result.id);
-    this.trackService.getTrack(result);
+    this.spotify.getTrack(this.token, result.id);
   }
 
  
