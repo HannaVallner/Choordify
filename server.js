@@ -37,6 +37,7 @@ app.use(cors({
 app.use(express.static(__dirname + '/client'));
 
 app.use(cookieParser());
+app.use(express.json());
 
 
 app.get("/spotify/auth", function(req, res) {
@@ -269,7 +270,6 @@ app.get('/api/tracks/:trackId', function(req, res) {
   }
 });
 
-
 // Get user info
 app.get('/api/user/info', function(req, res) {
   const token = req.query.token;
@@ -294,6 +294,48 @@ app.get('/api/user/info', function(req, res) {
       }
     });
   }
+});
+
+app.post('/api/playlists/create', function(req, res) {
+  const { token, userId, playlistName } = req.body;
+  const options = {
+    url: `https://api.spotify.com/v1/users/${userId}/playlists`,
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ name: playlistName })
+  };
+  request.post(options, (error, response, body) => {
+    if (!error && response.statusCode === 200) {
+      res.send(body);
+    } else {
+      console.error("Error creating playlist:", error);
+      res.status(response.statusCode).send(error);
+    }
+  });
+});
+
+
+app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
+  const { token, trackURIs } = req.body;
+  const { playlistId } = req.params;
+  const options = {
+    url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ uris: trackURIs })
+  };
+  request.post(options, (error, response, body) => {
+    if (!error && response.statusCode === 201) {
+      res.send(body);
+    } else {
+      console.error("Error adding tracks to playlist:", error);
+      res.status(response.statusCode).send(error);
+    }
+  });
 });
 
 app.listen(3000, () => { 

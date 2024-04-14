@@ -48,18 +48,11 @@ export class SpotifyService {
 
   // Adds tracks to a given playlist
   addPlaylistTracks(token: string, playlistId: string, trackURIs: string[]) {
-    return this.http.post('https://api.spotify.com/v1/playlists/' + playlistId + '/tracks', 
-    { uris: trackURIs }, 
-    { headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' } 
-    })
-      .subscribe(
-        (response) => {
-          console.log("Tracks added successfully:", response);
-        },
-        (error) => {
-          console.error("Error adding tracks to playlist:", error);
-        }
-      );
+    return this.http.post(`http://localhost:3000/api/playlists/${playlistId}/add-tracks`, { token, trackURIs });
+  }
+
+  createPlaylist(token: string, userId: string, playlistName: string) {
+    return this.http.post('http://localhost:3000/api/playlists/create', { token, userId, playlistName });
   }
 
   // Removes tracks from a given playlist
@@ -72,13 +65,7 @@ export class SpotifyService {
     });
   }
 
-  // Creates a new playlist
-  createPlaylist(token: string, userId: string, playlistName: string) {
-    return this.http.post('https://api.spotify.com/v1/users/' + userId +'/playlists', {
-      headers: { Authorization: 'Bearer ' + token }, 
-      body: { name: playlistName}
-    });
-  }
+
 
   searchForTracks(token: string, query: string) {
     return this.http.get(`http://localhost:3000/api/search/tracks?token=${token}&query=${query}`);

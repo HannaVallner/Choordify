@@ -15,6 +15,7 @@ export class CompatibilityComponent implements OnInit {
   trackId = '';
   input = ''; // For new playlist's name
   result: any;
+  userId = '';
   inputField = false;
   hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
   
@@ -39,6 +40,10 @@ export class CompatibilityComponent implements OnInit {
     this.spotify.getTrack(this.token, this.trackId).subscribe((response: any) => {
       this.track = response;
     });
+
+    this.spotify.getUserInfo(this.token).subscribe((response: any) => {
+      this.userId = response.id;
+    })
 
         // Calculating selected track's compatibility with each playlist
      // this.playlists.forEach(playlist => {
@@ -78,7 +83,14 @@ export class CompatibilityComponent implements OnInit {
   }
 
   addToPlaylist(playlist: any) {
-    this.spotify.addPlaylistTracks(this.token, playlist.id, [this.track.uri]);
+    this.spotify.addPlaylistTracks(this.token, playlist.id, [this.track.uri]) .subscribe(
+      (response) => {
+        console.log("Tracks added successfully:", response);
+      },
+      (error) => {
+        console.error("Error adding tracks to playlist:", error);
+      }
+    );
   }
 
   toggleInputField() {
@@ -86,12 +98,13 @@ export class CompatibilityComponent implements OnInit {
   }
 
   createPlaylist() {
-    /** 
-    this.spotify.getUserInfo(this.token).then(userInfoObservable => {
-      userInfoObservable.subscribe((userInfo:any) => {
-      this.spotify.createPlaylist(this.token, userInfo.id, this.input);
-      });
-    });
-    */
+    this.spotify.createPlaylist(this.token, this.userId, this.input).subscribe(
+      (response) => {
+        console.log("Playlist created successfully:", response);
+      },
+      (error) => {
+        console.error("Error creating playlist:", error);
+      }
+    );
   }
 }
