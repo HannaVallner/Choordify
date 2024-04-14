@@ -17,24 +17,11 @@ export class SpotifyService {
     })
   }
 
-  /** 
   // Returns user's playlists
   getPlaylists(token: string) {
-    return this.http.get('https://api.spotify.com/v1/me/playlists?limit=50&offset=0', {
-      headers: { Authorization: 'Bearer ' + token },
-    })
-  }
-
-  // Returns a playlist's tracks
-  getPlaylistTracks(token: string, playlistId: string, offset: string) {
-    return this.http.get('https://api.spotify.com/v1/playlists/' + playlistId + '/tracks?limit=50&offset=' + offset, {
-      headers: { Authorization: 'Bearer ' + token },
-    })
-  }
-  */
-  // Returns user's playlists
-  getPlaylists(token: string) {
-    return this.http.get(`http://localhost:3000/api/playlists/${token}`);
+    return this.http.get(`http://localhost:3000/api/playlists/${token}`, {
+      withCredentials: true
+    });
   }
 
   // Returns a playlist's tracks
@@ -42,36 +29,17 @@ export class SpotifyService {
     return this.http.get(`http://localhost:3000/api/playlists/${playlistId}/tracks?token=${token}&offset=${offset}`);
   }
 
-  // Returns a track
+  // Returns a track from backend
   getTrack(token: string, trackId: string) {
-    return this.http.get('https://api.spotify.com/v1/tracks/' + trackId, {
-      headers: { Authorization: 'Bearer ' + token },
-    })
+    return this.http.get(`http://localhost:3000/api/tracks/${trackId}?token=${token}`);
   }
 
-
-  /** 
-  // Returns a track's features
-  getTrackFeatures(token: string, trackId: string) {
-    return this.http.get('https://api.spotify.com/v1/audio-features/' + trackId, {
-      headers: { Authorization: 'Bearer ' + token },
-    })
-  }
-  */
 
   // Returns a track's features
   getTrackFeatures(token: string, trackId: string) {
     return this.http.get(`http://localhost:3000/api/audio-features/${trackId}?token=${token}`);
   }
 
-  /** 
-  // Returns several tracks' features
-  getTracksFeatures(token: string, trackIds: string) {
-    return this.http.get('https://api.spotify.com/v1/audio-features?ids=' + trackIds, {
-      headers: { Authorization: 'Bearer ' + token },
-    })
-  }
-  */
   // Returns several tracks' features
   getTracksFeatures(token: string, trackIds: string) {
     return this.http.get(`http://localhost:3000/api/tracks/features?token=${token}&trackIds=${trackIds}`);
@@ -111,10 +79,7 @@ export class SpotifyService {
     });
   }
 
-  // Returns tracks which match a given input
-  searchForTracks(token: string, input: string) {
-    return this.http.get('https://api.spotify.com/v1/search?q=' + input + '&type=track', {
-      headers: { Authorization: 'Bearer ' + token },
-    })
+  searchForTracks(token: string, query: string) {
+    return this.http.get(`http://localhost:3000/api/search/tracks?token=${token}&query=${query}`);
   }
 }

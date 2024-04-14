@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SpotifyService } from '../spotify/spotify.service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -10,15 +11,21 @@ export class TrackService {
   track: any;
   trackId = '';
 
-  constructor(private spotify: SpotifyService) { 
+  constructor(private spotify: SpotifyService, private http: HttpClient) { 
     const storedToken = sessionStorage.getItem('token');
     if (storedToken) {
       this.token = storedToken;
     }
   }
 
-  toggleTrack(track: any) {
-    this.track = track;
+  // getTrack
+  getTrack(track: any) {
+    return this.http.get(`http://localhost:3000/api/tracks/${track.id}?token=${this.token}`).subscribe(
+      (response: any) => {
+        console.log("Track selected successfully", response);
+        // Assuming the response contains the track data
+        this.track = response;
+      });
     // Get selected track's features
     //track.features = this.spotify.getTrackFeatures(this.token, this.track.id)
      /**
@@ -32,7 +39,7 @@ export class TrackService {
     }); 
      */
     // Initialize displayFeatures as false (changes on button click)
-    track.displayFeatures = false;
+    //track.displayFeatures = false;
   }
 
 

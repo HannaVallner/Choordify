@@ -17,26 +17,20 @@ export class PlaylistService {
     }
   }
 
-  getPlaylistCount() {
-    return this.playlists.length;
-  }
-
 
   togglePlaylists() {
     // toggle playlists
+    
+   /** 
     this.spotify.getPlaylists(this.token).subscribe((response: any) => {
       this.playlists = response.items;
-    console.log("playlists at home" + this.playlists);
-    this.playlists.forEach(element => {
-      console.log("playlistnames at home: " + element.name);
-    });
-    /** 
       this.playlists.forEach(playlist => {
         // calculate playlists' averages (filtered and normalized)
         this.getPlaylistAverages(playlist);
         });
-        */
+        
     });
+    */
   }
 
   getPlaylistAverages(playlist: any) {

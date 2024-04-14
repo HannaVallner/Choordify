@@ -12,7 +12,9 @@ export class CompatibilityComponent implements OnInit {
   playlists: any[] = [];
   track: any;
   token = '';
-  input = '';
+  trackId = '';
+  input = ''; // For new playlist's name
+  result: any;
   inputField = false;
   hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
   
@@ -21,16 +23,27 @@ export class CompatibilityComponent implements OnInit {
 
   ngOnInit() {
     const storedToken = sessionStorage.getItem('token');
+    const storedId = sessionStorage.getItem("trackId");
     if (storedToken) {
       this.token = storedToken;
-      this.playlists = this.playlistService.playlists;
+    }
+    if (storedId) {
+      this.trackId = storedId;
+    }
+
+    // Get playlists
+    this.spotify.getPlaylists(this.token).subscribe((response: any) => {
+      this.playlists = response.items;
+    });
       // Get main details and features of selected track
-      this.track = this.trackService.track;
+    this.track = this.spotify.getTrack(this.token, this.trackId).subscribe((response: any) => {
+      this.track = response;
+    });
+
         // Calculating selected track's compatibility with each playlist
      // this.playlists.forEach(playlist => {
       //  playlist.compatibility = this.calculateCompatibility(this.track.features, playlist.averages)
     //});
-    }
   }
 
   // for chosen track

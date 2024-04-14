@@ -59,8 +59,8 @@ export class AddComponent implements OnInit {
     this.searchResults = [];
     this.isSelected = true;
     this.selectedTrack = result;
-    this.trackService.toggleTrack(result);
-    
+    sessionStorage.setItem("trackId", result.id);
+    this.trackService.getTrack(result);
   }
 
  
