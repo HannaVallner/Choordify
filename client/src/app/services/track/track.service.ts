@@ -20,12 +20,9 @@ export class TrackService {
 
   // getTrack
   getTrack(track: any) {
-    return this.http.get(`http://localhost:3000/api/tracks/${track.id}?token=${this.token}`).subscribe(
-      (response: any) => {
-        console.log("Track selected successfully", response);
-        // Assuming the response contains the track data
-        this.track = response;
-      });
+    return this.http.get(`http://localhost:3000/api/tracks/${track.id}?token=${this.token}`, {
+      withCredentials: true
+    });
     // Get selected track's features
     //track.features = this.spotify.getTrackFeatures(this.token, this.track.id)
      /**

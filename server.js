@@ -238,28 +238,30 @@ app.get('/api/search/tracks', function(req, res) {
 
 
 
-// Select chosen track
+// Get chosen track
 app.get('/api/tracks/:trackId', function(req, res) {
   const { trackId } = req.params;
   const { token } = req.query;
+
+  if (req.session.track) {
+    // If playlists data exists, send it directly from the session
+    console.log("got track from session");
+    res.send(req.session.track);
+  }else {
   const options = {
     url: `https://api.spotify.com/v1/tracks/${trackId}`,
     headers: {
       'Authorization': 'Bearer ' + token
     }
   };
-  if (req.session.selectedTrack) {
-    console.log("got from session storage");
-    res.send(req.session.selectedTrack);
-  }
-  else {
     request.get(options, (error, response, body) => {
       if (!error && response.statusCode === 200) {
         // Store selected track in the session
-        req.session.save(() => {
-          req.session.selectedTrack = JSON.parse(body);
-        });
+        req.session.track = JSON.parse(body);
+        req.session.save();
+        console.log("got track from api call")
         res.send(body);
+      
       } else {
         res.status(response.statusCode).send(error);
       }

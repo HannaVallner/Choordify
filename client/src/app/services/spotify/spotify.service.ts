@@ -31,9 +31,10 @@ export class SpotifyService {
 
   // Returns a track from backend
   getTrack(token: string, trackId: string) {
-    return this.http.get(`http://localhost:3000/api/tracks/${trackId}?token=${token}`);
+    return this.http.get(`http://localhost:3000/api/tracks/${trackId}?token=${token}`, {
+      withCredentials: true
+    });
   }
-
 
   // Returns a track's features
   getTrackFeatures(token: string, trackId: string) {

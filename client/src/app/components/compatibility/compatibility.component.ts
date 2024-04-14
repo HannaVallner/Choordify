@@ -36,7 +36,7 @@ export class CompatibilityComponent implements OnInit {
       this.playlists = response.items;
     });
       // Get main details and features of selected track
-    this.track = this.spotify.getTrack(this.token, this.trackId).subscribe((response: any) => {
+    this.spotify.getTrack(this.token, this.trackId).subscribe((response: any) => {
       this.track = response;
     });
 
