@@ -31,27 +31,21 @@ export class SpotifyService {
     });
   }
 
-  // Returns a playlist's tracks
-  getPlaylistTracks(token: string, playlistId: string, offset: string) {
-    return this.http.get(`http://localhost:3000/api/playlists/${playlistId}/tracks?token=${token}&offset=${offset}`);
-  }
 
-  // Returns a track from backend
-  getTrack(token: string, trackId: string) {
+  // Returns a track from Spotify Web API (with its features, filtered and normalized)
+  toggleTrack(token: string, trackId: string) {
     return this.http.get(`http://localhost:3000/api/tracks/${trackId}?token=${token}`, {
       withCredentials: true
     });
   }
 
-  // Returns a track's features
-  getTrackFeatures(token: string, trackId: string) {
-    return this.http.get(`http://localhost:3000/api/audio-features/${trackId}?token=${token}`);
+  // Returns a track from backend session management
+  getStoredTrack() {
+    return this.http.get('http://localhost:3000/api/stored_track', {
+      withCredentials: true
+    });
   }
 
-  // Returns several tracks' features
-  getTracksFeatures(token: string, trackIds: string) {
-    return this.http.get(`http://localhost:3000/api/tracks/features?token=${token}&trackIds=${trackIds}`);
-  }
 
   // Adds tracks to a given playlist
   addPlaylistTracks(token: string, playlistId: string, trackURIs: string[]) {

@@ -35,7 +35,7 @@ export class CompatibilityComponent implements OnInit {
     });
       
     // Get selected track and its features (normalized and filtered)
-    this.spotify.getTrack(this.token, this.trackId).subscribe((response: any) => {
+    this.spotify.getStoredTrack().subscribe((response: any) => {
       this.track = response;
     });
 
@@ -64,6 +64,7 @@ export class CompatibilityComponent implements OnInit {
   }
 
 
+  // Add selected track to selected playlist
   addToPlaylist(playlist: any) {
     this.spotify.addPlaylistTracks(this.token, playlist.id, [this.track.uri]).subscribe(
       (response) => {
@@ -75,6 +76,7 @@ export class CompatibilityComponent implements OnInit {
     );
   }
 
+  // Create a new playlist (upon "create" button click)
   createPlaylist() {
     this.spotify.createPlaylist(this.token, this.userId, this.input).subscribe(
       (response) => {

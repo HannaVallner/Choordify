@@ -301,42 +301,6 @@ app.get('/api/playlists/:playlistId/tracks', function(req, res) {
   });
 });
 
-// Get tracks' features
-app.get('/api/tracks/features', function(req, res) {
-  const { token, trackIds } = req.query;
-  const options = {
-    url: `https://api.spotify.com/v1/audio-features?ids=${trackIds}`,
-    headers: {
-      'Authorization': 'Bearer ' + token
-    }
-  };
-  request.get(options, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      res.send(body);
-    } else {
-      res.status(response.statusCode).send(error);
-    }
-  });
-});
-
-// Get a track's features
-app.get('/api/audio-features/:trackId', function(req, res) {
-  const { trackId } = req.params;
-  const { token } = req.query;
-  const options = {
-    url: `https://api.spotify.com/v1/audio-features/${trackId}`,
-    headers: {
-      'Authorization': 'Bearer ' + token
-    }
-  };
-  request.get(options, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      res.send(body);
-    } else {
-      res.status(response.statusCode).send(error);
-    }
-  });
-});
 
 // Search for tracks
 app.get('/api/search/tracks', function(req, res) {
@@ -356,75 +320,82 @@ app.get('/api/search/tracks', function(req, res) {
   });
 });
 
-// Get chosen track with filtered and normalized features
-app.get('/api/tracks/:trackId', function(req, res) {
-  const { trackId } = req.params;
-  const { token } = req.query;
+
+// Return previously stored track
+app.get('/api/stored_track', function(req,res) {
   if (req.session.track) {
     console.log("track sent from session");
     res.send(req.session.track);
   } else {
-    const trackOptions = {
-      url: `https://api.spotify.com/v1/tracks/${trackId}`,
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    };
-    // First, get the track information
-    request.get(trackOptions, (error, trackResponse, trackBody) => {
-      if (!error && trackResponse.statusCode === 200) {
-        let track = JSON.parse(trackBody);
-
-        // Next, get the track features
-        const featuresOptions = {
-          url: `https://api.spotify.com/v1/audio-features/${trackId}`,
-          headers: {
-            'Authorization': 'Bearer ' + token
-          }
-        };
-        request.get(featuresOptions, (featuresError, featuresResponse, featuresBody) => {
-          if (!featuresError && featuresResponse.statusCode === 200) {
-            let features = JSON.parse(featuresBody);
-
-            // Filter out unnecessary features
-            const hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
-            for (const key in features) {
-              if (features.hasOwnProperty(key) && hiddenFeatures.includes(key)) {
-                delete features[key];
-              }
-            }
-
-            // Normalize the remaining features
-            const normalizedFeatures = normalizeFeatures(features);
-            
-            // Attach the normalized features to the track object
-            track.features = normalizedFeatures;
-
-            // Calculate compatibility of each playlist with the track features
-            const playlists = req.session.playlists;
-            playlists.forEach((playlist) => {
-              const compatibility = calculateCompatibility(normalizedFeatures, playlist.features);
-              playlist.compatibility = compatibility;
-            });
-
-            // Update session with playlists containing compatibility measures
-            req.session.playlists = playlists;
-            req.session.track = track;
-            req.session.save();
-
-            console.log("track sent from api call");
-            res.send(track);
-          } else {
-            console.error("Error getting track features:", featuresError);
-            res.status(featuresResponse.statusCode).send(featuresError);
-          }
-        });
-      } else {
-        console.error("Error getting track:", error);
-        res.status(trackResponse.statusCode).send(error);
-      }
-    });
+    res.status(404).send("No track found");
   }
+});
+
+// Get chosen track with filtered and normalized features
+app.get('/api/tracks/:trackId', function(req, res) {
+  const { trackId } = req.params;
+  const { token } = req.query;
+  const trackOptions = {
+    url: `https://api.spotify.com/v1/tracks/${trackId}`,
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  };
+  // First, get the track information
+  request.get(trackOptions, (error, trackResponse, trackBody) => {
+    if (!error && trackResponse.statusCode === 200) {
+      let track = JSON.parse(trackBody);
+
+      // Next, get the track features
+      const featuresOptions = {
+        url: `https://api.spotify.com/v1/audio-features/${trackId}`,
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      };
+      request.get(featuresOptions, (featuresError, featuresResponse, featuresBody) => {
+        if (!featuresError && featuresResponse.statusCode === 200) {
+          let features = JSON.parse(featuresBody);
+
+          // Filter out unnecessary features
+          const hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
+          for (const key in features) {
+            if (features.hasOwnProperty(key) && hiddenFeatures.includes(key)) {
+              delete features[key];
+            }
+          }
+
+          // Normalize the remaining features
+          const normalizedFeatures = normalizeFeatures(features);
+          
+          // Attach the normalized features to the track object
+          track.features = normalizedFeatures;
+
+          // Calculate compatibility of each playlist with the track features
+          const playlists = req.session.playlists;
+          playlists.forEach((playlist) => {
+            const compatibility = calculateCompatibility(normalizedFeatures, playlist.features);
+            playlist.compatibility = compatibility;
+          });
+
+          // Update session with playlists containing compatibility measures
+          req.session.playlists = playlists;
+          req.session.track = track;
+          req.session.save();
+
+          console.log("track sent from api call");
+          res.send(track);
+        } else {
+          console.error("Error getting track features:", featuresError);
+          res.status(featuresResponse.statusCode).send(featuresError);
+        }
+      });
+    } else {
+      console.error("Error getting track:", error);
+      res.status(trackResponse.statusCode).send(error);
+    }
+  });
+  
 });
 
 // Calculate similarity of a track's and a playlist's features
@@ -434,40 +405,6 @@ function calculateCompatibility(trackFeatures, playlistAverages) {
     sum += Math.pow(trackFeatures[feature] - playlistAverages[feature], 2);
   }
   return Math.round((1 - Math.sqrt(sum / Object.keys(trackFeatures).length)) * 100);
-}
-
-// Function to normalize features
-function normalizeFeatures(features) {
-  const normalizedFeatures = {};
-  const minMaxValues = {
-    "acousticness": [0, 1],
-    "danceability": [0, 1],
-    "energy": [0, 1],
-    "instrumentalness": [0, 1],
-    //integer
-    "key": [-1, 11],
-    "liveness": [0, 1],
-    "loudness": [-60, 0],
-    //integer
-    "mode": [0, 1],
-    "speechiness": [0, 1],
-    // no real limit
-    "tempo": [70, 169],
-    //integer
-    "time_signature": [3, 7],
-    "valence": [0, 1]
-  };
-  for (const feature of Object.keys(features)) {
-    const value = features[feature];
-    const [min, max] = minMaxValues[feature];
-    if (value < min) {
-      normalizedFeatures[feature] = min;
-    } else if (value > max) {
-      normalizedFeatures[feature] = max;
-    }
-    normalizedFeatures[feature] = (value - min) / (max - min);
-  }
-  return normalizedFeatures;
 }
 
 
