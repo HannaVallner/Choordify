@@ -471,6 +471,21 @@ function normalizeFeatures(features) {
 }
 
 
+// Function to delete stored track from session
+app.delete('/api/track/delete', function(req, res) {
+  // Check if track exists in session
+  if (req.session.track) {
+    // Delete the track from session
+    delete req.session.track;
+    req.session.save();
+    console.log("deleted");
+    res.send(body);
+  } else {
+    console.log("not deleted");
+    res.send(body);
+  }
+});
+
 // Get user info
 app.get('/api/user/info', function(req, res) {
   const token = req.query.token;

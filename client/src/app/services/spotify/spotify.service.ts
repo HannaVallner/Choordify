@@ -10,6 +10,13 @@ export class SpotifyService {
 
   constructor(private http: HttpClient) { }
 
+  // Delete previously stored track from server
+  deleteStoredTrack() {
+    return this.http.delete('http://localhost:3000/api/track/delete', {
+    withCredentials: true
+    });
+  }
+
   getUserInfo(token: string) {
     return this.http.get('http://localhost:3000/api/user/info', {
       params: { token: token },

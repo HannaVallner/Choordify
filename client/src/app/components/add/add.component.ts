@@ -58,9 +58,15 @@ export class AddComponent implements OnInit {
     this.searchResults = [];
     this.isSelected = true;
     this.selectedTrack = result;
+    this.spotify.deleteStoredTrack().subscribe(
+      (response) => {
+        console.log(response);
+    });
     sessionStorage.setItem("trackId", result.id);
     this.spotify.getTrack(this.token, result.id);
   }
+
+  
 
  
 }
