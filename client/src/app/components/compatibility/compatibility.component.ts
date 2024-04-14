@@ -32,15 +32,17 @@ export class CompatibilityComponent implements OnInit {
       this.trackId = storedId;
     }
 
-    // Get playlists
+    // Get playlists and their average features (normalized and filtered)
     this.spotify.getPlaylists(this.token).subscribe((response: any) => {
-      this.playlists = response.items;
+      this.playlists = response;
     });
-      // Get main details and features of selected track
+      
+    // Get selected track and its features (normalized and filtered)
     this.spotify.getTrack(this.token, this.trackId).subscribe((response: any) => {
       this.track = response;
     });
 
+    // Get userID (needed for adding a new playlist)
     this.spotify.getUserInfo(this.token).subscribe((response: any) => {
       this.userId = response.id;
     })
@@ -53,15 +55,6 @@ export class CompatibilityComponent implements OnInit {
 
   // for chosen track
   toggleFeatures() {
-    this.spotify.getTrackFeatures(this.token, this.track.id).subscribe((response: any) => {
-      this.track.features = response.items;
-    /** 
-      this.playlists.forEach(playlist => {
-        // calculate playlists' averages (filtered and normalized)
-        this.getPlaylistAverages(playlist);
-        });
-        */
-    });
     this.track.displayFeatures = !this.track.displayFeatures;
   }
 
@@ -69,6 +62,7 @@ export class CompatibilityComponent implements OnInit {
   toggleAverages(playlist: any) {
     playlist.displayAverages = !playlist.displayAverages
   }
+
   toggleColour(event: any) {
     event.target.classList.toggle('select')
   }
@@ -83,7 +77,7 @@ export class CompatibilityComponent implements OnInit {
   }
 
   addToPlaylist(playlist: any) {
-    this.spotify.addPlaylistTracks(this.token, playlist.id, [this.track.uri]) .subscribe(
+    this.spotify.addPlaylistTracks(this.token, playlist.id, [this.track.uri]).subscribe(
       (response) => {
         console.log("Tracks added successfully:", response);
       },

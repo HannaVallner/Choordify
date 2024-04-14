@@ -135,33 +135,152 @@ app.get('/refresh_token', function(req, res) {
     });
 });
 
-// Get playlists
+// Get playlists with average features
 app.get('/api/playlists/:token', function(req, res) {
   const token = req.params.token;
-   // Check if playlists data exists in the session
-   if (req.session.playlists) {
+  // Check if playlists data exists in the session
+  if (req.session.playlists) {
     // If playlists data exists, send it directly from the session
     console.log("got playlists from session");
     res.send(req.session.playlists);
   } else {
     const options = {
-        url: 'https://api.spotify.com/v1/me/playlists?limit=50&offset=0',
-        headers: {
-            'Authorization': 'Bearer ' + token
-        }
+      url: 'https://api.spotify.com/v1/me/playlists?limit=50&offset=0',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
     };
     request.get(options, (error, response, body) => {
-        if (!error && response.statusCode === 200) {
-            req.session.playlists = JSON.parse(body);
+      if (!error && response.statusCode === 200) {
+        const playlists = JSON.parse(body).items;
+        // Initialize an array to store promises for fetching track features
+        const trackFeaturePromises = [];
+        playlists.forEach((playlist) => {
+          // Fetch all tracks' features for each playlist
+          const playlistId = playlist.id;
+          const tracksOptions = {
+            url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50`,
+            headers: {
+              'Authorization': 'Bearer ' + token
+            }
+          };
+          trackFeaturePromises.push(new Promise((resolve, reject) => {
+            request.get(tracksOptions, (error, response, body) => {
+              if (!error && response.statusCode === 200) {
+                const trackItems = JSON.parse(body).items;
+                // Extract track IDs
+                const trackIds = trackItems.map((item) => item.track.id).join(',');
+                // Fetch track features
+                const featuresOptions = {
+                  url: `https://api.spotify.com/v1/audio-features?ids=${trackIds}`,
+                  headers: {
+                    'Authorization': 'Bearer ' + token
+                  }
+                };
+                request.get(featuresOptions, (error, response, body) => {
+                  if (!error && response.statusCode === 200) {
+                    const trackFeatures = JSON.parse(body).audio_features;
+                    resolve(trackFeatures);
+                  } else {
+                    reject(error);
+                  }
+                });
+              } else {
+                reject(error);
+              }
+            });
+          }));
+        });
+
+        // Wait for all track features to be fetched
+        Promise.all(trackFeaturePromises)
+          .then((playlistTracksFeatures) => {
+            // Calculate average features for each playlist
+            const playlistsWithAverages = playlists.map((playlist, index) => {
+              const trackFeatures = playlistTracksFeatures[index];
+              const filteredTrackFeatures = filterFeatures(trackFeatures);
+              const averageFeatures = calculatePlaylistAverages(filteredTrackFeatures);
+              const normalizedAverages = normalizeFeatures(averageFeatures);
+              playlist.features = normalizedAverages;
+              return playlist;
+            });
+
+            // Save playlists with average features in the session
+            req.session.playlists = playlistsWithAverages;
             req.session.save();
-            console.log("got playlists from api call")
-            res.send(body);
-        } else {
-            res.status(response.statusCode).send(error);
-        }
+            console.log("got playlists with average features from API call");
+            res.send(playlistsWithAverages);
+          })
+          .catch((error) => {
+            console.error("Error fetching track features:", error);
+            res.status(500).send(error);
+          });
+      } else {
+        res.status(response.statusCode).send(error);
+      }
     });
   }
 });
+
+// Function to filter out unnecessary features from track features
+function filterFeatures(trackFeatures) {
+  const filteredTrackFeatures = trackFeatures.map((track) => {
+    const filteredTrack = {};
+    for (const key in track) {
+      if (track.hasOwnProperty(key) && !['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'].includes(key)) {
+        filteredTrack[key] = track[key];
+      }
+    }
+    return filteredTrack;
+  });
+  return filteredTrackFeatures;
+}
+
+// Function to calculate average features for a list of tracks
+function calculatePlaylistAverages(trackFeatures) {
+  const totalTracks = trackFeatures.length;
+  const averageFeatures = {};
+  trackFeatures.forEach((track) => {
+    for (const key in track) {
+      if (track.hasOwnProperty(key)) {
+        averageFeatures[key] = (averageFeatures[key] || 0) + track[key];
+      }
+    }
+  });
+  for (const key in averageFeatures) {
+    if (averageFeatures.hasOwnProperty(key)) {
+      averageFeatures[key] /= totalTracks;
+    }
+  }
+  return averageFeatures;
+}
+
+// Function to normalize features
+function normalizeFeatures(features) {
+  const normalizedFeatures = {};
+  const minMaxValues = {
+    "acousticness": [0, 1],
+    "danceability": [0, 1],
+    "energy": [0, 1],
+    "instrumentalness": [0, 1],
+    "key": [-1, 11],
+    "liveness": [0, 1],
+    "loudness": [-60, 0],
+    "mode": [0, 1],
+    "speechiness": [0, 1],
+    "tempo": [70, 169],
+    "time_signature": [3, 7],
+    "valence": [0, 1]
+  };
+  for (const feature in features) {
+    if (features.hasOwnProperty(feature)) {
+      const value = features[feature];
+      const [min, max] = minMaxValues[feature];
+      normalizedFeatures[feature] = (value - min) / (max - min);
+    }
+  }
+  return normalizedFeatures;
+}
 
 // Get playlist's tracks
 app.get('/api/playlists/:playlistId/tracks', function(req, res) {
@@ -237,38 +356,120 @@ app.get('/api/search/tracks', function(req, res) {
   });
 });
 
-
-
-// Get chosen track
+// Get chosen track with filtered and normalized features
 app.get('/api/tracks/:trackId', function(req, res) {
   const { trackId } = req.params;
   const { token } = req.query;
-
   if (req.session.track) {
-    // If playlists data exists, send it directly from the session
-    console.log("got track from session");
+    console.log("track sent from session");
     res.send(req.session.track);
-  } 
-  else {
-  const options = {
-    url: `https://api.spotify.com/v1/tracks/${trackId}`,
-    headers: {
-      'Authorization': 'Bearer ' + token
-    }
-  };
-    request.get(options, (error, response, body) => {
-      if (!error && response.statusCode === 200) {
-        // Store selected track in the session
-        req.session.track = JSON.parse(body);
-        req.session.save();
-        console.log("got track from api call")
-        res.send(body);
+  } else {
+    const trackOptions = {
+      url: `https://api.spotify.com/v1/tracks/${trackId}`,
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    };
+    // First, get the track information
+    request.get(trackOptions, (error, trackResponse, trackBody) => {
+      if (!error && trackResponse.statusCode === 200) {
+        let track = JSON.parse(trackBody);
+
+        // Next, get the track features
+        const featuresOptions = {
+          url: `https://api.spotify.com/v1/audio-features/${trackId}`,
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        };
+        request.get(featuresOptions, (featuresError, featuresResponse, featuresBody) => {
+          if (!featuresError && featuresResponse.statusCode === 200) {
+            let features = JSON.parse(featuresBody);
+
+            // Filter out unnecessary features
+            const hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
+            for (const key in features) {
+              if (features.hasOwnProperty(key) && hiddenFeatures.includes(key)) {
+                delete features[key];
+              }
+            }
+
+            // Normalize the remaining features
+            const normalizedFeatures = normalizeFeatures(features);
+            
+            // Attach the normalized features to the track object
+            track.features = normalizedFeatures;
+
+            // Calculate compatibility of each playlist with the track features
+            const playlists = req.session.playlists;
+            playlists.forEach((playlist) => {
+              const compatibility = calculateCompatibility(normalizedFeatures, playlist.features);
+              playlist.compatibility = compatibility;
+            });
+
+            // Update session with playlists containing compatibility measures
+            req.session.playlists = playlists;
+            req.session.track = track;
+            req.session.save();
+
+            console.log("track sent from api call");
+            res.send(track);
+          } else {
+            console.error("Error getting track features:", featuresError);
+            res.status(featuresResponse.statusCode).send(featuresError);
+          }
+        });
       } else {
-        res.status(response.statusCode).send(error);
+        console.error("Error getting track:", error);
+        res.status(trackResponse.statusCode).send(error);
       }
     });
   }
 });
+
+// Calculate similarity of a track's and a playlist's features
+function calculateCompatibility(trackFeatures, playlistAverages) {
+  let sum = 0; 
+  for (const feature of Object.keys(trackFeatures)) {
+    sum += Math.pow(trackFeatures[feature] - playlistAverages[feature], 2);
+  }
+  return Math.round((1 - Math.sqrt(sum / Object.keys(trackFeatures).length)) * 100);
+}
+
+// Function to normalize features
+function normalizeFeatures(features) {
+  const normalizedFeatures = {};
+  const minMaxValues = {
+    "acousticness": [0, 1],
+    "danceability": [0, 1],
+    "energy": [0, 1],
+    "instrumentalness": [0, 1],
+    //integer
+    "key": [-1, 11],
+    "liveness": [0, 1],
+    "loudness": [-60, 0],
+    //integer
+    "mode": [0, 1],
+    "speechiness": [0, 1],
+    // no real limit
+    "tempo": [70, 169],
+    //integer
+    "time_signature": [3, 7],
+    "valence": [0, 1]
+  };
+  for (const feature of Object.keys(features)) {
+    const value = features[feature];
+    const [min, max] = minMaxValues[feature];
+    if (value < min) {
+      normalizedFeatures[feature] = min;
+    } else if (value > max) {
+      normalizedFeatures[feature] = max;
+    }
+    normalizedFeatures[feature] = (value - min) / (max - min);
+  }
+  return normalizedFeatures;
+}
+
 
 // Get user info
 app.get('/api/user/info', function(req, res) {
@@ -296,6 +497,7 @@ app.get('/api/user/info', function(req, res) {
   }
 });
 
+// Create a new playlist
 app.post('/api/playlists/create', function(req, res) {
   const { token, userId, playlistName } = req.body;
   const options = {
@@ -316,7 +518,7 @@ app.post('/api/playlists/create', function(req, res) {
   });
 });
 
-
+// Add tracks to playlist
 app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
   const { token, trackURIs } = req.body;
   const { playlistId } = req.params;

@@ -28,7 +28,7 @@ export class ProfileComponent implements OnInit {
       this.userInfo = response;
     });
     this.spotify.getPlaylists(this.token).subscribe((response: any) => {
-      this.playLists = response.items.length;
+      this.playLists = response.length;
     })
   }
 

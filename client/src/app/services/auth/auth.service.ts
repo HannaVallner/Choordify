@@ -32,10 +32,6 @@ export class AuthService {
     return this.isAuthenticated;
   }
 
-  getToken() {
-    return this.token;
-  }
-
   logout() {
     sessionStorage.setItem('token', '');
     this.isAuthenticated = false;

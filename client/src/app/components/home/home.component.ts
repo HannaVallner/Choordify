@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { PlaylistService } from '../../services/playlist/playlist.service';
+import { SpotifyService } from '../../services/spotify/spotify.service';
 
 
 @Component({
@@ -8,13 +8,16 @@ import { PlaylistService } from '../../services/playlist/playlist.service';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
-  constructor(private playlistService: PlaylistService) {}
+  token = '';
+  constructor(private spotify: SpotifyService) {}
 
   ngOnInit() {
-    // If the user's playlists havent been set yet,
-    if (this.playlistService.playlists.length == 0) {
-    // initialize user's playlists (with their average features calculated, filtered and normalized)
-      this.playlistService.togglePlaylists();
+    const storedToken = sessionStorage.getItem("token");
+    if (storedToken) {
+      this.token = storedToken;
     }
+    // initialize user's playlists (with their average features calculated, filtered and normalized)
+    this.spotify.getPlaylists(this.token).subscribe((response: any) => {
+    });
   }
 }
