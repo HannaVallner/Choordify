@@ -11,6 +11,7 @@
                 </div>
             </div>
             <button class="details-button" type="button" (click)="toggleAverages(playlist)"> Details</button>
+            <button class="details-button" type="button" (click)="toggleTracks(playlist)"> tracks</button>
             <ul class="track-features" *ngIf="playlist.displayAverages">
                 <li class="track-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">
                     <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>

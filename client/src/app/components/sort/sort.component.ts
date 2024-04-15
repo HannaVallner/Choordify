@@ -32,5 +32,11 @@ export class SortComponent implements OnInit {
     playlist.displayAverages = !playlist.displayAverages
   }
 
-
+  toggleTracks(playlist: any) {
+    const tracks = playlist.tracks;
+    tracks.forEach((track: any) => {
+      console.log(track.track.name);
+      console.log(track.features);
+    });
+  }
 }

@@ -138,19 +138,17 @@ app.get('/refresh_token', function(req, res) {
 // Get playlists with average features
 app.get('/api/playlists/:token', function(req, res) {
   const token = req.params.token;
-  // Check if playlists data exists in the session
+    // If playlists data is saved to the session, send it directly without an api call
   if (req.session.playlists) {
-    // If playlists data exists, send it directly from the session
     console.log("got playlists from session");
-
-    const playlists = req.session.playlists;
     // Sort playlists based on compatibility
+    const playlists = req.session.playlists;
     playlists.sort((a, b) => b.compatibility - a.compatibility);
     req.session.playlists = playlists;
-
     res.send(req.session.playlists);
-    
+
   } else {
+    // Get all playlists with an API call
     const options = {
       url: 'https://api.spotify.com/v1/me/playlists?limit=50&offset=0',
       headers: {
@@ -160,13 +158,15 @@ app.get('/api/playlists/:token', function(req, res) {
     request.get(options, (error, response, body) => {
       if (!error && response.statusCode === 200) {
         const playlists = JSON.parse(body).items;
+
         // Initialize an array to store promises for fetching track features
         const trackFeaturePromises = [];
+        // Fetch all tracks' for each playlist
         playlists.forEach((playlist) => {
-          // Fetch all tracks' features for each playlist
           const playlistId = playlist.id;
+          let offset = 0;
           const tracksOptions = {
-            url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50`,
+            url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50&offset=${offset}`,
             headers: {
               'Authorization': 'Bearer ' + token
             }
@@ -175,9 +175,11 @@ app.get('/api/playlists/:token', function(req, res) {
             request.get(tracksOptions, (error, response, body) => {
               if (!error && response.statusCode === 200) {
                 const trackItems = JSON.parse(body).items;
+                // Attach tracks to playlist
+                playlist.tracks = trackItems;
                 // Extract track IDs
                 const trackIds = trackItems.map((item) => item.track.id).join(',');
-                // Fetch track features
+                // Fetch track features for all tracks
                 const featuresOptions = {
                   url: `https://api.spotify.com/v1/audio-features?ids=${trackIds}`,
                   headers: {
@@ -187,6 +189,9 @@ app.get('/api/playlists/:token', function(req, res) {
                 request.get(featuresOptions, (error, response, body) => {
                   if (!error && response.statusCode === 200) {
                     const trackFeatures = JSON.parse(body).audio_features;
+                    playlist.tracks.forEach((track, index) => {
+                      track.features = trackFeatures[index]; // Attach features to each track
+                    });
                     resolve(trackFeatures);
                   } else {
                     reject(error);
@@ -228,6 +233,7 @@ app.get('/api/playlists/:token', function(req, res) {
     });
   }
 });
+
 
 // Function to filter out unnecessary features from track features
 function filterFeatures(trackFeatures) {
@@ -289,24 +295,6 @@ function normalizeFeatures(features) {
   return normalizedFeatures;
 }
 
-// Get playlist's tracks
-app.get('/api/playlists/:playlistId/tracks', function(req, res) {
-  const { playlistId } = req.params;
-  const { token, offset } = req.query;
-  const options = {
-    url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50&offset=${offset || 0}`,
-    headers: {
-      'Authorization': 'Bearer ' + token
-    }
-  };
-  request.get(options, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      res.send(body);
-    } else {
-      res.status(response.statusCode).send(error);
-    }
-  });
-});
 
 
 // Search for tracks
@@ -413,22 +401,6 @@ function calculateCompatibility(trackFeatures, playlistAverages) {
   }
   return Math.round((1 - Math.sqrt(sum / Object.keys(trackFeatures).length)) * 100);
 }
-
-
-// Function to delete stored track from session
-app.delete('/api/track/delete', function(req, res) {
-  // Check if track exists in session
-  if (req.session.track) {
-    // Delete the track from session
-    delete req.session.track;
-    req.session.save();
-    console.log("deleted");
-    res.send(body);
-  } else {
-    console.log("not deleted");
-    res.send(body);
-  }
-});
 
 // Get user info
 app.get('/api/user/info', function(req, res) {
