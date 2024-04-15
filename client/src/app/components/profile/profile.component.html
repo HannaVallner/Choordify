@@ -1,4 +1,5 @@
 <app-navbar></app-navbar>
+<app-loading *ngIf="!playLists || !userInfo"></app-loading>
 <div *ngIf="userInfo" class="profile">
     <section id="profile">
         <div class="profile-info">
