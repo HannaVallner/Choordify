@@ -12,18 +12,20 @@ import { AddComponent } from './components/add/add.component';
 import { SortComponent } from './components/sort/sort.component';
 import { AboutComponent } from './components/about/about.component';
 import { CompatibilityComponent } from './components/compatibility/compatibility.component';
+import { LoadingComponent } from './components/loading/loading.component';
 @NgModule({ 
 	declarations: [ 
 		AppComponent, LoginComponent, 
 		HomeComponent, NavbarComponent, 
 		ProfileComponent, AddComponent, 
-		SortComponent, AboutComponent, CompatibilityComponent 
+		SortComponent, AboutComponent, 
+		CompatibilityComponent, LoadingComponent 
 	], 
 	imports: [ 
 		BrowserModule, 
 		AppRoutingModule, 
 		HttpClientModule,
-		FormsModule 
+		FormsModule,
 	], 
 	providers: [], 
 	bootstrap: [AppComponent] 

@@ -1,4 +1,5 @@
 <app-navbar></app-navbar>
+<app-loading *ngIf="playlists.length === 0"></app-loading>
 <div class="outer-container">
     <ul class="playlists-container">
         <li class="playlist" *ngFor="let playlist of playlists" (click)="toggleColour($event)">   

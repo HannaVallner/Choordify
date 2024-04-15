@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../../services/spotify/spotify.service';
+import { LoadingComponent } from '../loading/loading.component';
 
 @Component({
   selector: 'app-sort',

@@ -1,4 +1,5 @@
 <app-navbar></app-navbar>
+<app-loading *ngIf="playlists.length === 0 || !track"></app-loading>
 <div class="outer-container">
     <div class="track-info" *ngIf="track">
         <img class="track-cover" *ngIf="track.album && track.album.images && track.album.images.length > 0"
