@@ -37,6 +37,7 @@ export class SortComponent implements OnInit {
     tracks.forEach((track: any) => {
       console.log(track.track.name);
       console.log(track.features);
+      console.log(track.bestfit);
     });
   }
 }

@@ -10,7 +10,8 @@ const app = express();
 var client_id = 'a52b1c6ae851463b8614c146866ecf5d';
 var client_secret = '19aff404760f490db5e964da47134a3d';
 var redirect_uri = 'http://localhost:3000/callback'; 
-var basePath = "http://localhost:4200/home"
+var basePath = 'http://localhost:4200/home';
+var stateKey = 'spotify_auth_state';
 
 
 const generateRandomString = (length) => {
@@ -20,7 +21,9 @@ const generateRandomString = (length) => {
     .slice(0, length);
 }
 
-var stateKey = 'spotify_auth_state';
+
+
+/*              MIDDLEWARE SETUP             */
 
 app.use(cors({
   origin: ['http://localhost:4200'], 
@@ -33,11 +36,13 @@ app.use(cors({
   saveUninitialized: true
 }));
 
-
 app.use(express.static(__dirname + '/client'));
-
 app.use(cookieParser());
 app.use(express.json());
+
+
+
+/*                    API CALL FUNCTIONS                    */
 
 
 app.get("/spotify/auth", function(req, res) {
@@ -210,8 +215,7 @@ app.get('/api/playlists/:token', function(req, res) {
             // Calculate average features for each playlist
             const playlistsWithAverages = playlists.map((playlist, index) => {
               const trackFeatures = playlistTracksFeatures[index];
-              const filteredTrackFeatures = filterFeatures(trackFeatures);
-              const averageFeatures = calculatePlaylistAverages(filteredTrackFeatures);
+              const averageFeatures = calculatePlaylistAverages(trackFeatures);
               const normalizedAverages = normalizeFeatures(averageFeatures);
               playlist.features = normalizedAverages;
               return playlist;
@@ -233,68 +237,6 @@ app.get('/api/playlists/:token', function(req, res) {
     });
   }
 });
-
-
-// Function to filter out unnecessary features from track features
-function filterFeatures(trackFeatures) {
-  const filteredTrackFeatures = trackFeatures.map((track) => {
-    const filteredTrack = {};
-    for (const key in track) {
-      if (track.hasOwnProperty(key) && !['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'].includes(key)) {
-        filteredTrack[key] = track[key];
-      }
-    }
-    return filteredTrack;
-  });
-  return filteredTrackFeatures;
-}
-
-// Function to calculate average features for a list of tracks
-function calculatePlaylistAverages(trackFeatures) {
-  const totalTracks = trackFeatures.length;
-  const averageFeatures = {};
-  trackFeatures.forEach((track) => {
-    for (const key in track) {
-      if (track.hasOwnProperty(key)) {
-        averageFeatures[key] = (averageFeatures[key] || 0) + track[key];
-      }
-    }
-  });
-  for (const key in averageFeatures) {
-    if (averageFeatures.hasOwnProperty(key)) {
-      averageFeatures[key] /= totalTracks;
-    }
-  }
-  return averageFeatures;
-}
-
-// Function to normalize features
-function normalizeFeatures(features) {
-  const normalizedFeatures = {};
-  const minMaxValues = {
-    "acousticness": [0, 1],
-    "danceability": [0, 1],
-    "energy": [0, 1],
-    "instrumentalness": [0, 1],
-    "key": [-1, 11],
-    "liveness": [0, 1],
-    "loudness": [-60, 0],
-    "mode": [0, 1],
-    "speechiness": [0, 1],
-    "tempo": [70, 169],
-    "time_signature": [3, 7],
-    "valence": [0, 1]
-  };
-  for (const feature in features) {
-    if (features.hasOwnProperty(feature)) {
-      const value = features[feature];
-      const [min, max] = minMaxValues[feature];
-      normalizedFeatures[feature] = (value - min) / (max - min);
-    }
-  }
-  return normalizedFeatures;
-}
-
 
 
 // Search for tracks
@@ -352,15 +294,7 @@ app.get('/api/tracks/:trackId', function(req, res) {
         if (!featuresError && featuresResponse.statusCode === 200) {
           let features = JSON.parse(featuresBody);
 
-          // Filter out unnecessary features
-          const hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
-          for (const key in features) {
-            if (features.hasOwnProperty(key) && hiddenFeatures.includes(key)) {
-              delete features[key];
-            }
-          }
-
-          // Normalize the remaining features
+          // Normalize features and remove unnecessary ones
           const normalizedFeatures = normalizeFeatures(features);
           
           // Attach the normalized features to the track object
@@ -373,8 +307,10 @@ app.get('/api/tracks/:trackId', function(req, res) {
             playlist.compatibility = compatibility;
           });
 
+          //const bestfitPlaylists = findBestFitPlaylists(playlists);
           // Update session with playlists containing compatibility measures
-          req.session.playlists = playlists;
+          //console.log("bestfitplaylists: " + bestfitPlaylists);
+          req.session.playlists = bestfitPlaylists;
           req.session.track = track;
           req.session.save();
 
@@ -392,15 +328,6 @@ app.get('/api/tracks/:trackId', function(req, res) {
   });
   
 });
-
-// Calculate similarity of a track's and a playlist's features
-function calculateCompatibility(trackFeatures, playlistAverages) {
-  let sum = 0; 
-  for (const feature of Object.keys(trackFeatures)) {
-    sum += Math.pow(trackFeatures[feature] - playlistAverages[feature], 2);
-  }
-  return Math.round((1 - Math.sqrt(sum / Object.keys(trackFeatures).length)) * 100);
-}
 
 // Get user info
 app.get('/api/user/info', function(req, res) {
@@ -470,6 +397,133 @@ app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
     }
   });
 });
+
+
+
+
+/*                      REGULAR FUNCTIONS                         */
+
+
+// Function to calculate the similarity of a track's and a playlist's features
+function calculateCompatibility(trackFeatures, playlistAverages) {
+  let sum = 0;
+  let count = 0; // Keep track of the number of features included in the calculation
+  for (const feature of Object.keys(trackFeatures)) {
+    // Check if the feature is not filtered out
+    if (!['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms', 'key', 'loudness', 'tempo', 'time_signature'].includes(feature)) {
+      sum += Math.pow(trackFeatures[feature] - playlistAverages[feature], 2);
+      count++; // Increment the count for each included feature
+    }
+  }
+
+  return Math.round((1 - Math.sqrt(sum / count)) * 100); // Calculate similarity based on included features
+ 
+}
+
+
+// Function to find the best suitable playlist for a track
+function findBestFitPlaylist(track, playlists) {
+  console.log("in findbestfitplaylist");
+  let bestFitPlaylist = null;
+  let maxCompatibility = -Infinity;
+  // Iterate through each playlist
+  playlists.forEach((playlist) => {
+    // Calculate compatibility of track with playlist
+    const compatibility = calculateCompatibility(track.features, playlist.features);
+    // Update best fit if compatibility is higher
+    if (compatibility > maxCompatibility) {
+      bestFitPlaylist = playlist;
+      maxCompatibility = compatibility;
+    }
+  });
+  // Attach best fit playlist to the track object
+  track.bestfit = bestFitPlaylist;
+  return track;
+}
+
+// Function to find best fit playlists for all tracks in all playlists
+function findBestFitPlaylists(playlists) {
+  console.log("in findbestfitplaylists");
+  // Iterate through each playlist
+  playlists.forEach((playlist) => {
+    // Iterate through each track in the playlist
+    playlist.tracks.forEach((track) => {
+      // Find the best fit playlist for the track
+      findBestFitPlaylist(track, playlists);
+    });
+  });
+  return playlists;
+}
+
+// Function to calculate average features for a list of tracks
+function calculatePlaylistAverages(trackFeatures) {
+  const totalTracks = trackFeatures.length;
+  const averageFeatures = {};
+  const excludedFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms']; // Define features to exclude
+
+  trackFeatures.forEach((track) => {
+    for (const key in track) {
+      if (track.hasOwnProperty(key) && !excludedFeatures.includes(key)) { // Check if the feature should be excluded
+        averageFeatures[key] = (averageFeatures[key] || 0) + track[key];
+      }
+    }
+  });
+
+  for (const key in averageFeatures) {
+    if (averageFeatures.hasOwnProperty(key)) {
+      averageFeatures[key] /= totalTracks;
+    }
+  }
+
+  return averageFeatures;
+}
+
+// Function to normalize features
+function normalizeFeatures(features) {
+  const normalizedFeatures = {};
+  const minMaxValues = {
+    "acousticness": [0, 1],
+    "danceability": [0, 1],
+    "energy": [0, 1],
+    "instrumentalness": [0, 1],
+    "key": [-1, 11],
+    "liveness": [0, 1],
+    "loudness": [-60, 0],
+    "mode": [0, 1],
+    "speechiness": [0, 1],
+    "tempo": [70, 169],
+    "time_signature": [3, 7],
+    "valence": [0, 1]
+  };
+  for (const feature in minMaxValues) {
+    if (features.hasOwnProperty(feature)) {
+      const value = features[feature];
+      const [min, max] = minMaxValues[feature];
+      normalizedFeatures[feature] = (value - min) / (max - min);
+    }
+  }
+  return normalizedFeatures;
+}
+
+/* 
+
+REMOVED, AS FILTERING OUT UNECESSARY FEATURES IS MORE EFFECTIVELY IMPLEMENTED
+IN calculateCompatibility() FUNCTION
+
+// Function to filter out unnecessary features from track features
+function filterFeatures(trackFeatures) {
+  const filteredTrackFeatures = trackFeatures.map((track) => {
+    const filteredTrack = {};
+    for (const key in track) {
+      if (track.hasOwnProperty(key) && !['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'].includes(key)) {
+        filteredTrack[key] = track[key];
+      }
+    }
+    return filteredTrack;
+  });
+  return filteredTrackFeatures;
+}
+*/
 
 app.listen(3000, () => { 
 	console.log('Server listening on port 3000'); 
