@@ -46,6 +46,13 @@ export class SpotifyService {
     });
   }
 
+  // Returns playlists from backend session management
+  getStoredPlaylists() {
+    return this.http.get('http://localhost:3000/api/stored_playlists', {
+      withCredentials: true
+    });
+  }
+
 
   // Adds tracks to a given playlist
   addPlaylistTracks(token: string, playlistId: string, trackURIs: string[]) {
