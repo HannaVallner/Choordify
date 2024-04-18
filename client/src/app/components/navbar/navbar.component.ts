@@ -10,7 +10,7 @@ import { AuthService } from '../../services/auth/auth.service';
 
 export class NavbarComponent implements OnInit {
   token = '';
-  userInfo: any;
+  display_name: any = null;
   isDropdown = false;
   constructor(private spotify: SpotifyService, private authService: AuthService) { }
 
@@ -19,9 +19,15 @@ export class NavbarComponent implements OnInit {
     if (storedToken != null) {
       this.token = storedToken; 
     }
-    this.spotify.getUserInfo(this.token).subscribe((response: any) => {
-      this.userInfo = response;
-    });
+
+    this.display_name = sessionStorage.getItem('display_name');
+    if (!this.display_name) {
+      this.spotify.getUserInfo(this.token).subscribe((response: any) => {
+        this.display_name = response.display_name;
+        sessionStorage.setItem('display_name', this.display_name);
+      });
+    }
+
   }
 
   logout() {

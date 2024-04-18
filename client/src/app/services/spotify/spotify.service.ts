@@ -7,8 +7,10 @@ import { Observable } from 'rxjs';
 })
 
 export class SpotifyService {
+  userinfo: any = null;
+  playlists: any[] = [];
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   // Delete previously stored track from server
   deleteStoredTrack() {
@@ -16,12 +18,17 @@ export class SpotifyService {
     withCredentials: true
     });
   }
+  
 
   getUserInfo(token: string) {
-    return this.http.get('http://localhost:3000/api/user/info', {
-      params: { token: token },
-      withCredentials: true
-    });
+    if (!this.userinfo) {
+      const response = this.http.get('http://localhost:3000/api/user/info', {
+        params: { token: token },
+        withCredentials: true
+      });
+      this.userinfo = response;
+    }
+    return this.userinfo;
   }
 
   // Returns user's playlists

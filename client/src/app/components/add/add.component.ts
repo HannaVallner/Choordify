@@ -62,7 +62,6 @@ export class AddComponent implements OnInit {
 
     this.spotify.toggleTrack(this.token, result.id).subscribe(
       (response) => {
-        console.log("Track toggled:", response);
       }
     );
   }

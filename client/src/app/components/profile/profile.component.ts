@@ -23,9 +23,11 @@ export class ProfileComponent implements OnInit {
     if (storedToken != null) {
       this.token = storedToken; 
     }
+
     this.spotify.getUserInfo(this.token).subscribe((response: any) => {
       this.userInfo = response;
     });
+    
     this.spotify.getStoredPlaylists().subscribe((response: any) => {
       this.playLists = response.length;
     })

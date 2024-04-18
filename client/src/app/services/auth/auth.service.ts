@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { SpotifyService } from '../spotify/spotify.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,12 +9,12 @@ import { Router } from '@angular/router';
 export class AuthService {
   private isAuthenticated = false;
   private token = '';
+  userInfo: any;
   url = '';
   params = '';
   rawParams = '';
 
-  constructor(private router: Router) { }
-
+  constructor(private router: Router, private spotify: SpotifyService) { }
 
   
   setAuthenticated() {
@@ -27,6 +28,7 @@ export class AuthService {
 			this.router.navigate(['/home'])
 		}
 	}
+  
 
   checkAuthenticated() {
     return this.isAuthenticated;

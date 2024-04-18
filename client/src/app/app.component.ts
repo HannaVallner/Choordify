@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
 		if (this.url.includes('?')) {
 			this.authService.setAuthenticated();
 		}
-		else if (!this.authService.checkAuthenticated()){
+		else if (!this.authService.checkAuthenticated()) {
 			//this.router.navigate(['']);
 		}
 	}
