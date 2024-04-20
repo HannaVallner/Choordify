@@ -175,7 +175,7 @@ app.get('/api/playlists/:token', function(req, res) {
               if (!error && response.statusCode === 200) {
                 const trackItems = JSON.parse(body).items;
                 // Attach tracks to playlist
-                playlist.tracks = trackItems;
+                playlist.songs = trackItems;
                 // Extract track IDs
                 const trackIds = trackItems.map((item) => item.track.id).join(',');
                 // Fetch track features for all tracks
@@ -188,7 +188,7 @@ app.get('/api/playlists/:token', function(req, res) {
                 request.get(featuresOptions, (error, response, body) => {
                   if (!error && response.statusCode === 200) {
                     const trackFeatures = JSON.parse(body).audio_features;
-                    playlist.tracks.forEach((track, index) => {
+                    playlist.songs.forEach((track, index) => {
                       track.features = trackFeatures[index]; // Attach features to each track
                     });
                     resolve(trackFeatures);
@@ -229,7 +229,7 @@ app.get('/api/playlists/:token', function(req, res) {
         res.status(response.statusCode).send(error);
       }
     });
-}
+  }
 });
 
 
@@ -256,11 +256,17 @@ app.get('/api/search/tracks', function(req, res) {
 app.get('/api/stored_playlists', function(req, res){
   if (req.session.playlists) {
     console.log("playlists sent from session");
-    // Order playlists based on compatibility
-    const playlists = req.session.playlists;
-    playlists.sort((a, b) => b.compatibility - a.compatibility);
-    req.session.playlists = playlists;
     res.send(req.session.playlists);
+  } else {
+    res.status(404).send("No playlists found");
+  }
+})
+
+// Return previously stored playlists, with compatibility measures and appropriate sorting
+app.get('/api/comp_playlists', function(req, res){
+  if (req.session.comp_playlists) {
+    console.log("playlists sent from session");
+    res.send(req.session.comp_playlists);
   } else {
     res.status(404).send("No playlists found");
   }
@@ -309,16 +315,23 @@ app.get('/api/tracks/:trackId', function(req, res) {
           track.features = normalizedFeatures;
 
           // Calculate compatibility of each playlist with the track features
-          const playlists = req.session.playlists;
+          let playlists = req.session.playlists.slice();
           playlists.forEach((playlist) => {
             const compatibility = calculateCompatibility(normalizedFeatures, playlist.features);
             playlist.compatibility = compatibility;
           });
 
-          //const bestfitPlaylists = findBestFitPlaylists(playlists);
-          // Update session with playlists containing compatibility measures
-          //console.log("bestfitplaylists: " + bestfitPlaylists);
-          //req.session.playlists = bestfitPlaylists;
+          // Order playlists based on compatibility
+          playlists.sort((a, b) => {
+            // If either of the playlist has no songs, move it to the end of the list
+            if (!a.tracks || a.tracks['total'] === 0) return 1;
+            if (!b.tracks || b.tracks['total'] === 0) return -1; 
+            // Otherwise, sort based on compatibility
+            return b.compatibility - a.compatibility;
+          });
+
+          // Store playlists and track in session management
+          req.session.comp_playlists = playlists;
           req.session.track = track;
           req.session.save();
 
@@ -415,17 +428,18 @@ app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
 // Function to calculate the similarity of a track's and a playlist's features
 function calculateCompatibility(trackFeatures, playlistAverages) {
   let sum = 0;
-  let count = 0; // Keep track of the number of features included in the calculation
+  // Keep track of the number of features included in the calculation
+  let count = 0; 
   for (const feature of Object.keys(trackFeatures)) {
     // Check if the feature is not filtered out
-    if (!['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms', 'key', 'loudness', 'tempo', 'time_signature'].includes(feature)) {
+    if (!['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms', 'key', 'loudness', 
+        'tempo', 'time_signature'].includes(feature)) {
       sum += Math.pow(trackFeatures[feature] - playlistAverages[feature], 2);
-      count++; // Increment the count for each included feature
+      count++; 
     }
   }
-
-  return Math.round((1 - Math.sqrt(sum / count)) * 100); // Calculate similarity based on included features
- 
+  // Calculate similarity based on included features
+  return Math.round((1 - Math.sqrt(sum / count)) * 100); 
 }
 
 
@@ -455,7 +469,7 @@ function findBestFitPlaylists(playlists) {
   // Iterate through each playlist
   playlists.forEach((playlist) => {
     // Iterate through each track in the playlist
-    playlist.tracks.forEach((track) => {
+    playlist.song.forEach((track) => {
       // Find the best fit playlist for the track
       findBestFitPlaylist(track, playlists);
     });

@@ -16,9 +16,11 @@ export class AppComponent implements OnInit {
 
 	ngOnInit() {
 		this.url = window.location.href;
+		// Redirect to homepage if user is authenticated
 		if (this.url.includes('?')) {
 			this.authService.setAuthenticated();
 		}
+		// Redirect unauthenticated users to loginpage
 		else if (!this.authService.checkAuthenticated()) {
 			//this.router.navigate(['']);
 		}

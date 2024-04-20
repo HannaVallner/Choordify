@@ -60,6 +60,13 @@ export class SpotifyService {
     });
   }
 
+  // Returns playlists (with compatibility measures and matching sorting) from backend session management
+  getCompPlaylists() {
+    return this.http.get('http://localhost:3000/api/comp_playlists', {
+      withCredentials: true
+    });
+  }
+
 
   // Adds tracks to a given playlist
   addPlaylistTracks(token: string, playlistId: string, trackURIs: string[]) {

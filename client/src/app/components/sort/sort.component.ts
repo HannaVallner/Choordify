@@ -34,11 +34,6 @@ export class SortComponent implements OnInit {
   }
 
   toggleTracks(playlist: any) {
-    const tracks = playlist.tracks;
-    tracks.forEach((track: any) => {
-      console.log(track.track.name);
-      console.log(track.features);
-      console.log(track.bestfit);
-    });
+    console.log(playlist);
   }
 }

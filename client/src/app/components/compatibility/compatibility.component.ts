@@ -31,7 +31,7 @@ export class CompatibilityComponent implements OnInit {
     }
 
     // Get playlists and their average features (normalized and filtered)
-    this.spotify.getStoredPlaylists().subscribe((response: any) => {
+    this.spotify.getCompPlaylists().subscribe((response: any) => {
       this.playlists = response;
     });
       
