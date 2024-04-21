@@ -70,11 +70,17 @@ export class SpotifyService {
 
   // Adds tracks to a given playlist
   addPlaylistTracks(token: string, playlistId: string, trackURIs: string[]) {
-    return this.http.post(`http://localhost:3000/api/playlists/${playlistId}/add-tracks`, { token, trackURIs });
+    return this.http.post(`http://localhost:3000/api/playlists/${playlistId}/add-tracks`, 
+    { token, trackURIs }, {
+      withCredentials: true
+    });
   }
 
   createPlaylist(token: string, userId: string, playlistName: string) {
-    return this.http.post('http://localhost:3000/api/playlists/create', { token, userId, playlistName });
+    return this.http.post('http://localhost:3000/api/playlists/create', 
+    { token, userId, playlistName }, {
+      withCredentials: true
+    });
   }
 
   // Removes tracks from a given playlist
@@ -83,11 +89,14 @@ export class SpotifyService {
   removePlaylistTracks(token: string, playlistId: string, trackURIs: object[]) {
     return this.http.delete('https://api.spotify.com/v1/playlists/' + playlistId + '/tracks', {
       headers: { Authorization: 'Bearer ' + token },
-      body: { tracks: trackURIs }
+      body: { tracks: trackURIs },
+      withCredentials: true
     });
   }
 
   searchForTracks(token: string, query: string) {
-    return this.http.get(`http://localhost:3000/api/search/tracks?token=${token}&query=${query}`);
+    return this.http.get(`http://localhost:3000/api/search/tracks?token=${token}&query=${query}`, {
+      withCredentials: true
+    });
   }
 }

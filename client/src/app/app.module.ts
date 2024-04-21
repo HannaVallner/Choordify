@@ -13,13 +13,14 @@ import { SortComponent } from './components/sort/sort.component';
 import { AboutComponent } from './components/about/about.component';
 import { CompatibilityComponent } from './components/compatibility/compatibility.component';
 import { LoadingComponent } from './components/loading/loading.component';
+import { PlaylistComponent } from './components/playlist/playlist.component';
 @NgModule({ 
 	declarations: [ 
 		AppComponent, LoginComponent, 
 		HomeComponent, NavbarComponent, 
 		ProfileComponent, AddComponent, 
 		SortComponent, AboutComponent, 
-		CompatibilityComponent, LoadingComponent 
+		CompatibilityComponent, LoadingComponent, PlaylistComponent 
 	], 
 	imports: [ 
 		BrowserModule, 

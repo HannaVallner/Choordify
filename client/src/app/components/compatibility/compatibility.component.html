@@ -6,12 +6,7 @@
              [src]="track.album.images[0].url" 
              alt="Track cover">
         <p class="track-title"> {{ track.name }} </p>
-        <p class="track-details">
-            <span *ngFor="let artist of track.artists; let last = last">
-                {{ artist.name }}{{ !last ? ', ' : '' }}
-            </span>
-        </p>
-        <p class="track-details"> {{ track.album.name }} </p>
+        <p class="track-details"> {{ track.artists[0]['name']}} <span class="dot">&bull;</span> {{ track.album.name }} </p>
         <button type="button" (click)="toggleFeatures()"> Details</button>
         <ul class="track-features" *ngIf="track.displayFeatures">
             <li class="track-feature" *ngFor="let keyValuePair of track.features | keyvalue">
@@ -41,7 +36,8 @@
                 <div class="compatibility-filled" [style.width.%]="playlist.compatibility"></div>
                 <span class="compatibility-percentage">{{ playlist.compatibility }}%</span>
             </div>
-            <button type="button" (click)="addToPlaylist(playlist)">Add to playlist</button>
+            <button *ngIf="!playlist.loading" type="button" (click)="addToPlaylist(playlist)">Add to playlist</button>
+            <app-loading *ngIf="playlist.loading"></app-loading>
             <ul class="averages" *ngIf="playlist.displayAverages"> 
                 <li class="playlist-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">
                     <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>

@@ -207,7 +207,7 @@ app.get('/api/playlists/:token', function(req, res) {
         Promise.all(trackFeaturePromises)
           .then((playlistTracksFeatures) => {
             // Calculate average features for each playlist
-            const playlistsWithAverages = playlists.map((playlist, index) => {
+              const playlistsWithAverages = playlists.map((playlist, index) => {
               const trackFeatures = playlistTracksFeatures[index];
               const averageFeatures = calculatePlaylistAverages(trackFeatures);
               const normalizedAverages = normalizeFeatures(averageFeatures);
@@ -376,7 +376,7 @@ app.get('/api/user/info', function(req, res) {
   }
 });
 
-// Create a new playlist
+// Create a new playlist and add the selected track to it
 app.post('/api/playlists/create', function(req, res) {
   const { token, userId, playlistName } = req.body;
   const options = {
@@ -388,14 +388,66 @@ app.post('/api/playlists/create', function(req, res) {
     body: JSON.stringify({ name: playlistName })
   };
   request.post(options, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      res.send(body);
+    if (!error && (response.statusCode === 200 || response.statusCode === 201)) {
+      const responseBody = JSON.parse(body);
+      const playlistId = responseBody.id;
+
+      // Add the selected track to the newly created playlist
+      const trackURIs = [req.session.track.uri];
+      const addTrackOptions = {
+        url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ uris: trackURIs })
+      };
+      request.post(addTrackOptions, (addTrackError, addTrackResponse, addTrackBody) => {
+        if (!addTrackError && (addTrackResponse.statusCode === 201 || addTrackResponse.statusCode === 200)) {
+
+          // Fetch the newly created playlist
+          const playlistOptions = {
+            url: `https://api.spotify.com/v1/playlists/${playlistId}`,
+            headers: {
+              'Authorization': 'Bearer ' + token
+            }
+          };
+          request.get(playlistOptions, (playlistError, playlistResponse, playlistBody) => {
+            if (!playlistError && playlistResponse.statusCode === 200) {
+              const playlist = JSON.parse(playlistBody);
+              
+              // Update the playlist's features
+              playlist.features = req.session.track.features;
+
+              // Update the playlist's compatibility in the session
+              playlist.compatibility = 100;
+
+              // Store the playlist in the session management 
+              // (as the first element, as its the newest playlist and most compatible with the track)
+              req.session.comp_playlists.unshift(playlist);
+              req.session.playlists.unshift(playlist);
+            
+              req.session.save();
+
+              console.log("Created playlist and updated session");
+              res.send(playlist);
+            } else {
+              console.error("Error fetching created playlist:", playlistError);
+              res.status(playlistResponse.statusCode).send(playlistError);
+            }
+          });
+        } else {
+          console.error("Error adding track to playlist:", addTrackError);
+          res.status(addTrackResponse.statusCode).send(addTrackError);
+        }
+      });
     } else {
       console.error("Error creating playlist:", error);
       res.status(response.statusCode).send(error);
     }
   });
 });
+
 
 // Add tracks to playlist
 app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
@@ -410,14 +462,54 @@ app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
     body: JSON.stringify({ uris: trackURIs })
   };
   request.post(options, (error, response, body) => {
-    if (!error && response.statusCode === 201) {
-      res.send(body);
+    if (!error && (response.statusCode === 201 || response.statusCode == 200)) {
+      // Fetch the updated playlist data
+      const playlistOptions = {
+        url: `https://api.spotify.com/v1/playlists/${playlistId}`,
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      };
+      request.get(playlistOptions, (playlistError, playlistResponse, playlistBody) => {
+        if (!playlistError && playlistResponse.statusCode === 200) {
+          const updatedPlaylist = JSON.parse(playlistBody);
+
+          // Find the index of the playlist in the session data
+          const playlistIndex = req.session.comp_playlists.findIndex(p => p.id === playlistId);
+          if (playlistIndex !== -1) {
+            // Attach the songs property from the previous playlist
+            updatedPlaylist.songs = req.session.playlists[playlistIndex].songs;
+            // Attach the newly added track to the songs
+            updatedPlaylist.songs.push(req.session.track);
+            // Recalculate average features for the updated playlist
+            const updatedPlaylistFeatures = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
+            // Recalculate compatibility with the track
+            const track = req.session.track;
+            const compatibility = calculateCompatibility(track.features, updatedPlaylistFeatures);
+            // Update the playlist's average features and compatibility in the session
+            updatedPlaylist.features = updatedPlaylistFeatures;
+            updatedPlaylist.compatibility = compatibility;
+            // Update the playlist data in the session
+            req.session.playlists[playlistIndex] = updatedPlaylist;
+            req.session.comp_playlists[playlistIndex] = updatedPlaylist;
+            req.session.save();
+            // Send the updated playlist data back to the client
+            res.send(updatedPlaylist);
+          } else {
+            res.status(404).send("Playlist not found");
+          }
+        } else {
+          console.error("Error fetching updated playlist:", playlistError);
+          res.status(playlistResponse.statusCode).send(playlistError);
+        }
+      });
     } else {
       console.error("Error adding tracks to playlist:", error);
       res.status(response.statusCode).send(error);
     }
   });
 });
+
 
 
 

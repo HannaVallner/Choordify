@@ -16,7 +16,7 @@ export class CompatibilityComponent implements OnInit {
   result: any;
   userId = '';
   inputField = false;
-  hiddenFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'];
+
   
   constructor(private spotify: SpotifyService) {}
 
@@ -67,25 +67,26 @@ export class CompatibilityComponent implements OnInit {
 
   // Add selected track to selected playlist
   addToPlaylist(playlist: any) {
+    playlist.loading = true;
     this.spotify.addPlaylistTracks(this.token, playlist.id, [this.track.uri]).subscribe(
-      (response) => {
-        console.log("Tracks added successfully:", response);
-      },
-      (error) => {
-        console.error("Error adding tracks to playlist:", error);
-      }
-    );
+        () => {
+        // Update the playlists array with the updated playlist data
+        this.spotify.getCompPlaylists().subscribe((response: any) => {
+          this.playlists = response;
+          playlist.loading = false;
+        });
+      });
   }
+  
 
   // Create a new playlist (upon "create" button click)
   createPlaylist() {
     this.spotify.createPlaylist(this.token, this.userId, this.input).subscribe(
-      (response) => {
-        console.log("Playlist created successfully:", response);
-      },
-      (error) => {
-        console.error("Error creating playlist:", error);
-      }
-    );
+      () => {
+        // Update the playlists array with the updated playlist data
+        this.spotify.getCompPlaylists().subscribe((response: any) => {
+          this.playlists = response;
+        });
+    });
   }
 }

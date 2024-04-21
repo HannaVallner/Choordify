@@ -112,10 +112,14 @@
     background-color: #484444;
 }
 
+.dot {
+    margin: 0 7px;
+}
+
 .compatibility-bar {
     height: 20px;
     background-color: #4a4a4a; 
-    border: 1px solid #7e7e7e; /* Add border style */
+    border: 1px solid #7e7e7e;
     width: 200px;
     position: absolute;
     border-radius: 10px; 
