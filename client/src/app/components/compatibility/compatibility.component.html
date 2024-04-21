@@ -14,13 +14,10 @@
             </li>
         </ul>
     </div>
-    <div class="create-playlist">
-        <button type="button" class="create-button" (click)="toggleInputField()"> Create new playlist </button>
-        <div *ngIf="inputField" class="input-container">
+        <div class="input-container">
             <input type="text" placeholder="Enter playlist name" [(ngModel)]="input" name="input" autocomplete="off">
             <button type="button" (click)="createPlaylist()">Create</button>
         </div>
-    </div>
     <ul class="playlists-container" *ngIf="playlists.length > 0">
         <li class="playlist-container" *ngFor="let playlist of playlists">
             <div class="playlist-content">

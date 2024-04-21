@@ -49,7 +49,7 @@ app.get("/spotify/auth", function(req, res) {
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
   var scope =
-    "user-read-private user-read-email user-top-read playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private";
+    "user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private";
   res.redirect(
     "https://accounts.spotify.com/authorize?" +
       querystring.stringify({
@@ -143,7 +143,6 @@ app.get('/refresh_token', function(req, res) {
 // Get playlists with average features
 app.get('/api/playlists/:token', function(req, res) {
   if (req.session.playlists) {
-    console.log("playlists sent from session");
     res.send(req.session.playlists);
   } else {
     const token = req.params.token;
@@ -163,6 +162,12 @@ app.get('/api/playlists/:token', function(req, res) {
         // Fetch all tracks' for each playlist
         playlists.forEach((playlist) => {
           const playlistId = playlist.id;
+
+           // If the playlist is a blend or other playlist created by Spotify, skip it
+           if (playlist.owner.display_name === "Spotify") {
+            return;
+          }
+          
           let offset = 0;
           const tracksOptions = {
             url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50&offset=${offset}`,
@@ -218,7 +223,6 @@ app.get('/api/playlists/:token', function(req, res) {
             // Save playlists with average features in the session
             req.session.playlists = playlistsWithAverages;
             req.session.save();
-            console.log("got playlists with average features from API call");
             res.send(playlistsWithAverages);
           })
           .catch((error) => {
@@ -255,7 +259,6 @@ app.get('/api/search/tracks', function(req, res) {
 // Return previously stored playlists
 app.get('/api/stored_playlists', function(req, res){
   if (req.session.playlists) {
-    console.log("playlists sent from session");
     res.send(req.session.playlists);
   } else {
     res.status(404).send("No playlists found");
@@ -265,7 +268,6 @@ app.get('/api/stored_playlists', function(req, res){
 // Return previously stored playlists, with compatibility measures and appropriate sorting
 app.get('/api/comp_playlists', function(req, res){
   if (req.session.comp_playlists) {
-    console.log("playlists sent from session");
     res.send(req.session.comp_playlists);
   } else {
     res.status(404).send("No playlists found");
@@ -275,7 +277,6 @@ app.get('/api/comp_playlists', function(req, res){
 // Return previously stored track
 app.get('/api/stored_track', function(req, res) {
   if (req.session.track) {
-    console.log("track sent from session");
     res.send(req.session.track);
   } else {
     res.status(404).send("No track found");
@@ -335,7 +336,6 @@ app.get('/api/tracks/:trackId', function(req, res) {
           req.session.track = track;
           req.session.save();
 
-          console.log("track sent from api call");
           res.send(track);
         } else {
           console.error("Error getting track features:", featuresError);
@@ -354,7 +354,6 @@ app.get('/api/tracks/:trackId', function(req, res) {
 app.get('/api/user/info', function(req, res) {
   const token = req.query.token;
   if (req.session.user) {
-    console.log("got user from session");
     res.send(req.session.user);
   } else {
     const options = {
@@ -367,7 +366,6 @@ app.get('/api/user/info', function(req, res) {
       if (!error && response.statusCode === 200) {
         req.session.user = JSON.parse(body);
         req.session.save();
-        console.log("got user from api call")
         res.send(body);
       } else {
         res.status(response.statusCode).send(error);
@@ -419,17 +417,18 @@ app.post('/api/playlists/create', function(req, res) {
               // Update the playlist's features
               playlist.features = req.session.track.features;
 
+              // Attach the track to the playlist
+              playlist.songs = [req.session.track];
+
               // Update the playlist's compatibility in the session
               playlist.compatibility = 100;
 
               // Store the playlist in the session management 
               // (as the first element, as its the newest playlist and most compatible with the track)
               req.session.comp_playlists.unshift(playlist);
-              req.session.playlists.unshift(playlist);
-            
+              req.session.playlists.unshift(playlist);  
               req.session.save();
 
-              console.log("Created playlist and updated session");
               res.send(playlist);
             } else {
               console.error("Error fetching created playlist:", playlistError);
@@ -622,7 +621,7 @@ function normalizeFeatures(features) {
 /* 
 
 REMOVED, AS FILTERING OUT UNECESSARY FEATURES IS MORE EFFECTIVELY IMPLEMENTED
-IN calculateCompatibility() FUNCTION
+IN OTHER FUNCTIONS
 
 // Function to filter out unnecessary features from track features
 function filterFeatures(trackFeatures) {

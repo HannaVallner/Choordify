@@ -15,7 +15,6 @@ export class CompatibilityComponent implements OnInit {
   input = ''; // For new playlist's name
   result: any;
   userId = '';
-  inputField = false;
 
   
   constructor(private spotify: SpotifyService) {}
@@ -33,6 +32,9 @@ export class CompatibilityComponent implements OnInit {
     // Get playlists and their average features (normalized and filtered)
     this.spotify.getCompPlaylists().subscribe((response: any) => {
       this.playlists = response;
+      this.playlists.forEach(element => {
+        console.log(element);
+      });
     });
       
     // Get selected track and its features (normalized and filtered)
@@ -58,10 +60,6 @@ export class CompatibilityComponent implements OnInit {
 
   toggleColour(event: any) {
     event.target.classList.toggle('select')
-  }
-
-  toggleInputField() {
-    this.inputField = !this.inputField;
   }
 
 
