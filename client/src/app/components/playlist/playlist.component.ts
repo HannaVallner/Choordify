@@ -32,8 +32,4 @@ export class PlaylistComponent implements OnInit {
   toggleAverages(playlist: any) {
     playlist.displayAverages = !playlist.displayAverages
   }
-
-  toggleTracks(playlist: any) {
-    console.log(playlist);
-  }
 }

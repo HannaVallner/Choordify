@@ -4,8 +4,9 @@
         <form>
             <input type="text" placeholder="Search for a track" [(ngModel)]="input" name="input" 
             class="search-input" (input)="onInput($event)" autocomplete="off">
-            <a routerLink="/compatibility"
-            ><button type="button" [disabled]="!isSelected" [ngClass]="{'disabled-button': !isSelected}"> SUBMIT </button></a>
+            <a routerLink="/compatibility">
+                <button type="button" [disabled]="!isSelected" [ngClass]="{'disabled-button': !isSelected}"> SUBMIT </button>
+            </a>
         </form>
         <div class="dropdown" *ngIf="searchResults.length > 0">
             <ul>

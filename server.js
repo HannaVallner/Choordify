@@ -155,19 +155,19 @@ app.get('/api/playlists/:token', function(req, res) {
     };
     request.get(options, (error, response, body) => {
       if (!error && response.statusCode === 200) {
-        const playlists = JSON.parse(body).items;
+        let unfiltered_playlists = JSON.parse(body).items;
 
         // Initialize an array to store promises for fetching track features
         const trackFeaturePromises = [];
+
+        // Filter out playlists curated by Spotify, as they can't be modified
+        const playlists = unfiltered_playlists.filter((playlist) => {
+          return playlist.owner.display_name !== "Spotify";
+        });
+
         // Fetch all tracks' for each playlist
         playlists.forEach((playlist) => {
           const playlistId = playlist.id;
-
-           // If the playlist is a blend or other playlist created by Spotify, skip it
-           if (playlist.owner.display_name === "Spotify") {
-            return;
-          }
-          
           let offset = 0;
           const tracksOptions = {
             url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50&offset=${offset}`,

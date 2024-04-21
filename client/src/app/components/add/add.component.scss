@@ -28,7 +28,25 @@ button {
 .disabled-button {
     background-color: #ccc;
     cursor: default;
+    position: relative;
 }
+
+.disabled-button:hover:before {
+    content: "Please select a track first"; 
+    position: absolute;
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 12px;
+    z-index: 9999; 
+    visibility: visible;
+    opacity: 1; 
+    transition: opacity 0.3s ease-in-out; 
+    top: calc(100% + 10px); 
+    left: 50%; 
+    transform: translateX(-50%); 
+    white-space: nowrap;
+  }
 
 .dropdown {
     margin-top: 5px;
