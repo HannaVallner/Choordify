@@ -193,8 +193,8 @@ app.get('/api/playlists/:token', function(req, res) {
                 request.get(featuresOptions, (error, response, body) => {
                   if (!error && response.statusCode === 200) {
                     const trackFeatures = JSON.parse(body).audio_features;
-                    playlist.songs.forEach((track, index) => {
-                      track.features = trackFeatures[index]; // Attach features to each track
+                    playlist.songs.forEach((song, index) => {
+                      song.features = trackFeatures[index]; // Attach features to each track
                     });
                     resolve(trackFeatures);
                   } else {
@@ -264,6 +264,27 @@ app.get('/api/stored_playlists', function(req, res){
     res.status(404).send("No playlists found");
   }
 })
+
+// Store chosen playlist
+app.post('/api/store_playlist', function(req, res) {
+  const playlist = req.body; 
+  if (playlist) {
+    req.session.playlist = playlist; 
+    req.session.save(); 
+    res.status(200).send("Playlist stored successfully");
+  } else {
+    res.status(400).send("No playlist data provided");
+  }
+});
+
+// Return previously stored playlist
+app.get('/api/stored_playlist', function(req, res){
+  if (req.session.playlist) {
+    res.send(req.session.playlist);
+  } else {
+    res.status(404).send("No playlist found");
+  }
+});
 
 // Return previously stored playlists, with compatibility measures and appropriate sorting
 app.get('/api/comp_playlists', function(req, res){

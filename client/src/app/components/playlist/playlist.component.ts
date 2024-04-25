@@ -10,7 +10,7 @@ import { LoadingComponent } from '../loading/loading.component';
 
 export class PlaylistComponent implements OnInit {
 
-  playlists: any[] = [];
+  playlist: any;
   token = '';
   
   constructor(private spotify: SpotifyService) {}
@@ -20,16 +20,14 @@ export class PlaylistComponent implements OnInit {
     if (token) {
       this.token = token;
     }
-    this.spotify.getStoredPlaylists().subscribe((response: any) => {
-      this.playlists = response;
+    // Retrieve the chosen playlist
+    this.spotify.getStoredPlaylist().subscribe((response: any) => {
+      this.playlist = response;
+      console.log(this.playlist);
+      console.log(this.playlist.public);
+      console.log(this.playlist.owner['display_name']);
+
     });
   }
 
-  toggleColour(event: any) {
-    event.target.classList.toggle('select')
-  }
-
-  toggleAverages(playlist: any) {
-    playlist.displayAverages = !playlist.displayAverages
-  }
 }

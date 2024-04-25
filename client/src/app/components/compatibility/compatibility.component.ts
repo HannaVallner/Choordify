@@ -58,10 +58,6 @@ export class CompatibilityComponent implements OnInit {
     playlist.displayAverages = !playlist.displayAverages
   }
 
-  toggleColour(event: any) {
-    event.target.classList.toggle('select')
-  }
-
 
   // Add selected track to selected playlist
   addToPlaylist(playlist: any) {

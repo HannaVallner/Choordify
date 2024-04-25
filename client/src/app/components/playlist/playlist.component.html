@@ -1,22 +1,24 @@
 <app-navbar></app-navbar>
-<app-loading *ngIf="playlists.length === 0"></app-loading>
-<div class="outer-container">
-    <ul class="playlists-container">
-        <li class="playlist" *ngFor="let playlist of playlists" (click)="toggleColour($event)">   
-            <div class="playlist-content">
-                <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist Cover">
-                <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
-                <div class="playlist-details">
-                    <p class="playlist-name">{{ playlist.name }}</p>
-                    <p class="playlist-tracks">{{ playlist.tracks['total'] }} songs </p>
-                </div>
+<app-loading *ngIf="!playlist"></app-loading>
+<div class="outer-container" *ngIf="playlist">
+    <div class="playlist-content">
+        <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist Cover">
+        <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
+        <div class="playlist-details">
+            <p class="playlist-tracks"*ngIf="playlist.public">Public Playlist</p>
+            <p class="playlist-tracks"*ngIf="!playlist.public">Private Playlist</p>
+            <p class="playlist-name">{{ playlist.name }}</p>
+            <p class="playlist-tracks"> {{ playlist.owner['display_name'] }} &bull; {{ playlist.tracks['total'] }} songs </p>
+        </div>
+    </div>
+    <ul class="tracks-container" *ngIf="playlist.songs">
+        <li class="track" *ngFor="let song of playlist.songs">  
+            <img class="track-cover" *ngIf="song.track.album && song.track.album.images && song.track.album.images.length > 0"
+                [src]="song.track.album.images[0].url" alt="Track cover">
+            <div class="track-details">
+                <p class="track-title"> {{ song.track.name }} </p>
+                <p class="track-artist"> {{ song.track.artists[0]['name']}} </p>
             </div>
-            <button class="details-button" type="button" (click)="toggleAverages(playlist)"> Analyze </button>
-            <ul class="track-features" *ngIf="playlist.displayAverages">
-                <li class="track-feature" *ngFor="let keyValuePair of playlist.features | keyvalue">
-                    <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
-                </li>
-            </ul> 
         </li>
-    </ul>
+    </ul> 
 </div>

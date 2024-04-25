@@ -61,7 +61,7 @@ export class AddComponent implements OnInit {
     sessionStorage.setItem("trackId", result.id);
 
     this.spotify.toggleTrack(this.token, result.id).subscribe(
-      (response) => {
+      () => {
       }
     );
   }

@@ -25,15 +25,9 @@ export class SortComponent implements OnInit {
     });
   }
 
-  toggleColour(event: any) {
-    event.target.classList.toggle('select')
+
+  selectPlaylist(playlist: any) {
+    this.spotify.storePlaylist(playlist).subscribe(() => {});
   }
 
-  toggleAverages(playlist: any) {
-    playlist.displayAverages = !playlist.displayAverages
-  }
-
-  toggleTracks(playlist: any) {
-    console.log(playlist);
-  }
 }

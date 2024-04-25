@@ -7,6 +7,7 @@ import { AddComponent } from './components/add/add.component';
 import { SortComponent } from './components/sort/sort.component';
 import { AboutComponent } from './components/about/about.component';
 import { CompatibilityComponent } from './components/compatibility/compatibility.component';
+import { PlaylistComponent } from './components/playlist/playlist.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -15,7 +16,8 @@ const routes: Routes = [
   { path: 'add', component: AddComponent },
   { path: 'sort', component: SortComponent },
   { path: 'about', component: AboutComponent },
-  { path: 'compatibility', component: CompatibilityComponent }
+  { path: 'compatibility', component: CompatibilityComponent },
+  { path: 'playlist', component: PlaylistComponent }
 ];
 
 @NgModule({

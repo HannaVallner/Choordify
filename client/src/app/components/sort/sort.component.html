@@ -2,7 +2,7 @@
 <app-loading *ngIf="playlists.length === 0"></app-loading>
 <div class="outer-container">
     <ul class="playlists-container">
-        <li class="playlist" *ngFor="let playlist of playlists" (click)="toggleColour($event)">   
+        <li class="playlist" *ngFor="let playlist of playlists">   
             <div class="playlist-content">
                 <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist Cover">
                 <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
@@ -11,12 +11,9 @@
                     <p class="playlist-tracks">{{ playlist.tracks['total'] }} songs </p>
                 </div>
             </div>
-            <button class="details-button" type="button" (click)="toggleAverages(playlist)"> Analyze </button>
-            <ul class="track-features" *ngIf="playlist.displayAverages">
-                <li class="track-feature" *ngFor="let keyValuePair of playlist.features | keyvalue">
-                    <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
-                </li>
-            </ul> 
+            <a routerLink="/playlist">
+                <button class="details-button" type="button" (click)="selectPlaylist(playlist)"> Analyze </button>
+            </a>
         </li>
     </ul>
 </div>

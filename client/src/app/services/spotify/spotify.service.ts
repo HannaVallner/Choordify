@@ -18,7 +18,6 @@ export class SpotifyService {
     withCredentials: true
     });
   }
-  
 
   getUserInfo(token: string) {
     if (!this.userinfo) {
@@ -42,6 +41,19 @@ export class SpotifyService {
   // Returns a track from Spotify Web API (with its features, filtered and normalized)
   toggleTrack(token: string, trackId: string) {
     return this.http.get(`http://localhost:3000/api/tracks/${trackId}?token=${token}`, {
+      withCredentials: true
+    });
+  }
+
+  storePlaylist(playlist: any) {
+    return this.http.post('http://localhost:3000/api/store_playlist', playlist, {
+      withCredentials: true,
+      responseType: 'text'
+    });
+  }
+
+  getStoredPlaylist() {
+    return this.http.get('http://localhost:3000/api/stored_playlist', {
       withCredentials: true
     });
   }
