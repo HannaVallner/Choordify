@@ -15,12 +15,18 @@
         </div>
     </div>
     <ul class="tracks-container" *ngIf="playlist.songs">
-        <li class="track" *ngFor="let song of playlist.songs">  
+        <li class="track" *ngFor="let song of playlist.songs" [ngClass]="{'open-dropdown': song.more}">  
             <img class="track-cover" *ngIf="song.album && song.album.images && song.album.images.length > 0"
                 [src]="song.album.images[0].url" alt="Track cover">
             <div class="track-details">
                 <p class="track-title"> {{ song.name }} </p>
                 <p class="track-artist"> {{ song.artists[0]['name']}} </p>
+            </div>
+            <div>
+                <img class="nav-link" *ngIf="!song.more" src="assets/svg/more.svg" alt="More" (click)="toggleDropdown(song)"> 
+            </div>
+            <div class="dropdown" [ngClass]="{'open': song.more}">
+                <img class="view-less" src="assets/svg/less.svg" alt="Less" (click)="toggleDropdown(song)">
             </div>
         </li>
     </ul> 

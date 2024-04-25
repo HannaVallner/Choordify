@@ -26,4 +26,14 @@ export class PlaylistComponent implements OnInit {
     });
   }
 
+  toggleDropdown(song: any) {
+    song.more = !song.more;
+
+    this.playlist.songs.forEach((track: any) => {
+      if (track !== song) {
+        track.more = false;
+      }
+    });
+  }
+
 }

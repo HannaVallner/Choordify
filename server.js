@@ -38,7 +38,7 @@ app.use(cors({
 
 app.use(express.static(__dirname + '/client'));
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 
 
@@ -270,6 +270,7 @@ app.post('/api/store_playlist', function(req, res) {
   const playlist = req.body; 
   if (playlist) {
     req.session.playlist = playlist; 
+    findBestFitPlaylist(playlist, req.session.playlists);
     req.session.save(); 
     res.status(200).send("Playlist stored successfully");
   } else {
@@ -556,38 +557,28 @@ function calculateCompatibility(trackFeatures, playlistAverages) {
 
 
 // Function to find the best suitable playlist for a track
-function findBestFitPlaylist(track, playlists) {
-  console.log("in findbestfitplaylist");
-  let bestFitPlaylist = null;
-  let maxCompatibility = -Infinity;
-  // Iterate through each playlist
-  playlists.forEach((playlist) => {
-    // Calculate compatibility of track with playlist
-    const compatibility = calculateCompatibility(track.features, playlist.features);
-    // Update best fit if compatibility is higher
-    if (compatibility > maxCompatibility) {
-      bestFitPlaylist = playlist;
-      maxCompatibility = compatibility;
-    }
-  });
-  // Attach best fit playlist to the track object
-  track.bestfit = bestFitPlaylist;
-  return track;
-}
-
-// Function to find best fit playlists for all tracks in all playlists
-function findBestFitPlaylists(playlists) {
-  console.log("in findbestfitplaylists");
-  // Iterate through each playlist
-  playlists.forEach((playlist) => {
-    // Iterate through each track in the playlist
-    playlist.song.forEach((track) => {
-      // Find the best fit playlist for the track
-      findBestFitPlaylist(track, playlists);
+function findBestFitPlaylist(playlist, playlists) {
+  playlist.songs.forEach((song) => {
+    let bestFitPlaylist = null;
+    let maxCompatibility = -Infinity;
+    song.more = false;
+     // Iterate through each playlist
+    playlists.forEach((playlist2) => {
+      // Calculate compatibility of track with playlist
+      const compatibility = calculateCompatibility(song.features, playlist2.features);
+      if (compatibility > maxCompatibility) {
+        bestFitPlaylist = playlist2;
+        maxCompatibility = compatibility;
+      }
+      if (playlist2['name'] == playlist['name']) {
+        song.current_compatibility = compatibility;
+      }
+    song.best_fit = bestFitPlaylist;
+    song.max_compatibility = compatibility;
     });
   });
-  return playlists;
 }
+
 
 // Function to calculate average features for a list of tracks
 function calculatePlaylistAverages(trackFeatures) {

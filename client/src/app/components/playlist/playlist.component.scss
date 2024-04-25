@@ -32,7 +32,7 @@
 .playlist-cover {
     width: 80px;
     height: 80px;
-    margin-left: 80px;
+    margin-left: 60px;
 }
 
 .playlist-details {
@@ -85,14 +85,17 @@
     padding: 10px;
     margin-bottom: 10px;
     align-items: center;
+    position: relative;
+    transition: margin-bottom 0.3s ease-in-out;
+}
+
+.track.open-dropdown {
+    margin-bottom: 150px;
+    background-color: #484444;
 }
 
 .track:hover {
     background-color: #484444;
-}
-
-.track.select {
-    background-color: #686262;
 }
 
 .track-cover {
@@ -114,4 +117,45 @@
     font-size: 0.8rem;
     color: #bababa;
     margin-top: 2px; 
+}
+
+.dropdown {
+    position: absolute;
+    background-color: #686262;
+    width: 100%; 
+    top: 95%;
+    bottom: 0;
+    height: 0;
+    left: 0; 
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    display: flex;
+    justify-content: center; 
+}
+
+.dropdown.open {
+    overflow: visible;
+    height: 145px;
+}
+
+
+.dropdown-item {
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+}
+
+.view-less {
+    align-self: flex-end;
+    margin-bottom: 10px;
+    opacity: 0.6;
+    color: #fff;
+    text-decoration: none;
+}
+
+.view-less:hover {
+    opacity: 1;
 }
