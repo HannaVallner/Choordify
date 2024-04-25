@@ -23,10 +23,6 @@ export class PlaylistComponent implements OnInit {
     // Retrieve the chosen playlist
     this.spotify.getStoredPlaylist().subscribe((response: any) => {
       this.playlist = response;
-      console.log(this.playlist);
-      console.log(this.playlist.public);
-      console.log(this.playlist.owner['display_name']);
-
     });
   }
 

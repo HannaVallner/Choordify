@@ -1,7 +1,10 @@
 <app-navbar></app-navbar>
 <app-loading *ngIf="!playlist"></app-loading>
 <div class="outer-container" *ngIf="playlist">
-    <div class="playlist-content">
+    <div class="upper-container">
+        <a routerLink="/sort" class="nav-link">
+            <img src="assets/svg/back.svg" alt="Back"> 
+        </a>
         <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist Cover">
         <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
         <div class="playlist-details">
@@ -13,11 +16,11 @@
     </div>
     <ul class="tracks-container" *ngIf="playlist.songs">
         <li class="track" *ngFor="let song of playlist.songs">  
-            <img class="track-cover" *ngIf="song.track.album && song.track.album.images && song.track.album.images.length > 0"
-                [src]="song.track.album.images[0].url" alt="Track cover">
+            <img class="track-cover" *ngIf="song.album && song.album.images && song.album.images.length > 0"
+                [src]="song.album.images[0].url" alt="Track cover">
             <div class="track-details">
-                <p class="track-title"> {{ song.track.name }} </p>
-                <p class="track-artist"> {{ song.track.artists[0]['name']}} </p>
+                <p class="track-title"> {{ song.name }} </p>
+                <p class="track-artist"> {{ song.artists[0]['name']}} </p>
             </div>
         </li>
     </ul> 

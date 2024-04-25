@@ -180,7 +180,7 @@ app.get('/api/playlists/:token', function(req, res) {
               if (!error && response.statusCode === 200) {
                 const trackItems = JSON.parse(body).items;
                 // Attach tracks to playlist
-                playlist.songs = trackItems;
+                playlist.songs = trackItems.map(item => item.track);
                 // Extract track IDs
                 const trackIds = trackItems.map((item) => item.track.id).join(',');
                 // Fetch track features for all tracks

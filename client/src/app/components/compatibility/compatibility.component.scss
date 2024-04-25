@@ -13,9 +13,23 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.left-container {
+    margin-top: 20px;
+}
+
+.nav-link {
+    opacity: 0.6;
+    color: #fff;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    opacity: 1;
+}
+
 .track-info {
     margin-top: 20px;
-    width: 400px;
+    width: 320px;
     padding: 15px;
 }
 
@@ -42,8 +56,8 @@
 
 .playlists-container {
     padding-top: 10px;
-    width: 900px;
-    max-height: 80vh;
+    width: 800px;
+    max-height: 73vh;
     overflow-y: auto;
 }
 

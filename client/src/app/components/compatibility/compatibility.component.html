@@ -1,45 +1,52 @@
 <app-navbar></app-navbar>
 <app-loading *ngIf="playlists.length === 0 || !track"></app-loading>
 <div class="outer-container">
-    <div class="track-info" *ngIf="track">
-        <img class="track-cover" *ngIf="track.album && track.album.images && track.album.images.length > 0"
-             [src]="track.album.images[0].url" 
-             alt="Track cover">
-        <p class="track-title"> {{ track.name }} </p>
-        <p class="track-details"> {{ track.artists[0]['name']}} <span class="dot">&bull;</span> {{ track.album.name }} </p>
-        <button type="button" (click)="toggleFeatures()"> Details</button>
-        <ul class="track-features" *ngIf="track.displayFeatures">
-            <li class="track-feature" *ngFor="let keyValuePair of track.features | keyvalue">
-                <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
-            </li>
-        </ul>
-    </div>
+    <div class="left-container">
+        <a routerLink="/add" class="nav-link">
+            <img src="assets/svg/back.svg" alt="Back"> 
+        </a>
+        <div class="track-info" *ngIf="track">
+            <img class="track-cover" *ngIf="track.album && track.album.images && track.album.images.length > 0"
+                [src]="track.album.images[0].url" 
+                alt="Track cover">
+            <p class="track-title"> {{ track.name }} </p>
+            <p class="track-details"> {{ track.artists[0]['name']}} <span class="dot">&bull;</span> {{ track.album.name }} </p>
+            <button type="button" (click)="toggleFeatures()"> Details</button>
+            <ul class="track-features" *ngIf="track.displayFeatures">
+                <li class="track-feature" *ngFor="let keyValuePair of track.features | keyvalue">
+                    <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
+                </li>
+            </ul>
+        </div>
         <div class="input-container">
             <input type="text" placeholder="Enter playlist name" [(ngModel)]="input" name="input" autocomplete="off">
             <button type="button" (click)="createPlaylist()">Create</button>
         </div>
-    <ul class="playlists-container" *ngIf="playlists.length > 0">
-        <li class="playlist-container" *ngFor="let playlist of playlists">
-            <div class="playlist-content">
-                <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist cover">
-                <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
-                <div class="playlist-details">
-                    <p class="playlist-name">{{ playlist.name.length > 20 ? playlist.name.slice(0, 20) + '...' : playlist.name }}</p>
-                    <p class="playlist-tracks">{{ playlist.tracks["total"] }} songs </p>
+    </div>
+    <div class="playlists">
+        <ul class="playlists-container" *ngIf="playlists.length > 0">
+            <li class="playlist-container" *ngFor="let playlist of playlists">
+                <div class="playlist-content">
+                    <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist cover">
+                    <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
+                    <div class="playlist-details">
+                        <p class="playlist-name">{{ playlist.name.length > 20 ? playlist.name.slice(0, 20) + '...' : playlist.name }}</p>
+                        <p class="playlist-tracks">{{ playlist.tracks["total"] }} songs </p>
+                    </div>
                 </div>
-            </div>
-            <div class="compatibility-bar">
-                <p>Compatibility with track: </p>
-                <div class="compatibility-filled" [style.width.%]="playlist.compatibility"></div>
-                <span class="compatibility-percentage">{{ playlist.compatibility }}%</span>
-            </div>
-            <button *ngIf="!playlist.loading" type="button" (click)="addToPlaylist(playlist)">Add to playlist</button>
-            <app-loading *ngIf="playlist.loading"></app-loading>
-            <ul class="averages" *ngIf="playlist.displayAverages"> 
-                <li class="playlist-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">
-                    <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
-                </li>
-            </ul> 
-        </li>
-    </ul>
+                <div class="compatibility-bar">
+                    <p>Compatibility with track: </p>
+                    <div class="compatibility-filled" [style.width.%]="playlist.compatibility"></div>
+                    <span class="compatibility-percentage">{{ playlist.compatibility }}%</span>
+                </div>
+                <button *ngIf="!playlist.loading" type="button" (click)="addToPlaylist(playlist)">Add to playlist</button>
+                <app-loading *ngIf="playlist.loading"></app-loading>
+                <ul class="averages" *ngIf="playlist.displayAverages"> 
+                    <li class="playlist-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">
+                        <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
+                    </li>
+                </ul> 
+            </li>
+        </ul>
+    </div>
 </div>
