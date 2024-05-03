@@ -433,7 +433,7 @@ app.post('/api/playlists/create', function(req, res) {
             }
           };
           request.get(playlistOptions, (playlistError, playlistResponse, playlistBody) => {
-            if (!playlistError && playlistResponse.statusCode === 200) {
+            if (!playlistError && (playlistResponse.statusCode === 200 || playlistResponse.statusCode === 201)) {
               const playlist = JSON.parse(playlistBody);
               
               // Update the playlist's features
@@ -573,9 +573,9 @@ function findBestFitPlaylist(playlist, playlists) {
       if (playlist2['name'] == playlist['name']) {
         song.current_compatibility = compatibility;
       }
-    song.best_fit = bestFitPlaylist;
-    song.max_compatibility = compatibility;
     });
+    song.best_fit = bestFitPlaylist;
+    song.max_compatibility = maxCompatibility;
   });
 }
 

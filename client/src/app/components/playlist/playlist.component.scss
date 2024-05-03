@@ -13,11 +13,24 @@
 }
 
 .upper-container {
-    margin-left: 0;
+    margin-left: 40px;
     margin-top: 30px;
     display: flex;
     align-items: center;
 }
+
+.feature-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bar {
+    width: 10px; /* Adjust the width as needed */
+    background-color: blue; 
+    max-height: 200px;/* Adjust the color as needed */
+}
+
 
 .nav-link {
     opacity: 0.6;
@@ -52,9 +65,12 @@
     font-size: 0.8rem;
 }
 
+
+
 .tracks-container {
+    margin-left: 100px;
     padding-top: 10px;
-    width: 900px;
+    width: 800px;
     max-height: 55vh;
     overflow-y: auto;
 }
@@ -117,6 +133,48 @@
     font-size: 0.8rem;
     color: #bababa;
     margin-top: 2px; 
+}
+
+.compatibility-bar {
+    height: 20px;
+    background-color: #4a4a4a; 
+    border: 1px solid #7e7e7e;
+    width: 200px;
+    position: absolute;
+    border-radius: 10px; 
+    bottom: 30px;
+    left: 300px;
+}
+
+.compatibility-filled {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: #4caf50; 
+    border-radius: 10px; 
+}
+
+.compatibility-percentage {
+    font-size: 0.8rem;
+    font-family: 'Nunito-Bold', sans-serif;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #303030; 
+}
+
+.view-more {
+    margin-bottom: 0; 
+    opacity: 0.6;
+    color: #fff;
+    text-decoration: none;
+}
+
+.view-more:hover {
+    opacity: 1;
 }
 
 .dropdown {
