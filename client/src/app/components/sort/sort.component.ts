@@ -30,4 +30,8 @@ export class SortComponent implements OnInit {
     this.spotify.storePlaylist(playlist).subscribe(() => {});
   }
 
+  deletePlaylist(playlist: any) {
+
+  }
+
 }

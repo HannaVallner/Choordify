@@ -88,6 +88,7 @@ export class SpotifyService {
     });
   }
 
+  // Create a new playlist and add the selected track to it
   createPlaylist(token: string, userId: string, playlistName: string) {
     return this.http.post('http://localhost:3000/api/playlists/create', 
     { token, userId, playlistName }, {
@@ -96,12 +97,18 @@ export class SpotifyService {
   }
 
   // Removes tracks from a given playlist
-  // tracks = An array of objects containing Spotify URIs of the tracks or episodes to remove.
-  // For example: { "tracks": [{ "uri": "spotify:track:4iV5W9uYEdYUVa79Axb7Rh" },{ "uri": "spotify:track:1301WleyT98MSxVHPZCA6M" }] }
-  removePlaylistTracks(token: string, playlistId: string, trackURIs: object[]) {
-    return this.http.delete('https://api.spotify.com/v1/playlists/' + playlistId + '/tracks', {
-      headers: { Authorization: 'Bearer ' + token },
-      body: { tracks: trackURIs },
+  removePlaylistTracks(token: string, playlistId: string, trackURI: string) {
+    return this.http.delete(`http://localhost:3000/api/playlists/${playlistId}/remove-tracks`, {
+      headers: { 'Content-Type': 'application/json' },
+      body: { token, trackURI },
+      withCredentials: true
+  });
+  }
+
+  // Add the track that was previously deleted from a playlist to another one
+  changeTrackPlaylist(token: string, playlistId: string, track: any) {
+    return this.http.post(`http://localhost:3000/api/playlists/${playlistId}/add-track`, 
+    { token, track }, {
       withCredentials: true
     });
   }

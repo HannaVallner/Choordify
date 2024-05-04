@@ -22,17 +22,19 @@
                 <p class="track-title"> {{ song.name > 30 ? song.name.slice(0, 30) + '...' : song.name}} </p>
                 <p class="track-artist"> {{ song.artists[0]['name']}} </p>
             </div>
+            <p class="compatibility-text">Compatibility with playlist: </p>
             <div class="compatibility-bar">
-                <p>Compatibility with playlist: </p>
                 <div class="compatibility-filled" [style.width.%]="song.current_compatibility"></div>
                 <span class="compatibility-percentage">{{ song.current_compatibility }}%</span>
+                <button type="button" (click)="removeFromPlaylist(song)">Remove</button>
             </div>
             <div class="view-more">
                 <img *ngIf="!song.more" src="assets/svg/more.svg" alt="More" (click)="toggleDropdown(song)"> 
             </div>
             <div class="dropdown" [ngClass]="{'open': song.more}">
-                <p> {{ song.best_fit.name }}</p>
-                <p> {{ song.max_compatibility }}</p>
+                <p> This song is best suited to playlist: {{ song.best_fit.name }}</p>
+                <p> {{ song.max_compatibility }}%</p>
+                <button type="button" (click)="changeTrackPlaylist(song)">Add to playlist</button>
                 <img class="view-less" src="assets/svg/less.svg" alt="Less" (click)="toggleDropdown(song)">
                 <div>
                     

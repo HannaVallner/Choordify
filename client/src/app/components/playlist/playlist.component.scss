@@ -19,18 +19,6 @@
     align-items: center;
 }
 
-.feature-bar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.bar {
-    width: 10px; /* Adjust the width as needed */
-    background-color: blue; 
-    max-height: 200px;/* Adjust the color as needed */
-}
-
 
 .nav-link {
     opacity: 0.6;
@@ -133,6 +121,14 @@
     font-size: 0.8rem;
     color: #bababa;
     margin-top: 2px; 
+}
+
+.compatibility-text {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    bottom: 45px;
+    left: 340px;
+    position: absolute;
 }
 
 .compatibility-bar {

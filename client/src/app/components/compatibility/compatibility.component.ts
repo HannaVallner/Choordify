@@ -15,6 +15,7 @@ export class CompatibilityComponent implements OnInit {
   input = ''; // For new playlist's name
   result: any;
   userId = '';
+  creatingPlaylist = false;
 
   
   constructor(private spotify: SpotifyService) {}
@@ -59,24 +60,23 @@ export class CompatibilityComponent implements OnInit {
   // Add selected track to selected playlist
   addToPlaylist(playlist: any) {
     playlist.loading = true;
-    this.spotify.addPlaylistTracks(this.token, playlist.id, [this.track.uri]).subscribe(
-        () => {
+    this.spotify.addPlaylistTracks(this.token, playlist.id, [this.track.uri]).subscribe((response: any) => {
         // Update the playlists array with the updated playlist data
-        this.spotify.getCompPlaylists().subscribe((response: any) => {
-          this.playlists = response;
-          playlist.loading = false;
-        });
+        this.playlists = response;
+        playlist.loading = false;
       });
   }
   
 
   // Create a new playlist (upon "create" button click)
   createPlaylist() {
+    this.creatingPlaylist = true;
     this.spotify.createPlaylist(this.token, this.userId, this.input).subscribe(
       () => {
         // Update the playlists array with the updated playlist data
         this.spotify.getCompPlaylists().subscribe((response: any) => {
           this.playlists = response;
+          this.creatingPlaylist = false;
         });
     });
   }

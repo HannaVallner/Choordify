@@ -271,6 +271,8 @@ app.post('/api/store_playlist', function(req, res) {
   if (playlist) {
     req.session.playlist = playlist; 
     findBestFitPlaylist(playlist, req.session.playlists);
+    const playlistIndex = req.session.playlists.findIndex(p => p.id === playlist.id);
+    req.session.playlists[playlistIndex] = playlist;
     req.session.save(); 
     res.status(200).send("Playlist stored successfully");
   } else {
@@ -319,7 +321,6 @@ app.get('/api/tracks/:trackId', function(req, res) {
   request.get(trackOptions, (error, trackResponse, trackBody) => {
     if (!error && trackResponse.statusCode === 200) {
       let track = JSON.parse(trackBody);
-
       // Next, get the track features
       const featuresOptions = {
         url: `https://api.spotify.com/v1/audio-features/${trackId}`,
@@ -424,7 +425,6 @@ app.post('/api/playlists/create', function(req, res) {
       };
       request.post(addTrackOptions, (addTrackError, addTrackResponse, addTrackBody) => {
         if (!addTrackError && (addTrackResponse.statusCode === 201 || addTrackResponse.statusCode === 200)) {
-
           // Fetch the newly created playlist
           const playlistOptions = {
             url: `https://api.spotify.com/v1/playlists/${playlistId}`,
@@ -435,22 +435,17 @@ app.post('/api/playlists/create', function(req, res) {
           request.get(playlistOptions, (playlistError, playlistResponse, playlistBody) => {
             if (!playlistError && (playlistResponse.statusCode === 200 || playlistResponse.statusCode === 201)) {
               const playlist = JSON.parse(playlistBody);
-              
               // Update the playlist's features
               playlist.features = req.session.track.features;
-
               // Attach the track to the playlist
               playlist.songs = [req.session.track];
-
               // Update the playlist's compatibility in the session
               playlist.compatibility = 100;
-
               // Store the playlist in the session management 
               // (as the first element, as its the newest playlist and most compatible with the track)
               req.session.comp_playlists.unshift(playlist);
               req.session.playlists.unshift(playlist);  
               req.session.save();
-
               res.send(playlist);
             } else {
               console.error("Error fetching created playlist:", playlistError);
@@ -470,7 +465,7 @@ app.post('/api/playlists/create', function(req, res) {
 });
 
 
-// Add tracks to playlist
+// Add tracks to playlist (on compatibility page)
 app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
   const { token, trackURIs } = req.body;
   const { playlistId } = req.params;
@@ -494,9 +489,9 @@ app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
       request.get(playlistOptions, (playlistError, playlistResponse, playlistBody) => {
         if (!playlistError && playlistResponse.statusCode === 200) {
           const updatedPlaylist = JSON.parse(playlistBody);
-
           // Find the index of the playlist in the session data
-          const playlistIndex = req.session.comp_playlists.findIndex(p => p.id === playlistId);
+          const playlistIndex = req.session.playlists.findIndex(p => p.id === playlistId);
+          const comp_playlistIndex = req.session.comp_playlists.findIndex(p => p.id === playlistId);
           if (playlistIndex !== -1) {
             // Attach the songs property from the previous playlist
             updatedPlaylist.songs = req.session.playlists[playlistIndex].songs;
@@ -506,16 +501,131 @@ app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
             const updatedPlaylistFeatures = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
             // Recalculate compatibility with the track
             const track = req.session.track;
-            const compatibility = calculateCompatibility(track.features, updatedPlaylistFeatures);
-            // Update the playlist's average features and compatibility in the session
+            updatedPlaylist.compatibility = calculateCompatibility(track.features, updatedPlaylistFeatures);
+            // Update the playlist's average features in the session
             updatedPlaylist.features = updatedPlaylistFeatures;
-            updatedPlaylist.compatibility = compatibility;
             // Update the playlist data in the session
             req.session.playlists[playlistIndex] = updatedPlaylist;
-            req.session.comp_playlists[playlistIndex] = updatedPlaylist;
+            req.session.comp_playlists[comp_playlistIndex] = updatedPlaylist;
+            req.session.save();
+            // Send the updated playlists data back to the client
+            res.send(req.session.comp_playlists);
+          } else {
+            res.status(404).send("Playlist not found");
+          }
+        } else {
+          console.error("Error fetching updated playlist:", playlistError);
+          res.status(playlistResponse.statusCode).send(playlistError);
+        }
+      });
+    } else {
+      console.error("Error adding tracks to playlist:", error);
+      res.status(response.statusCode).send(error);
+    }
+  });
+});
+
+// Remove a track from a playlist (on playlist page)
+app.delete('/api/playlists/:playlistId/remove-tracks', function(req, res) {
+  const { token, trackURI } = req.body;
+  const { playlistId } = req.params;
+  const options = {
+    url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ tracks: [{ uri: trackURI }] })
+  };
+  request.delete(options, (error, response, body) => {
+    if (!error && (response.statusCode === 200 || response.statusCode === 204)) {
+      // Fetch the updated playlist data
+      const playlistOptions = {
+        url: `https://api.spotify.com/v1/playlists/${playlistId}`,
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      };
+      request.get(playlistOptions, (playlistError, playlistResponse, playlistBody) => {
+        if (!playlistError && playlistResponse.statusCode === 200) {
+          const updatedPlaylist = JSON.parse(playlistBody);
+          // Find the index of the playlist in the session data
+          const playlistIndex = req.session.playlists.findIndex(p => p.id === playlistId);
+          if (playlistIndex !== -1) {
+            // Find the original playlist from session data, remove the removed song
+            const originalPlaylist = req.session.playlists[playlistIndex];
+            const updatedSongs = originalPlaylist.songs.filter(song => song.uri !== trackURI);
+            updatedPlaylist.songs = updatedSongs;
+            // Recalculate average features for the updated playlist
+            updatedPlaylist.features = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
+            // Update the playlist data in the session
+            req.session.playlists[playlistIndex] = updatedPlaylist;
+            req.session.playlist = updatedPlaylist;
+            if (req.session.comp_playlists) {
+              const comp_playlistIndex = req.session.comp_playlists.findIndex(p => p.id === playlistId);
+              req.session.comp_playlists[comp_playlistIndex] = updatedPlaylist;
+            }
             req.session.save();
             // Send the updated playlist data back to the client
-            res.send(updatedPlaylist);
+            res.send(req.session.playlist);
+          }
+          else {
+            res.status(404).send("Playlist not found");
+          }
+        } else {
+          console.error("Error fetching updated playlist:", playlistError);
+          res.status(playlistResponse.statusCode).send(playlistError);
+        }
+      });
+    } else {
+      console.error("Error removing track from playlist:", error);
+      res.status(response.statusCode || 500).send(error);
+    }
+  });
+});
+
+// Add track to playlist (on playlist page)
+app.post('/api/playlists/:playlistId/add-track', function(req, res) {
+  const { token, track } = req.body;
+  const { playlistId } = req.params;
+  const options = {
+    url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ uris: [ track.uri ] })
+  };
+  request.post(options, (error, response, body) => {
+    if (!error && (response.statusCode === 201 || response.statusCode == 200)) {
+      // Fetch the updated playlist data
+      const playlistOptions = {
+        url: `https://api.spotify.com/v1/playlists/${playlistId}`,
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      };
+      request.get(playlistOptions, (playlistError, playlistResponse, playlistBody) => {
+        if (!playlistError && playlistResponse.statusCode === 200) {
+          const updatedPlaylist = JSON.parse(playlistBody);
+          // Find the index of the playlist in the session data
+          const playlistIndex = req.session.playlists.findIndex(p => p.id === playlistId);
+          if (playlistIndex !== -1) {
+            // Attach the songs property from the previous playlist
+            updatedPlaylist.songs = req.session.playlists[playlistIndex].songs;
+            // Attach the newly added track to the songs property
+            updatedPlaylist.songs.push(track);
+            // Recalculate average features for the updated playlist
+            updatedPlaylist.features = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
+            // Update the playlist data in the session
+            req.session.playlists[playlistIndex] = updatedPlaylist;
+            if (req.session.comp_playlists) {
+              const comp_playlistIndex = req.session.comp_playlists.findIndex(p => p.id === playlistId);
+              req.session.comp_playlists[comp_playlistIndex] = updatedPlaylist;
+            }
+            req.session.save();
+            // Send the updated playlists data back to the client
+            res.send(req.session.comp_playlists);
           } else {
             res.status(404).send("Playlist not found");
           }
@@ -532,8 +642,28 @@ app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
 });
 
 
+/*
+// Remove the track from the playlist in session management
+      const playlistIndex = req.session.playlists.findIndex(p => p.id === playlistId);
+      if (playlistIndex !== -1) {
+        const updatedPlaylist = req.session.playlists[playlistIndex];
+        delete updatedPlaylist.best_fit;
+        const updatedSongs = updatedPlaylist.songs.filter(song => song.uri !== trackURI);
+        updatedPlaylist.songs = updatedSongs;
+        // Update the song count 
+        updatedPlaylist.tracks.total = updatedSongs.length;
+        const updatedPlaylistFeatures = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
+        updatedPlaylist.features = updatedPlaylistFeatures;
+        findBestFitPlaylist(updatedPlaylist, req.session.playlists);
+        if (req.session.comp_playlists) {
+          req.session.comp_playlists[playlistIndex] = updatedPlaylist;
+        }
+        req.session.playlists[playlistIndex] = updatedPlaylist;
+        req.session.playlist = updatedPlaylist;
+        req.session.save();
 
 
+*/
 
 /*                      REGULAR FUNCTIONS                         */
 
