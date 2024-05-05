@@ -10,82 +10,102 @@
     justify-content: space-between;
     align-items: center;
     z-index: 999;
+}
+.navbar-brand {
+    font-size: 2rem;
+    text-decoration: none;
+    color: $white;
+    font-family: 'Nunito-Bold', sans-serif;
+    margin-left: 15px;
+}
 
-    .navbar-brand {
-        font-size: 2rem;
-        text-decoration: none;
-        color: $white;
-        font-family: 'Nunito-Bold', sans-serif;
-        margin-left: 15px;
-    }
+.nav-items {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    padding-right: 60px;
+}
 
-    .nav-items {
-        margin-top: 10px;
-        display: flex;
-        align-items: center;
-        padding-right: 60px;
-    }
+.spotify-link {
+    text-decoration: none;
+}
+.spotify-button {
+    font-size: 0.9rem;
+    width: 200px;
+    height: 40px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 25px;
+    margin-right: 25px;
+}
 
-    .nav-link {
-        margin-right: 25px;
-        opacity: 0.6;
-        color: $white;
-        text-decoration: none;
-    }
+.spotify-img {
+    width: 25px;
+    height: 25px;
+    margin-left: 10px;
+}
 
-    .nav-link:hover {
-        opacity: 1;
-        border-bottom: 4px solid $white;
+.nav-link {
+    margin-right: 25px;
+    opacity: 0.6;
+    color: $white;
+    text-decoration: none;
+}
 
-    }
+.nav-link:hover {
+    opacity: 1;
+    border-bottom: 4px solid $white;
 
-    .profile {
-        display: flex;
-        align-items: center;
-        position: relative;
-        margin-left: auto; 
-        margin-bottom: 5px;
-        padding-left: 20px;
-        background-color: #343131;
-        border-radius: 30px;
-        width: 180px;
-        opacity: 0.6;
-        transition: opacity 0.3s ease;
-        transition: background-color 0.3s ease;
-        cursor: pointer;
-    }
+}
 
-    .profile:hover {
-        opacity: 1;
-        background-color: #555;
-    }
+.profile {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-left: auto; 
+    margin-bottom: 5px;
+    padding-left: 20px;
+    background-color: #343131;
+    border-radius: 30px;
+    width: 180px;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
 
-    .profile p {
-        margin-left: 10px;
-        color: $white;
-        cursor: pointer;
-    }
+.profile:hover {
+    opacity: 1;
+    background-color: #555;
+}
 
-    .dropdown-menu {
-        background-color: #343131;
-        position: absolute;
-        top: calc(100% + 10px);
-        right: 5px;
-        width: 190px;
-        z-index: 1000;
-        border-radius: 10px;
-        overflow: hidden;
-    }
+.profile p {
+    margin-left: 10px;
+    color: $white;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    background-color: #343131;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 5px;
+    width: 190px;
+    z-index: 1000;
+    border-radius: 10px;
+    overflow: hidden;
+}
 
 
-    .dropdown-item {
-        display: block;
-        color: $white;
-        text-decoration: none;
-        padding: 10px;
-    }
+.dropdown-item {
+    display: block;
+    color: $white;
+    text-decoration: none;
+    padding: 10px;
+}
 
-    .dropdown-item:hover {
-        background-color: #555;
-    }
+.dropdown-item:hover {
+    background-color: #555;
 }

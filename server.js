@@ -338,7 +338,7 @@ app.get('/api/tracks/:trackId', function(req, res) {
           // Calculate compatibility of each playlist with the track features
           let playlists = req.session.playlists.slice();
           playlists.forEach((playlist) => {
-            const compatibility = calculateCompatibility(normalizedFeatures, playlist.features);
+            const compatibility = calculateCompatibility(features, playlist.features);
             playlist.compatibility = compatibility;
           });
 
@@ -708,9 +708,16 @@ function findBestFitPlaylist(playlist, playlists) {
     });
     if (bestFitPlaylist.name == playlist.name || song.current_compatibility == maxCompatibility) {
       song.shouldMove = false;
+      song.warning = false;
     }
     else {
       song.shouldMove = true;
+      if ((maxCompatibility - song.current_compatibility) > 20 ) {
+        song.warning = true;
+      }
+      else {
+        song.warning = false;
+      }
     }
     song.best_fit = bestFitPlaylist;
     song.max_compatibility = maxCompatibility;

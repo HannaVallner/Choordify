@@ -56,12 +56,17 @@
 .playlist-feature {
     width: 50px;
     text-align: center;
+    opacity: 0.7;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.playlist-feature:hover {
+    opacity: 1;
 }
 
 .feature-label {
     position: relative;
     font-size: 0.7rem;
-    opacity: 0.8;
     left: 50%;
     top: 0;
     margin-bottom: 5px;
@@ -74,10 +79,9 @@
 }
 
 .bar-container {
-    width: 8px;
+    width: 10px;
     height: 80px; 
     background-color: $white;
-    opacity: 0.6;
     vertical-align: bottom; 
     position: absolute;
     top: 30px;
@@ -130,7 +134,7 @@
 }
 
 .track.open-dropdown {
-    margin-bottom: 150px;
+    margin-bottom: 110px;
     background-color: #484444;
 }
 
@@ -163,8 +167,27 @@
     font-size: 0.8rem;
     opacity: 0.7;
     bottom: 45px;
-    left: 340px;
+    left: 32px;
     position: absolute;
+}
+
+.bestfit-text {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    bottom: 45px;
+    left: 320px;
+    position: absolute;
+}
+
+.bestfit-bar {
+    height: 20px;
+    background-color: #4a4a4a; 
+    border: 1px solid #7e7e7e;
+    width: 200px;
+    position: absolute;
+    border-radius: 10px; 
+    bottom: 30px;
+    left: 300px;
 }
 
 .compatibility-bar {
@@ -175,7 +198,7 @@
     position: absolute;
     border-radius: 10px; 
     bottom: 30px;
-    left: 300px;
+    left: 30px;
 }
 
 .compatibility-filled {
@@ -207,6 +230,7 @@
     color: $white;
     text-decoration: none;
 }
+
 .warning:hover {
     opacity: 1;
 }
@@ -253,9 +277,8 @@
 
 .dropdown.open {
     overflow: visible;
-    height: 145px;
+    height: 100px;
 }
-
 
 .dropdown-item {
     display: block;
@@ -265,8 +288,10 @@
 }
 
 .view-less {
-    align-self: flex-end;
-    margin-bottom: 10px;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
     opacity: 0.6;
     color: $white;
     text-decoration: none;

@@ -4,22 +4,32 @@
     <a routerLink="/home" class="back-link">
         <img src="assets/svg/back.svg" alt="Back"> 
     </a>
-    <ul class="playlists-container">
-        <li class="playlist" *ngFor="let playlist of playlists">   
-            <div class="playlist-content">
-                <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist Cover">
-                <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
-                <div class="playlist-details">
-                    <p class="playlist-name" [title]="playlist.name">{{ playlist.name.length > 25 ? playlist.name.slice(0, 25) + '...' : playlist.name }}</p>
-                    <p class="playlist-tracks"> {{ playlist.owner['display_name'] }} 
-                        <span class="dot">&bull;</span>  
-                        {{ playlist.tracks['total'] }} {{ playlist.tracks['total'] === 1 ? 'song' : 'songs' }}
-                    </p>
+    <div class="playlists">
+        <ul class="playlists-container" *ngIf="playlists.length > 0">
+            <li class="playlist-container" *ngFor="let playlist of playlists">   
+                <div class="playlist-content">
+                    <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist Cover">
+                    <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
+                    <div class="playlist-details">
+                        <p class="playlist-name" [title]="playlist.name">{{ playlist.name.length > 25 ? playlist.name.slice(0, 25) + '...' : playlist.name }}</p>
+                        <p class="playlist-tracks"> {{ playlist.owner['display_name'] }} 
+                            <span class="dot">&bull;</span>  
+                            {{ playlist.tracks['total'] }} {{ playlist.tracks['total'] === 1 ? 'song' : 'songs' }}
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <a routerLink="/playlist">
-                <button class="details-button" type="button" (click)="selectPlaylist(playlist)"> Analyze </button>
-            </a>
-        </li>
-    </ul>
+                <ul class="averages-container"> 
+                    <li class="playlist-feature" *ngFor="let keyValuePair of playlist.enlargedFeatures | keyvalue; let i = index">
+                        <p class="feature-label" [class.below]="i % 2 === 0">{{ keyValuePair.key }}</p>
+                        <div class="bar-container">
+                            <div class="bar" [style.height.%]="keyValuePair.value"></div>
+                        </div>
+                    </li>
+                </ul>
+                <a routerLink="/playlist">
+                    <button class="details-button" type="button" (click)="selectPlaylist(playlist)"> Analyze </button>
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>
