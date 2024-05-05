@@ -1,3 +1,10 @@
+$medium-grey: #353232;
+$dark-grey: #282626;
+$background-color: #191414;
+$main-green: #1db954;
+$secondary-green: #1ed760;
+$white: #fff;
+
 @font-face {
     font-family: 'Nunito-Bold';
     src: url('/assets/fonts/Nunito-ExtraBold.ttf') format('truetype');
@@ -13,8 +20,8 @@
 }
   
 body {
-    background-color: #191414;
-    color: #fff; 
+    background-color: $background-color;
+    color: $white; 
     font-family: 'Nunito-Light', sans-serif; 
 }
 
@@ -35,8 +42,8 @@ li {
 }
 
 button {
-  background-color: #1db954; 
-  color: #000; 
+  background-color: $main-green; 
+  color: $background-color; 
   padding: 10px 20px;
   border: none;
   border-radius: 20px;
@@ -49,7 +56,18 @@ button {
 }
 
 button:hover {
-    background-color: #1ed760;
+  background-color: $secondary-green;
+}
+
+.back-link {
+  margin-top: 20px;
+  opacity: 0.6;
+  color: $white;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  opacity: 1;
 }
 
 .loading-animation {
@@ -63,4 +81,8 @@ button:hover {
 
 .playlist-name {
   font-family: 'Nunito-Bold', sans-serif;
+}
+
+.dot {
+  margin: 0 5px;
 }

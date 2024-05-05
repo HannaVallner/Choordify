@@ -1,9 +1,10 @@
+@import '../../../styles.scss';
+
 .outer-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 97vh;
-    background-color: #191414; 
 }
 
 .search-input {
@@ -26,7 +27,7 @@ button {
 }
 
 .disabled-button {
-    background-color: #ccc;
+    opacity: 0.7;
     cursor: default;
     position: relative;
 }
@@ -40,9 +41,7 @@ button {
     font-size: 0.8rem;
     font-family: 'Nunito-Light', sans-serif;
     z-index: 9999; 
-    visibility: visible;
-    opacity: 1; 
-    transition: opacity 0.3s ease-in-out; 
+    visibility: visible; 
     top: calc(100% + 10px); 
     left: 50%; 
     transform: translateX(-50%); 

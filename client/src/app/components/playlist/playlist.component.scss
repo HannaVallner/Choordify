@@ -1,5 +1,7 @@
+@import '../../../styles.scss';
+
 .outer-container {
-    background-color: #353232;
+    background-color: $medium-grey;
     height: 82vh;
     width: 1000px;
     position: absolute;
@@ -17,17 +19,6 @@
     margin-top: 30px;
     display: flex;
     align-items: center;
-}
-
-
-.nav-link {
-    opacity: 0.6;
-    color: #fff;
-    text-decoration: none;
-}
-
-.nav-link:hover {
-    opacity: 1;
 }
 
 .playlist-cover {
@@ -53,13 +44,58 @@
     font-size: 0.8rem;
 }
 
+.averages-container {
+    left: 600px;
+    top: 0;
+    position: absolute;
+    list-style: none;
+    padding: 0;
+    display: flex;
+}
+
+.playlist-feature {
+    width: 50px;
+    text-align: center;
+}
+
+.feature-label {
+    position: relative;
+    font-size: 0.7rem;
+    opacity: 0.8;
+    left: 50%;
+    top: 0;
+    margin-bottom: 5px;
+    transform: translateX(-95%);
+}
+
+.feature-label.below {
+    position: relative;
+    top: calc(100% + 70px);
+}
+
+.bar-container {
+    width: 8px;
+    height: 80px; 
+    background-color: $white;
+    opacity: 0.6;
+    vertical-align: bottom; 
+    position: absolute;
+    top: 30px;
+}
+
+.bar {
+    width: 100%;
+    background-color: $main-green; 
+    position: absolute;
+    bottom: 0;
+}
 
 
 .tracks-container {
     margin-left: 100px;
     padding-top: 10px;
-    width: 800px;
-    max-height: 55vh;
+    width: 850px;
+    max-height: 50vh;
     overflow-y: auto;
 }
 
@@ -82,7 +118,7 @@
 
 .track {
     display: flex;
-    background-color: #282626;
+    background-color: $dark-grey;
     height: 45px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -162,15 +198,41 @@
     color: #303030; 
 }
 
+.warning {
+    position: absolute;
+    bottom: 10;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 1;
+    color: $white;
+    text-decoration: none;
+}
+.warning:hover {
+    opacity: 1;
+}
+
 .view-more {
-    margin-bottom: 0; 
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
     opacity: 0.6;
-    color: #fff;
+    color: $white;
     text-decoration: none;
 }
 
 .view-more:hover {
     opacity: 1;
+}
+
+.remove-button {
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    width: auto;
+    height: 30px;
+    text-align: center;
+    line-height: 0;
 }
 
 .dropdown {
@@ -197,7 +259,7 @@
 
 .dropdown-item {
     display: block;
-    color: #fff;
+    color: $white;
     text-decoration: none;
     padding: 10px;
 }
@@ -206,7 +268,7 @@
     align-self: flex-end;
     margin-bottom: 10px;
     opacity: 0.6;
-    color: #fff;
+    color: $white;
     text-decoration: none;
 }
 

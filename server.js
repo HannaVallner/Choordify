@@ -214,9 +214,9 @@ app.get('/api/playlists/:token', function(req, res) {
             // Calculate average features for each playlist
               const playlistsWithAverages = playlists.map((playlist, index) => {
               const trackFeatures = playlistTracksFeatures[index];
-              const averageFeatures = calculatePlaylistAverages(trackFeatures);
-              const normalizedAverages = normalizeFeatures(averageFeatures);
-              playlist.features = normalizedAverages;
+              const { averageFeatures, enlargedFeatures } = calculatePlaylistAverages(trackFeatures);
+              playlist.features = averageFeatures;
+              playlist.enlargedFeatures = enlargedFeatures;
               return playlist;
             });
 
@@ -332,11 +332,8 @@ app.get('/api/tracks/:trackId', function(req, res) {
         if (!featuresError && featuresResponse.statusCode === 200) {
           let features = JSON.parse(featuresBody);
 
-          // Normalize features and remove unnecessary ones
-          const normalizedFeatures = normalizeFeatures(features);
-          
           // Attach the normalized features to the track object
-          track.features = normalizedFeatures;
+          track.features = features;
 
           // Calculate compatibility of each playlist with the track features
           let playlists = req.session.playlists.slice();
@@ -498,12 +495,13 @@ app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
             // Attach the newly added track to the songs
             updatedPlaylist.songs.push(req.session.track);
             // Recalculate average features for the updated playlist
-            const updatedPlaylistFeatures = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
+            const { updatedPlaylistFeatures, enlargedFeatures } = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
             // Recalculate compatibility with the track
             const track = req.session.track;
             updatedPlaylist.compatibility = calculateCompatibility(track.features, updatedPlaylistFeatures);
             // Update the playlist's average features in the session
             updatedPlaylist.features = updatedPlaylistFeatures;
+            updatedPlaylist.enlargedFeatures = enlargedFeatures;
             // Update the playlist data in the session
             req.session.playlists[playlistIndex] = updatedPlaylist;
             req.session.comp_playlists[comp_playlistIndex] = updatedPlaylist;
@@ -557,7 +555,9 @@ app.delete('/api/playlists/:playlistId/remove-tracks', function(req, res) {
             const updatedSongs = originalPlaylist.songs.filter(song => song.uri !== trackURI);
             updatedPlaylist.songs = updatedSongs;
             // Recalculate average features for the updated playlist
-            updatedPlaylist.features = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
+            const { averageFeatures, enlargedFeatures } = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
+            updatedPlaylist.features = averageFeatures;
+            updatedPlaylist.enlargedFeatures = enlargedFeatures;
             // Update the playlist data in the session
             req.session.playlists[playlistIndex] = updatedPlaylist;
             req.session.playlist = updatedPlaylist;
@@ -616,7 +616,9 @@ app.post('/api/playlists/:playlistId/add-track', function(req, res) {
             // Attach the newly added track to the songs property
             updatedPlaylist.songs.push(track);
             // Recalculate average features for the updated playlist
-            updatedPlaylist.features = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
+            const { averageFeatures, enlargedFeatures } = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
+            updatedPlaylist.features = averageFeatures;
+            updatedPlaylist.enlargedFeatures = enlargedFeatures;
             // Update the playlist data in the session
             req.session.playlists[playlistIndex] = updatedPlaylist;
             if (req.session.comp_playlists) {
@@ -676,7 +678,7 @@ function calculateCompatibility(trackFeatures, playlistAverages) {
   for (const feature of Object.keys(trackFeatures)) {
     // Check if the feature is not filtered out
     if (!['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms', 'key', 'loudness', 
-        'tempo', 'time_signature'].includes(feature)) {
+        'tempo', 'time_signature', 'mode'].includes(feature)) {
       sum += Math.pow(trackFeatures[feature] - playlistAverages[feature], 2);
       count++; 
     }
@@ -704,6 +706,12 @@ function findBestFitPlaylist(playlist, playlists) {
         song.current_compatibility = compatibility;
       }
     });
+    if (bestFitPlaylist.name == playlist.name || song.current_compatibility == maxCompatibility) {
+      song.shouldMove = false;
+    }
+    else {
+      song.shouldMove = true;
+    }
     song.best_fit = bestFitPlaylist;
     song.max_compatibility = maxCompatibility;
   });
@@ -714,51 +722,28 @@ function findBestFitPlaylist(playlist, playlists) {
 function calculatePlaylistAverages(trackFeatures) {
   const totalTracks = trackFeatures.length;
   const averageFeatures = {};
-  const excludedFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms']; // Define features to exclude
+  const enlargedFeatures = {};
+  const excludedFeatures = ['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms', 'key', 'loudness', 
+  'tempo', 'time_signature', 'mode']; 
 
   trackFeatures.forEach((track) => {
     for (const key in track) {
-      if (track.hasOwnProperty(key) && !excludedFeatures.includes(key)) { // Check if the feature should be excluded
+      if (track.hasOwnProperty(key) && !excludedFeatures.includes(key)) { 
         averageFeatures[key] = (averageFeatures[key] || 0) + track[key];
+        enlargedFeatures[key] = averageFeatures[key] * 100;
       }
     }
   });
-
   for (const key in averageFeatures) {
     if (averageFeatures.hasOwnProperty(key)) {
       averageFeatures[key] /= totalTracks;
+      enlargedFeatures[key] /= totalTracks;
     }
   }
-
-  return averageFeatures;
+  return {averageFeatures, enlargedFeatures};
 }
 
-// Function to normalize features
-function normalizeFeatures(features) {
-  const normalizedFeatures = {};
-  const minMaxValues = {
-    "acousticness": [0, 1],
-    "danceability": [0, 1],
-    "energy": [0, 1],
-    "instrumentalness": [0, 1],
-    "key": [-1, 11],
-    "liveness": [0, 1],
-    "loudness": [-60, 0],
-    "mode": [0, 1],
-    "speechiness": [0, 1],
-    "tempo": [70, 169],
-    "time_signature": [3, 7],
-    "valence": [0, 1]
-  };
-  for (const feature in minMaxValues) {
-    if (features.hasOwnProperty(feature)) {
-      const value = features[feature];
-      const [min, max] = minMaxValues[feature];
-      normalizedFeatures[feature] = (value - min) / (max - min);
-    }
-  }
-  return normalizedFeatures;
-}
+
 
 /* 
 
@@ -777,6 +762,28 @@ function filterFeatures(trackFeatures) {
     return filteredTrack;
   });
   return filteredTrackFeatures;
+}
+
+// Function to normalize features
+function normalizeFeatures(features) {
+  const normalizedFeatures = {};
+  const minMaxValues = {
+    "acousticness": [0, 1],
+    "danceability": [0, 1],
+    "energy": [0, 1],
+    "instrumentalness": [0, 1],
+    "liveness": [0, 1],
+    "speechiness": [0, 1],
+    "valence": [0, 1]
+  };
+  for (const feature in minMaxValues) {
+    if (features.hasOwnProperty(feature)) {
+      const value = features[feature];
+      const [min, max] = minMaxValues[feature];
+      normalizedFeatures[feature] = (value - min) / (max - min);
+    }
+  }
+  return normalizedFeatures;
 }
 */
 

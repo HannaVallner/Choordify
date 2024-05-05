@@ -1,3 +1,5 @@
+@import '../../../styles.scss';
+
 .navbar {
     position: fixed;
     top: 0;
@@ -12,7 +14,7 @@
     .navbar-brand {
         font-size: 2rem;
         text-decoration: none;
-        color: #fff;
+        color: $white;
         font-family: 'Nunito-Bold', sans-serif;
         margin-left: 15px;
     }
@@ -27,13 +29,13 @@
     .nav-link {
         margin-right: 25px;
         opacity: 0.6;
-        color: #fff;
+        color: $white;
         text-decoration: none;
     }
 
     .nav-link:hover {
         opacity: 1;
-        border-bottom: 4px solid #fff;
+        border-bottom: 4px solid $white;
 
     }
 
@@ -60,7 +62,7 @@
 
     .profile p {
         margin-left: 10px;
-        color: #fff;
+        color: $white;
         cursor: pointer;
     }
 
@@ -78,7 +80,7 @@
 
     .dropdown-item {
         display: block;
-        color: #fff;
+        color: $white;
         text-decoration: none;
         padding: 10px;
     }

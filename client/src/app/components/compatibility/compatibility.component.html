@@ -2,7 +2,7 @@
 <app-loading *ngIf="playlists.length === 0 || !track"></app-loading>
 <div class="outer-container">
     <div class="left-container">
-        <a routerLink="/add" class="nav-link">
+        <a routerLink="/add" class="back-link">
             <img src="assets/svg/back.svg" alt="Back"> 
         </a>
         <div class="track-info-container">
@@ -10,8 +10,13 @@
                 <img class="track-cover" *ngIf="track.album && track.album.images && track.album.images.length > 0"
                     [src]="track.album.images[0].url" 
                     alt="Track cover">
-                <p class="track-title"> {{ track.name }} </p>
-                <p class="track-details"> {{ track.artists[0]['name']}} <span class="dot">&bull;</span> {{ track.album.name }} </p>
+                <p class="track-title" [title]="track.name"> {{ track.name.length > 23 ? track.name.slice(0, 23) + '...' : track.name }} </p>
+
+                <p class="track-details" [title]="track.artists[0]['name'] + ': ' + track.album.name"> 
+                    {{ track.artists[0]['name'].length > 18 ? track.artists[0]['name'].slice(0, 18) + '...' : track.artists[0]['name']}} 
+                    <span class="dot">&bull;</span> 
+                    {{ track.album.name.length > 25 ? track.album.name.slice(0, 25) + '...' : track.album.name }} 
+                </p>
                 <ul class="track-features" *ngIf="track.displayFeatures">
                     <li class="track-feature" *ngFor="let keyValuePair of track.features | keyvalue">
                         <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
@@ -38,7 +43,11 @@
                     <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
                     <div class="playlist-details">
                         <p class="playlist-name" [title]="playlist.name">{{ playlist.name.length > 25 ? playlist.name.slice(0, 25) + '...' : playlist.name }}</p>
-                        <p class="playlist-tracks">{{ playlist.tracks["total"] }} songs </p>
+                        <p class="playlist-tracks">
+                            {{ playlist.owner['display_name'] }} 
+                            <span class="dot">&bull;</span>  
+                            {{ playlist.tracks["total"] }} {{ playlist.tracks['total'] === 1 ? 'song' : 'songs' }} 
+                        </p>
                     </div>
                 </div>
                 <p class="compatibility-text">Compatibility with track </p>

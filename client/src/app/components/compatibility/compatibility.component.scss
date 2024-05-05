@@ -1,3 +1,5 @@
+@import '../../../styles.scss';
+
 .outer-container {
     background-color: #353232;
     height: 82vh;
@@ -17,17 +19,6 @@
     margin-top: 20px;
     display: flex; 
     align-items: top;
-}
-
-.nav-link {
-    margin-top: 25px;
-    opacity: 0.6;
-    color: #fff;
-    text-decoration: none;
-}
-
-.nav-link:hover {
-    opacity: 1;
 }
 
 .track-info-container {
@@ -121,7 +112,7 @@
 
 .playlist-container {
     align-items: center; 
-    background-color: #282626;
+    background-color: $dark-grey;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 10px;
@@ -134,10 +125,6 @@
 .playlist-container:hover {
     transform: translateY(-5px);
     background-color: #484444;
-}
-
-.dot {
-    margin: 0 7px;
 }
 
 .compatibility-text {

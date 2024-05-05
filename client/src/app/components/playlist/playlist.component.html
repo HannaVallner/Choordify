@@ -2,7 +2,7 @@
 <app-loading *ngIf="!playlist"></app-loading>
 <div class="outer-container" *ngIf="playlist">
     <div class="upper-container">
-        <a routerLink="/sort" class="nav-link">
+        <a routerLink="/sort" class="back-link">
             <img src="assets/svg/back.svg" alt="Back"> 
         </a>
         <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist Cover">
@@ -10,8 +10,19 @@
         <div class="playlist-details">
             <p class="playlist-tracks"*ngIf="playlist.public">Public Playlist</p>
             <p class="playlist-tracks"*ngIf="!playlist.public">Private Playlist</p>
-            <p class="playlist-name">{{ playlist.name }}</p>
-            <p class="playlist-tracks"> {{ playlist.owner['display_name'] }} &bull; {{ playlist.tracks['total'] }} songs </p>
+            <p class="playlist-name" [title]="playlist.name">{{ playlist.name.length > 25 ? playlist.name.slice(0, 25) + '...' : playlist.name }}</p>
+            <p class="playlist-tracks"> 
+                {{ playlist.owner['display_name'] }} <span class="dot">&bull;</span>  
+                {{ playlist.tracks['total'] }} {{ playlist.tracks['total'] === 1 ? 'song' : 'songs' }}
+            </p>
+            <ul class="averages-container"> 
+                <li class="playlist-feature" *ngFor="let keyValuePair of playlist.enlargedFeatures | keyvalue; let i = index">
+                    <p class="feature-label" [class.below]="i % 2 === 0">{{ keyValuePair.key }}</p>
+                    <div class="bar-container">
+                        <div class="bar" [style.height.%]="keyValuePair.value"></div>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
     <ul class="tracks-container" *ngIf="playlist.songs">
@@ -19,25 +30,38 @@
             <img class="track-cover" *ngIf="song.album && song.album.images && song.album.images.length > 0"
                 [src]="song.album.images[0].url" alt="Track cover">
             <div class="track-details">
-                <p class="track-title"> {{ song.name > 30 ? song.name.slice(0, 30) + '...' : song.name}} </p>
-                <p class="track-artist"> {{ song.artists[0]['name']}} </p>
+                <p class="track-title" [title]="song.name"> {{ song.name.length > 23 ? song.name.slice(0, 23) + '...' : song.name }} </p>
+                <p class="track-artist" [title]="song.artists[0]['name'] + ': ' + song.album.name"> 
+                    {{ song.artists[0]['name'].length > 18 ? song.artists[0]['name'].slice(0, 18) + '...' : song.artists[0]['name'] }} 
+                    <span class="dot">&bull;</span> 
+                    {{ song.album.name.length > 25 ? song.album.name.slice(0, 25) + '...' : song.album.name }}
+                </p>
             </div>
-            <p class="compatibility-text">Compatibility with playlist: </p>
-            <div class="compatibility-bar">
-                <div class="compatibility-filled" [style.width.%]="song.current_compatibility"></div>
-                <span class="compatibility-percentage">{{ song.current_compatibility }}%</span>
-                <button type="button" (click)="removeFromPlaylist(song)">Remove</button>
+            <div *ngIf="song.shouldMove" class="warning"> 
+                <img src="assets/svg/warning.svg" alt="Warning"> 
             </div>
             <div class="view-more">
                 <img *ngIf="!song.more" src="assets/svg/more.svg" alt="More" (click)="toggleDropdown(song)"> 
             </div>
+            <button *ngIf="!song.removing" type="button" class="remove-button" (click)="removeFromPlaylist(song)">Remove</button>
+            <p *ngIf="song.removing">Removing from playlist...</p>
             <div class="dropdown" [ngClass]="{'open': song.more}">
-                <p> This song is best suited to playlist: {{ song.best_fit.name }}</p>
-                <p> {{ song.max_compatibility }}%</p>
-                <button type="button" (click)="changeTrackPlaylist(song)">Add to playlist</button>
-                <img class="view-less" src="assets/svg/less.svg" alt="Less" (click)="toggleDropdown(song)">
-                <div>
-                    
+                <p class="compatibility-text">Compatibility with current playlist: </p>
+                <div class="compatibility-bar">
+                    <div class="compatibility-filled" [style.width.%]="song.current_compatibility"></div>
+                    <span class="compatibility-percentage">{{ song.current_compatibility }}%</span>
+                </div>
+                <div *ngIf="song.shouldMove">
+                    <p>This song is best suited to playlist:</p>
+                    <p [title]="song.best_fit.name">  {{ song.best_fit.name.length > 25 ? song.best_fit.name.slice(0, 25) + '...' : song.best_fit.name }}</p>
+                    <p> {{ song.max_compatibility }}%</p>
+                    <button type="button" *ngIf="!song.loading" (click)="changeTrackPlaylist(song)">Move to playlist</button>
+                    <p *ngIf="song.loading">Adding to playlist...</p>
+                    <img class="view-less" src="assets/svg/less.svg" alt="Less" (click)="toggleDropdown(song)">
+                </div>
+                <div *ngIf="!song.shouldMove">
+                    <p>Song is already in best fit playlist!</p>
+                    <img class="view-less" src="assets/svg/less.svg" alt="Less" (click)="toggleDropdown(song)">
                 </div>
             </div>
         </li>

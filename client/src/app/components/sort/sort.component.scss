@@ -1,5 +1,7 @@
+@import '../../../styles.scss';
+
 .outer-container {
-    background-color: #353232;
+    background-color: $medium-grey;
     height: 82vh;
     width: 1000px;
     position: absolute;
@@ -38,7 +40,7 @@
 
 .playlist {
     display: flex;
-    background-color: #282626;
+    background-color: $dark-grey;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 10px;
@@ -80,7 +82,6 @@
     margin-top: 5px;
     font-size: 0.8rem;
 }
-
 
 .details-button {
     margin-left: auto;

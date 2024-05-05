@@ -1,3 +1,5 @@
+@import '../../../styles.scss';
+
 .outer-container {
     display: flex;
     justify-content: center;
@@ -11,7 +13,7 @@
 
 .app-name {
     font-size: 1.5rem;
-    color: #1db954; 
+    color: $main-green; 
 }
 
 
@@ -21,5 +23,5 @@
 }
 
 .intro-text strong {
-    color: #1db954; 
+    color: $main-green; 
 }

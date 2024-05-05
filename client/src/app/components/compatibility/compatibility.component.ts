@@ -76,6 +76,7 @@ export class CompatibilityComponent implements OnInit {
         // Update the playlists array with the updated playlist data
         this.spotify.getCompPlaylists().subscribe((response: any) => {
           this.playlists = response;
+          this.input = '';
           this.creatingPlaylist = false;
         });
     });
