@@ -1,8 +1,10 @@
 <app-navbar></app-navbar>
 <div class="outer-container">
-    <a routerLink="/home" class="back-link">
-        <img src="assets/svg/back.svg" alt="Back"> 
-    </a>
+    <div class="upper-container">
+        <a routerLink="/home" class="back-link">
+            <img src="assets/svg/back.svg" alt="Back"> 
+        </a>
+    </div>
     <div class="inner-container">
         <form>
             <input type="text" placeholder="Search for a track" [(ngModel)]="input" name="input" 

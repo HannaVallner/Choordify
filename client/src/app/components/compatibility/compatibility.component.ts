@@ -38,6 +38,7 @@ export class CompatibilityComponent implements OnInit {
     // Get selected track and its features (normalized and filtered)
     this.spotify.getStoredTrack().subscribe((response: any) => {
       this.track = response;
+      console.log(this.track.features);
     });
 
     // Get userID (needed for adding a new playlist)

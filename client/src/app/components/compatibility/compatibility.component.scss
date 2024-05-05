@@ -85,8 +85,8 @@
 }
 
 .playlist-cover {
-    width: 80px; 
-    height: 80px;
+    width: 70px; 
+    height: 70px;
     margin-right: 20px;
 }
 
@@ -166,6 +166,11 @@
     color: #303030; 
 }
 
+.loading-text {
+    position: absolute;
+    bottom: 0;
+    right: 5px;
+}
 
 .playlist-button {
     position: absolute;
@@ -183,7 +188,7 @@
     left: 10px;
 }
 
-.input-container p {
+.input-text {
     font-size: 1.1rem;
     opacity: 0.8;
     margin-bottom: 25px;

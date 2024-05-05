@@ -44,7 +44,7 @@
                 <img *ngIf="!song.more" src="assets/svg/more.svg" alt="More" (click)="toggleDropdown(song)"> 
             </div>
             <button *ngIf="!song.removing" type="button" class="remove-button" (click)="removeFromPlaylist(song)">Remove</button>
-            <p *ngIf="song.removing">Removing from playlist...</p>
+            <p *ngIf="song.removing" class="loading-text">Removing from playlist...</p>
             <div class="dropdown" [ngClass]="{'open': song.more}">
                 <p class="compatibility-text">Compatibility with current playlist: </p>
                 <div class="compatibility-bar">
@@ -59,7 +59,7 @@
                             <span class="compatibility-percentage">{{ song.current_compatibility }}%</span>
                         </div>
                     <button type="button" class="remove-button" *ngIf="!song.loading" (click)="changeTrackPlaylist(song)">Move to playlist</button>
-                    <p *ngIf="song.loading">Adding to playlist...</p>
+                    <p *ngIf="song.loading" class="loading-text">Moving to playlist...</p>
                     <img class="view-less" src="assets/svg/less.svg" alt="Less" (click)="toggleDropdown(song)">
                 </div>
                 <div *ngIf="!song.shouldMove">
