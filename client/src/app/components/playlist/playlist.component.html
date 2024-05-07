@@ -20,6 +20,7 @@
                     <p class="feature-label" [class.below]="i % 2 === 0">{{ keyValuePair.key }}</p>
                     <div class="bar-container">
                         <div class="bar" [style.height.%]="keyValuePair.value"></div>
+                        <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
                     </div>
                 </li>
             </ul>
@@ -36,6 +37,11 @@
                     <span class="dot">&bull;</span> 
                     {{ song.album.name.length > 25 ? song.album.name.slice(0, 25) + '...' : song.album.name }}
                 </p>
+                <p class="compatibility-text">Compatibility with current playlist: </p>
+                <div class="compatibility-bar">
+                    <div class="compatibility-filled" [style.width.%]="song.current_compatibility"></div>
+                    <span class="compatibility-percentage">{{ song.current_compatibility }}%</span>
+                </div>
             </div>
             <div *ngIf="song.warning && !song.more" class="warning"> 
                 <img src="assets/svg/warning.svg" alt="Warning"> 
@@ -46,24 +52,23 @@
             <button *ngIf="!song.removing" type="button" class="remove-button" (click)="removeFromPlaylist(song)">Remove</button>
             <p *ngIf="song.removing" class="loading-text">Removing from playlist...</p>
             <div class="dropdown" [ngClass]="{'open': song.more}">
-                <p class="compatibility-text">Compatibility with current playlist: </p>
-                <div class="compatibility-bar">
-                    <div class="compatibility-filled" [style.width.%]="song.current_compatibility"></div>
-                    <span class="compatibility-percentage">{{ song.current_compatibility }}%</span>
-                </div>
                 <div *ngIf="song.shouldMove">
-                    <p class="bestfit-text" [title]="song.best_fit.name">This song is best suited to playlist 
-                        {{ song.best_fit.name.length > 25 ? song.best_fit.name.slice(0, 25) + '...' : song.best_fit.name }}:</p>
-                        <div class="bestfit-bar">
-                            <div class="compatibility-filled" [style.width.%]="song.current_compatibility"></div>
-                            <span class="compatibility-percentage">{{ song.current_compatibility }}%</span>
-                        </div>
+                    <p class="info-text"> This song is best suited to playlist 
+                        <span>{{ song.best_fit.name.length > 25 ? song.best_fit.name.slice(0, 25) + '...' : song.best_fit.name }}</span>. <br>
+                        However, you can still keep it here if you'd like!
+                    </p>
+                    <p class="bestfit-text" [title]="song.best_fit.name"> Compatibility with  
+                    <span> {{ song.best_fit.name.length > 25 ? song.best_fit.name.slice(0, 25) + '...' : song.best_fit.name }}</span>:</p>
+                    <div class="bestfit-bar">
+                        <div class="compatibility-filled" [style.width.%]="song.max_compatibility"></div>
+                        <span class="compatibility-percentage">{{ song.max_compatibility }}%</span>
+                    </div>
                     <button type="button" class="remove-button" *ngIf="!song.loading" (click)="changeTrackPlaylist(song)">Move to playlist</button>
                     <p *ngIf="song.loading" class="loading-text">Moving to playlist...</p>
                     <img class="view-less" src="assets/svg/less.svg" alt="Less" (click)="toggleDropdown(song)">
                 </div>
                 <div *ngIf="!song.shouldMove">
-                    <p>Song is already in best fit playlist!</p>
+                    <p>Well done! This song has already found its perfect match from your playlists!</p>
                     <img class="view-less" src="assets/svg/less.svg" alt="Less" (click)="toggleDropdown(song)">
                 </div>
             </div>

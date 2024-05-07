@@ -1,5 +1,8 @@
 <nav class="navbar">
-    <a routerLink="/home" class="navbar-brand">Choordify</a>
+    <a routerLink="/home" class="navbar-brand">
+        <img src="favicon.ico" alt="Favicon">
+        Choordify
+    </a>
     <div class="nav-items">
         <a href="https://open.spotify.com" target="_blank" rel="noopener" class="spotify-link">
             <button type="button" class="spotify-button"> OPEN SPOTIFY
@@ -7,10 +10,10 @@
             </button>
         </a>
 
-        <a routerLink="/home" class="nav-link">
+        <a routerLink="/home" class="nav-link" title="Home">
             <img src="assets/svg/home.svg" alt="Home">
         </a>
-        <a routerLink="/about" class="nav-link">
+        <a routerLink="/about" class="nav-link" title="About">
             <img src="assets/svg/about.svg" alt="About">
         </a>
         <div *ngIf="display_name" class="profile" (click)="toggleDropdown()">

@@ -745,8 +745,11 @@ function calculatePlaylistAverages(trackFeatures) {
     if (averageFeatures.hasOwnProperty(key)) {
       averageFeatures[key] /= totalTracks;
       enlargedFeatures[key] /= totalTracks;
+      const valueString = enlargedFeatures[key].toString(); 
+      enlargedFeatures[key] = valueString.substring(0, 5);
     }
   }
+
   return {averageFeatures, enlargedFeatures};
 }
 

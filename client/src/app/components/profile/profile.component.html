@@ -2,9 +2,6 @@
 <app-loading *ngIf="!playLists || !userInfo"></app-loading>
 <div *ngIf="userInfo" class="outer-container">
     <div class="user-details">
-        <a routerLink="/home" class="back-link">
-            <img src="assets/svg/back.svg" alt="Back"> 
-        </a>
         <div class="image-container">
             <img *ngIf="userInfo.images" src="{{ userInfo.images[1].url }}" alt="Profile Picture" class="profile-picture">
         </div>

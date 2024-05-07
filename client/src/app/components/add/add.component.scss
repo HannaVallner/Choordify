@@ -7,7 +7,13 @@
     height: 97vh;
 }
 
+.instructions {
+    font-size: 1.2rem;
+}
 
+span {
+    font-family: 'Nunito-Bold', sans-serif;
+}
 
 .search-input {
     width: 400px;
@@ -20,7 +26,7 @@
 }
 
 form {
-    margin-top: 50px;
+    margin-top: 30px;
     position: relative;
 }
 
@@ -37,7 +43,7 @@ button {
 .disabled-button:hover:before {
     content: "Please select a track first"; 
     position: absolute;
-    background-color: white;
+    background-color: $white;
     border-radius: 5px;
     padding: 10px 15px;
     font-size: 0.8rem;
@@ -53,8 +59,9 @@ button {
 .dropdown {
     margin-top: 5px;
     position: absolute;
-    background-color: #464343;
-    border: 1px solid #848181;
+    left: 340px;
+    background-color: $dark-grey;
+    border: 1px solid $medium-grey;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-height: 200px; 
@@ -90,5 +97,5 @@ li {
 }
 
 li:hover {
-    background-color: #bdb9b9;
+    background-color: $medium-grey;
 }

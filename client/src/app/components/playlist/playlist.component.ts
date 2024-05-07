@@ -24,7 +24,9 @@ export class PlaylistComponent implements OnInit {
     // Retrieve the chosen playlist
     this.spotify.getStoredPlaylist().subscribe((response: any) => {
       this.playlist = response;
-      console.log(this.playlist);
+      this.playlist.songs.forEach((song:any) => {
+        console.log(song.current_compatibility);
+      });
     });
   }
 
@@ -47,7 +49,9 @@ export class PlaylistComponent implements OnInit {
   }
 
   removeFromPlaylist(track: any) {
-    track.removing = true;
+    if (!track.loading) {
+      track.removing = true;
+    }
     this.spotify.removePlaylistTracks(this.token, this.playlist.id, track.uri).subscribe((response: any) => {
       this.playlist = response;  
       track.removing = false;

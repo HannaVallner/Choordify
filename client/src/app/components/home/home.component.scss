@@ -1,26 +1,57 @@
 @import '../../../styles.scss';
 
+span {
+    font-family: 'Nunito-Bold', sans-serif;
+}
+
 .outer-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 97vh;
-    background-color: #191414; 
 }
 
 .inner-container {
     display: flex;
-    justify-content: space-between; 
+    max-width: 800px;
+    width: 100%;
 }
 
 .button-wrapper {
     text-align: center;
-    display: flex;
-    flex-direction: column; 
-    margin: 80px;
+    margin: 20px;
 }
 
-button {
+.organize-button {
+    bottom: 150px;
+    left: 300px;
+    position: absolute;
     width: 200px;
+    font-size: 16px;
 }
 
+.add-button {
+    bottom: 150px;
+    right: 300px;
+    position: absolute;
+    width: 200px;
+    font-size: 16px;
+}
+
+.add-instructions {
+    bottom: 195px;
+    right: 230px;
+    position: absolute;
+    font-size: 18px;
+    width: 350px;
+    line-height: 2;
+}
+
+.organize-instructions {
+    position: absolute;
+    bottom: 195px;
+    left: 240px;
+    font-size: 18px;
+    width: 350px;
+    line-height: 2;
+}

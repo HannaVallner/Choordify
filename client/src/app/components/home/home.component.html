@@ -1,16 +1,16 @@
 <app-navbar></app-navbar>
-
 <div class="outer-container">
     <div class="inner-container">
-        <div class="button-wrapper">
-            <p> Rearrange tracks in your existing playlists</p>
-            <a routerLink="/sort"
-            ><button type="button"> Sort playlists </button></a>
-        </div>
-        <div class="button-wrapper">
-            <p>Get recommendations upon adding a new track</p>
-            <a routerLink="/add"
-            ><button type="button"> Add new song </button></a>
-        </div>
+        <p class="organize-instructions">Feel like your playlists are lacking flow or cohesion? <br> 
+            <span> Optimize your playlists </span> by rearranging tracks for an enhanced listening experience</p>
+        <a routerLink="/sort">
+            <button type="button" class="organize-button">Organize playlists</button>
+        </a>
+    
+        <p class="add-instructions">Discovered a new favorite <span>song</span>, but unsure where to add it?<br>   
+            Receive tailored recommendations, ensuring it <span>finds its perfect playlist </span> </p>
+        <a routerLink="/add">
+            <button type="button" class="add-button">Add new song</button>
+        </a>
     </div>
 </div>

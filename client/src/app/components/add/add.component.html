@@ -1,11 +1,7 @@
 <app-navbar></app-navbar>
 <div class="outer-container">
-    <div class="upper-container">
-        <a routerLink="/home" class="back-link">
-            <img src="assets/svg/back.svg" alt="Back"> 
-        </a>
-    </div>
     <div class="inner-container">
+        <p class="instructions">To find your desired song, simply enter its <span>title or artist's name</span> in the field below</p>
         <form>
             <input type="text" placeholder="Search for a track" [(ngModel)]="input" name="input" 
             class="search-input" (input)="onInput($event)" autocomplete="off">

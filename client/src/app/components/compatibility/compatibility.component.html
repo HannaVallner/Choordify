@@ -11,17 +11,16 @@
                     [src]="track.album.images[0].url" 
                     alt="Track cover">
                 <p class="track-title" [title]="track.name"> {{ track.name.length > 23 ? track.name.slice(0, 23) + '...' : track.name }} </p>
-
                 <p class="track-details" [title]="track.artists[0]['name'] + ': ' + track.album.name"> 
                     {{ track.artists[0]['name'].length > 18 ? track.artists[0]['name'].slice(0, 18) + '...' : track.artists[0]['name']}} 
                     <span class="dot">&bull;</span> 
                     {{ track.album.name.length > 25 ? track.album.name.slice(0, 25) + '...' : track.album.name }} 
                 </p>
-                <ul class="track-features" *ngIf="track.displayFeatures">
-                    <li class="track-feature" *ngFor="let keyValuePair of track.features | keyvalue">
-                        <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
-                    </li>
-                </ul>
+                <a href="{{ track.external_urls.spotify }}" target="_blank" rel="noopener" class="spotify-link">
+                    <button type="button" class="spotify-button"> PLAY ON SPOTIFY
+                        <img class="spotify-img" src="assets/spotify.png" alt="Spotify">
+                    </button>
+                </a>    
             </div>
         </div>
         <div class="input-container">
@@ -50,7 +49,7 @@
                         </p>
                     </div>
                 </div>
-                <p class="compatibility-text">Compatibility with track </p>
+                <p class="track-text">Compatibility with track </p>
                 <div class="compatibility-bar">
                     <div class="compatibility-filled" [style.width.%]="playlist.compatibility"></div>
                     <span class="compatibility-percentage">{{ playlist.compatibility }}%</span>

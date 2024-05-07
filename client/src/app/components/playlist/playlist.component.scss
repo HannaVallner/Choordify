@@ -1,5 +1,10 @@
 @import '../../../styles.scss';
 
+
+span {
+    font-family: 'Nunito-Bold', sans-serif;
+}
+
 .outer-container {
     background-color: $medium-grey;
     height: 82vh;
@@ -45,7 +50,7 @@
 }
 
 .averages-container {
-    left: 600px;
+    left: 650px;
     top: 0;
     position: absolute;
     list-style: none;
@@ -57,7 +62,6 @@
     width: 50px;
     text-align: center;
     opacity: 0.7;
-    transition: opacity 0.3s ease-in-out;
 }
 
 .playlist-feature:hover {
@@ -79,6 +83,7 @@
 }
 
 .bar-container {
+    border-radius: 2px;
     width: 10px;
     height: 80px; 
     background-color: $white;
@@ -88,16 +93,37 @@
 }
 
 .bar {
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
     width: 100%;
     background-color: $main-green; 
     position: absolute;
     bottom: 0;
 }
 
+.bar-container:hover .bar-tooltip {
+    display: block; 
+}
+
+.bar-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 50%; 
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: $dark-grey; 
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 999;
+}
 
 .tracks-container {
     margin-left: 100px;
-    padding-top: 10px;
+    margin-top: 0;
+    padding-top: 5px;
     width: 850px;
     max-height: 50vh;
     overflow-y: auto;
@@ -163,19 +189,17 @@
     margin-top: 2px; 
 }
 
-.compatibility-text {
-    font-size: 0.8rem;
-    opacity: 0.7;
-    bottom: 45px;
-    left: 32px;
+.info-text {
     position: absolute;
+    line-height: 2;
+    left: 20px;
 }
 
 .bestfit-text {
     font-size: 0.8rem;
     opacity: 0.7;
-    bottom: 45px;
-    left: 320px;
+    bottom: 60px;
+    left: 510px;
     position: absolute;
 }
 
@@ -186,8 +210,16 @@
     width: 200px;
     position: absolute;
     border-radius: 10px; 
-    bottom: 30px;
-    left: 300px;
+    bottom: 49px;
+    left: 480px;
+}
+
+.compatibility-text {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    bottom: 25px;
+    right: 165px;
+    position: absolute;
 }
 
 .compatibility-bar {
@@ -197,8 +229,8 @@
     width: 200px;
     position: absolute;
     border-radius: 10px; 
-    bottom: 30px;
-    left: 30px;
+    bottom: 15px;
+    right: 160px;
 }
 
 .compatibility-filled {
@@ -257,8 +289,8 @@
 
 .remove-button {
     position: absolute;
-    bottom: 15px;
-    right: 20px;
+    bottom: 10px;
+    right: 10px;
     width: auto;
     height: 30px;
     text-align: center;
@@ -295,7 +327,7 @@
 
 .view-less {
     position: absolute;
-    bottom: 0;
+    bottom: 5px;
     left: 50%;
     transform: translateX(-50%);
     opacity: 0.6;

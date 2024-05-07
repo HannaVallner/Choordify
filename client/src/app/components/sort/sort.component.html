@@ -1,12 +1,10 @@
 <app-navbar></app-navbar>
 <app-loading *ngIf="playlists.length === 0"></app-loading>
 <div class="outer-container">
-    <a routerLink="/home" class="back-link">
-        <img src="assets/svg/back.svg" alt="Back"> 
-    </a>
+    <p class="instructions">Choose a <span>playlist </span> to fine-tune</p>
     <div class="playlists">
         <ul class="playlists-container" *ngIf="playlists.length > 0">
-            <li class="playlist-container" *ngFor="let playlist of playlists">   
+            <li class="playlist-container" *ngFor="let playlist of playlists; let i = index">   
                 <div class="playlist-content">
                     <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist Cover">
                     <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
@@ -18,14 +16,6 @@
                         </p>
                     </div>
                 </div>
-                <ul class="averages-container"> 
-                    <li class="playlist-feature" *ngFor="let keyValuePair of playlist.enlargedFeatures | keyvalue; let i = index">
-                        <p class="feature-label" [class.below]="i % 2 === 0">{{ keyValuePair.key }}</p>
-                        <div class="bar-container">
-                            <div class="bar" [style.height.%]="keyValuePair.value"></div>
-                        </div>
-                    </li>
-                </ul>
                 <a routerLink="/playlist">
                     <button class="details-button" type="button" (click)="selectPlaylist(playlist)"> Analyze </button>
                 </a>

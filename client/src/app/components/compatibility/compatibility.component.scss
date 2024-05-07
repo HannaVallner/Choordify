@@ -50,9 +50,16 @@
 
 }
 
-.track-features {
-    list-style: none;
+.spotify-button {
     font-size: 0.8rem;
+    width: 190px;
+    height: 40px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-left: 0;
 }
 
 .playlists-container {
@@ -125,6 +132,14 @@
 .playlist-container:hover {
     transform: translateY(-5px);
     background-color: #484444;
+}
+
+.track-text {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    top: 45px;
+    left: 340px;
+    position: absolute;
 }
 
 .compatibility-text {
