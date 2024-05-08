@@ -8,31 +8,45 @@
         <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist Cover">
         <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
         <div class="playlist-details">
-            <p class="playlist-tracks"*ngIf="playlist.public">Public Playlist</p>
-            <p class="playlist-tracks"*ngIf="!playlist.public">Private Playlist</p>
-            <p class="playlist-name" [title]="playlist.name">{{ playlist.name.length > 25 ? playlist.name.slice(0, 25) + '...' : playlist.name }}</p>
-            <p class="playlist-tracks"> 
-                {{ playlist.owner['display_name'] }} <span class="dot">&bull;</span>  
-                {{ playlist.tracks['total'] }} {{ playlist.tracks['total'] === 1 ? 'song' : 'songs' }}
-            </p>
+            <div class="playlist-info">
+                <p class="playlist-tracks"*ngIf="playlist.public">Public Playlist</p>
+                <p class="playlist-tracks"*ngIf="!playlist.public">Private Playlist</p>
+                <p class="playlist-name" [title]="playlist.name">{{ playlist.name.length > 25 ? playlist.name.slice(0, 25) + '...' : playlist.name }}</p>
+                <p class="playlist-tracks"> 
+                    {{ playlist.owner['display_name'] }} <span class="dot">&bull;</span>  
+                    {{ playlist.tracks['total'] }} {{ playlist.tracks['total'] === 1 ? 'song' : 'songs' }}
+                </p>
+            </div>
+            <p class="instructions"><span>Expand a song</span> to learn more</p> 
             <div class="colour-blocks">
-                <div class="bestfit-block"></div>
-                <div class="playlist-block"></div>
-                <div class="song-block"></div>
+                <div class="colour-block" title="Average features of current playlist" [class.hover]="hover_current" (mouseover)="hover_current = true" (mouseleave)="hover_current = false">
+                    <div class="playlist-colour colour"></div>
+                    <p>current playlist</p>
+                </div>
+                <div class="colour-block" title="Selected song's features" [class.hover]="hover_song" (mouseover)="hover_song = true" (mouseleave)="hover_song = false">
+                    <div class="song-colour colour"></div>
+                    <p>chosen song</p>
+                </div>
+                <div class="colour-block" title="Average features of recommended playlist" [class.hover]="hover_recommended" (mouseover)="hover_recommended = true" (mouseleave)="hover_recommended = false">
+                    <div class="bestfit-colour colour"></div>
+                    <p>recommended playlist</p>
+                </div>
             </div>
             <ul class="averages-container"> 
                 <li class="playlist-feature" *ngFor="let keyValuePair of playlist.enlargedFeatures | keyvalue; let i = index">
                     <p class="feature-label" [class.below]="i % 2 === 0">{{ keyValuePair.key }}</p>
-                    <div class="bar-container">
+                    <div class="bar-container" (mouseenter)="hover_current = true" (mouseleave)="hover_current = false" [class.hover]="hover_current">
                         <div class="bar" [style.height.%]="keyValuePair.value"></div>
                         <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
                     </div>
+                    <div class="empty-song-bar bar-container" [class.above]="selectedSong != null" (mouseover)="hover_song = true" (mouseleave)="hover_song = false"></div>
+                    <div class="empty-bestfit-bar bar-container" [class.above]="selectedSong!= null && selectedSong.best_fit.name != playlist.name"(mouseover)="hover_recommended = true" (mouseleave)="hover_recommended = false"></div>
                 </li>
             </ul>
             <div *ngIf="selectedSong != null">
                 <ul class="song-container"> 
                     <li class="playlist-feature" *ngFor="let keyValuePair of selectedSong.enlargedFeatures | keyvalue; let i = index">
-                        <div class="bar-container">
+                        <div class="bar-container" [class.hover]="hover_song" (mouseover)="hover_song = true" (mouseleave)="hover_song = false">
                             <div class="bar" [style.height.%]="keyValuePair.value"></div>
                             <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
                         </div>
@@ -41,7 +55,7 @@
                 <div *ngIf="selectedSong.best_fit.name != playlist.name">
                     <ul class="bestfit-container"> 
                         <li class="playlist-feature" *ngFor="let keyValuePair of selectedSong.best_fit.enlargedFeatures | keyvalue; let i = index">
-                            <div class="bar-container">
+                            <div class="bar-container" [class.hover]="hover_recommended" (mouseover)="hover_recommended = true" (mouseleave)="hover_recommended = false"> 
                                 <div class="bar" [style.height.%]="keyValuePair.value"></div>
                                 <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
                             </div>
@@ -88,18 +102,19 @@
                         <div class="compatibility-filled" [style.width.%]="song.max_compatibility"></div>
                         <span class="compatibility-percentage">{{ song.max_compatibility }}%</span>
                     </div>
-                    <button type="button" class="add-button" title="Add without removing" (click)="addToPlaylist(song)">Add to playlist</button>
+                    <button type="button" class="add-button" title="Add without removing" *ngIf="!song.adding" (click)="addToPlaylist(song)">Add to playlist</button>
+                    <p *ngIf="song.adding" class="adding-text">Adding to playlist...</p>
                     <button type="button" class="remove-button" title="Add and remove" *ngIf="!song.loading" (click)="changeTrackPlaylist(song)">Move to playlist</button>
                     <p *ngIf="song.loading" class="loading-text">Moving to playlist...</p>
                 </div>
                 <div *ngIf="!song.shouldMove">
-                    <p>Well done! This song has already found its perfect match from your playlists!</p>
+                    <p><span>Well done!</span> This song has already found its perfect match from your playlists!</p>
                 </div>
                 <img class="view-less" src="assets/svg/less.svg" alt="Less" title="View less" (click)="toggleDropdown(song)">
             </div>
         </li>
-        <li>
-            <p>load more</p>
-        </li>
-    </ul> 
+    </ul>
+    <div *ngIf="playlist.songs"> 
+        <button type="button" (click)="loadMoreTracks()"> load more</button>
+    </div>
 </div>

@@ -38,7 +38,7 @@ app.use(cors({
 
 app.use(express.static(__dirname + '/client'));
 app.use(cookieParser());
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '100mb' }));
 
 
 
@@ -164,7 +164,6 @@ app.get('/api/playlists/:token', function(req, res) {
         const playlists = unfiltered_playlists.filter((playlist) => {
           return playlist.owner.display_name !== "Spotify";
         });
-
         // Fetch all tracks' for each playlist
         playlists.forEach((playlist) => {
           // As an additional step, initialize the boolean of whether to show additional info
@@ -224,10 +223,12 @@ app.get('/api/playlists/:token', function(req, res) {
               playlist.enlargedFeatures = enlargedFeatures;
               return playlist;
             });
-
-            // Save playlists with average features in the session
-            req.session.playlists = playlistsWithAverages;
-            req.session.save();
+            if (req.session.playlists) {
+            } else {
+              // Save playlists with average features in the session
+              req.session.playlists = playlistsWithAverages;
+              req.session.save();
+            }
             res.send(playlistsWithAverages);
           })
           .catch((error) => {
@@ -241,6 +242,10 @@ app.get('/api/playlists/:token', function(req, res) {
   }
 });
 
+
+app.get('/api/load-more-tracks', function(req, res) {
+
+});
 
 // Search for tracks
 app.get('/api/search/tracks', function(req, res) {
@@ -268,7 +273,7 @@ app.get('/api/stored_playlists', function(req, res){
   } else {
     res.status(404).send("No playlists found");
   }
-})
+});
 
 // Store chosen playlist
 app.post('/api/store_playlist', function(req, res) {

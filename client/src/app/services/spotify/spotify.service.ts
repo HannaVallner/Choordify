@@ -113,9 +113,24 @@ export class SpotifyService {
     });
   }
 
+  // Search for tracks based on user input (can be artist's or song's name)
   searchForTracks(token: string, query: string) {
     return this.http.get(`http://localhost:3000/api/search/tracks?token=${token}&query=${query}`, {
       withCredentials: true
     });
+  }
+
+  // Send a request to get more of the playlist's songs
+  loadMoreTracks(token: string, playlist: any) {
+    return this.http.get(`http://localhost:3000/${token}`, {
+      withCredentials: true
+    });
+  }
+
+  // Send a request to get more of the user's playlists
+  loadMorePlaylists() {
+    return this.http.get(`http://localhost:3000/api/playlists/`, {
+      withCredentials: true
+    });                                 
   }
 }

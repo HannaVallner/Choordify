@@ -13,6 +13,9 @@ export class PlaylistComponent implements OnInit {
   token = '';
   playlist_loading = false;
   selectedSong: any = null;
+  hover_current = false;
+  hover_song = false;
+  hover_recommended = false;
   
   constructor(private spotify: SpotifyService) {}
 
@@ -55,8 +58,9 @@ export class PlaylistComponent implements OnInit {
 
   // Add selected song to best suited playlist (while keeping it in its original one)
   addToPlaylist(track: any) {
+    track.adding = true;
     this.spotify.changeTrackPlaylist(this.token, track.best_fit.id, track).subscribe(() => {
-
+      track.adding = false;
     });
   }
 
@@ -68,6 +72,14 @@ export class PlaylistComponent implements OnInit {
     this.spotify.removePlaylistTracks(this.token, this.playlist.id, track.uri).subscribe((response: any) => {
       this.playlist = response;  
       track.removing = false;
+    });
+  }
+
+  // Load more tracks from the playlist through a request to Spotify
+  loadMoreTracks() {
+    this.spotify.loadMoreTracks(this.token, this.playlist).subscribe((response: any) => {
+      const new_tracks = response;
+      console.log(new_tracks);
     });
   }
 
