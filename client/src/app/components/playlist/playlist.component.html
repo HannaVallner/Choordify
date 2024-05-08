@@ -33,36 +33,29 @@
                 </div>
             </div>
             <ul class="averages-container"> 
-                <li class="playlist-feature" *ngFor="let keyValuePair of playlist.enlargedFeatures | keyvalue; let i = index">
-                    <p class="feature-label" [class.below]="i % 2 === 0">{{ keyValuePair.key }}</p>
+                <li class="playlist-feature" *ngFor="let key of keys; let i = index">
+                    <p class="feature-label" [class.below]="i % 2 === 0">{{ key }}</p>
                     <div class="bar-container" (mouseenter)="hover_current = true" (mouseleave)="hover_current = false" [class.hover]="hover_current">
-                        <div class="bar" [style.height.%]="keyValuePair.value"></div>
-                        <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
+                        <div class="bar" [style.height.%]="playlist.enlargedFeatures[key]"></div>
+                        <div class="bar-tooltip">{{ playlist.enlargedFeatures[key] }}%</div>
                     </div>
-                    <div class="empty-song-bar bar-container" [class.above]="selectedSong" (mouseover)="hover_song = true" (mouseleave)="hover_song = false"></div>
-                    <div class="empty-bestfit-bar bar-container" [class.above]="selectedSong && selectedSong.best_fit != playlist"(mouseover)="hover_recommended = true" (mouseleave)="hover_recommended = false"></div>
+                    <div class="empty-song-bar bar-container" (mouseenter)="hover_song = true" (mouseleave)="hover_song = false" [class.hover]="hover_song">
+                        <div *ngIf="selectedSong">
+                            <div class="bar" [style.height.%]="selectedSong.enlargedFeatures[key]"></div>
+                            <div class="bar-tooltip">{{ selectedSong.enlargedFeatures[key] }}%</div>
+                        </div>
+                    </div>
+                    <div class="empty-bestfit-bar bar-container" (mouseenter)="hover_recommended = true" (mouseleave)="hover_recommended = false" [class.hover]="hover_recommended">
+                        <div *ngIf="selectedSong && selectedSong.best_fit != playlist">
+                            <div class="bar" [style.height.%]="selectedSong.best_fit.enlargedFeatures[key]"></div>
+                            <div class="bar-tooltip">{{ selectedSong.best_fit.enlargedFeatures[key] }}%</div>
+                        </div>
+                    </div>
+                    <div *ngIf="selectedSong && selectedSong.best_fit != playlist" >
+
+                    </div>
                 </li>
             </ul>
-            <div *ngIf="selectedSong">
-                <ul class="song-container"> 
-                    <li class="playlist-feature" *ngFor="let keyValuePair of selectedSong.enlargedFeatures | keyvalue; let i = index">
-                        <div class="bar-container" [class.hover]="hover_song" (mouseover)="hover_song = true" (mouseleave)="hover_song = false">
-                            <div class="bar" [style.height.%]="keyValuePair.value"></div>
-                            <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
-                        </div>
-                    </li>
-                </ul>
-                <div *ngIf="selectedSong.best_fit != playlist">
-                    <ul class="bestfit-container"> 
-                        <li class="playlist-feature" *ngFor="let keyValuePair of selectedSong.best_fit.enlargedFeatures | keyvalue; let i = index">
-                            <div class="bar-container" [class.hover]="hover_recommended" (mouseover)="hover_recommended = true" (mouseleave)="hover_recommended = false"> 
-                                <div class="bar" [style.height.%]="keyValuePair.value"></div>
-                                <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
         </div>
     </div>
     <ul class="tracks-container" *ngIf="playlist.songs">

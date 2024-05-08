@@ -16,6 +16,7 @@ export class PlaylistComponent implements OnInit {
   hover_current = false;
   hover_song = false;
   hover_recommended = false;
+  keys = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'speechiness', 'valence']; // to iterate over multiple dictionaries simultaneously
   
   constructor(private spotify: SpotifyService) {}
 
