@@ -16,8 +16,10 @@ export class CompatibilityComponent implements OnInit {
   result: any;
   userId = '';
   creatingPlaylist = false;
+  selectedPlaylist: any = null;
+  hover_song = false;
+  hover_playlist = false;
 
-  
   constructor(private spotify: SpotifyService) {}
 
   ngOnInit() {
@@ -46,16 +48,15 @@ export class CompatibilityComponent implements OnInit {
     })
   }
 
- // Open/close selected playlist's additional info box
- toggleDropdown(playlist: any) {
-  playlist.more = !playlist.more;
-  // Close any other playlist's info box
-  this.playlists.forEach((other_playlist: any) => {
-    if (other_playlist !== playlist) {
-      other_playlist.more = false;
+  // Select/unselect playlist's additional info
+  selectPlaylist(playlist: any) {
+    if (this.selectedPlaylist === playlist) {
+      this.selectedPlaylist = null;
+    } else {
+      this.selectedPlaylist = playlist;
+      console.log(this.selectedPlaylist.enlargedFeatures);
     }
-  });
-}
+  }
 
 
 

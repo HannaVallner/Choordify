@@ -39,11 +39,11 @@
                         <div class="bar" [style.height.%]="keyValuePair.value"></div>
                         <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
                     </div>
-                    <div class="empty-song-bar bar-container" [class.above]="selectedSong != null" (mouseover)="hover_song = true" (mouseleave)="hover_song = false"></div>
-                    <div class="empty-bestfit-bar bar-container" [class.above]="selectedSong!= null && selectedSong.best_fit.name != playlist.name"(mouseover)="hover_recommended = true" (mouseleave)="hover_recommended = false"></div>
+                    <div class="empty-song-bar bar-container" [class.above]="selectedSong" (mouseover)="hover_song = true" (mouseleave)="hover_song = false"></div>
+                    <div class="empty-bestfit-bar bar-container" [class.above]="selectedSong && selectedSong.best_fit != playlist"(mouseover)="hover_recommended = true" (mouseleave)="hover_recommended = false"></div>
                 </li>
             </ul>
-            <div *ngIf="selectedSong != null">
+            <div *ngIf="selectedSong">
                 <ul class="song-container"> 
                     <li class="playlist-feature" *ngFor="let keyValuePair of selectedSong.enlargedFeatures | keyvalue; let i = index">
                         <div class="bar-container" [class.hover]="hover_song" (mouseover)="hover_song = true" (mouseleave)="hover_song = false">
@@ -52,7 +52,7 @@
                         </div>
                     </li>
                 </ul>
-                <div *ngIf="selectedSong.best_fit.name != playlist.name">
+                <div *ngIf="selectedSong.best_fit != playlist">
                     <ul class="bestfit-container"> 
                         <li class="playlist-feature" *ngFor="let keyValuePair of selectedSong.best_fit.enlargedFeatures | keyvalue; let i = index">
                             <div class="bar-container" [class.hover]="hover_recommended" (mouseover)="hover_recommended = true" (mouseleave)="hover_recommended = false"> 

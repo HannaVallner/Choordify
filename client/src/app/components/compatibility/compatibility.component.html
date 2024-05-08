@@ -1,6 +1,7 @@
 <app-navbar></app-navbar>
 <app-loading *ngIf="playlists.length === 0 || !track"></app-loading>
-<div class="outer-container">
+<div class="outer-container" *ngIf="track">
+    <p class="instructions"><span>Click on a playlist </span> to learn more</p>
     <div class="left-container">
         <div>
             <a routerLink="/add" class="back-link">
@@ -8,21 +9,46 @@
             </a>
         </div>
         <div class="track-info-container">
-            <div class="track-info" *ngIf="track">
-                <img class="track-cover" *ngIf="track.album && track.album.images && track.album.images.length > 0"
-                    [src]="track.album.images[0].url" 
-                    alt="Track cover">
+            <img class="track-cover" *ngIf="track.album && track.album.images && track.album.images.length > 0"
+                [src]="track.album.images[0].url" 
+                alt="Track cover">
+            <div class="track-details-container">
                 <p class="track-title" [title]="track.name"> {{ track.name.length > 23 ? track.name.slice(0, 23) + '...' : track.name }} </p>
                 <p class="track-details" [title]="track.artists[0]['name'] + ': ' + track.album.name"> 
                     {{ track.artists[0]['name'].length > 18 ? track.artists[0]['name'].slice(0, 18) + '...' : track.artists[0]['name']}} 
                     <span class="dot">&bull;</span> 
                     {{ track.album.name.length > 25 ? track.album.name.slice(0, 25) + '...' : track.album.name }} 
                 </p>
-                <a href="{{ track.external_urls.spotify }}" target="_blank" rel="noopener" class="spotify-link">
-                    <button type="button" class="spotify-button"> PLAY ON SPOTIFY
-                        <img class="spotify-img" src="assets/spotify.png" alt="Spotify">
-                    </button>
-                </a>    
+            </div>
+        </div>
+        <ul class="averages-container"> 
+            <li class="song-feature" *ngFor="let keyValuePair of track.enlargedFeatures | keyvalue; let i = index">
+                <p class="feature-label" [class.below]="i % 2 === 0">{{ keyValuePair.key }}</p>
+                <div class="bar-container" [class.hover]="hover_song" (mouseover)="hover_song = true" (mouseleave)="hover_song = false">
+                    <div class="bar" [style.height.%]="keyValuePair.value"></div>
+                    <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
+                </div>
+                <div class="empty-selected-bar bar-container" [class.above]="selectedPlaylist" (mouseover)="hover_playlist = true" (mouseleave)="hover_playlist = false"></div>
+            </li>
+        </ul>
+        <div *ngIf="selectedPlaylist">
+            <ul class="selected-container"> 
+                <li class="song-feature" *ngFor="let keyValuePair of selectedPlaylist.enlargedFeatures | keyvalue; let i = index">
+                    <div class="bar-container" [class.hover]="hover_playlist" (mouseover)="hover_playlist = true" (mouseleave)="hover_playlist = false">
+                        <div class="bar" [style.height.%]="keyValuePair.value"></div>
+                        <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="colour-blocks">
+            <div class="colour-block" title="Selected song's features" [class.hover]="hover_song" (mouseover)="hover_song = true" (mouseleave)="hover_song = false">
+                <div class="song-colour colour"></div>
+                <p>song</p>
+            </div>
+            <div class="colour-block" title="Average features of chosen playlist" [class.hover]="hover_playlist" (mouseover)="hover_playlist = true" (mouseleave)="hover_playlist = false">
+                <div class="playlist-colour colour"></div>
+                <p>chosen playlist</p>
             </div>
         </div>
         <div class="input-container">
@@ -38,7 +64,7 @@
     </div>
     <div class="playlists">
         <ul class="playlists-container" *ngIf="playlists.length > 0">
-            <li class="playlist-container" *ngFor="let playlist of playlists" [ngClass]="{'open-dropdown' : playlist.more}">
+            <li class="playlist-container" *ngFor="let playlist of playlists" [ngClass]="{'selected': playlist === selectedPlaylist}" (click)="selectPlaylist(playlist)">
                 <div class="playlist-content">
                     <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist cover">
                     <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
@@ -51,28 +77,13 @@
                             </p>
                     </div>
                 </div>
-                <p class="compatibility-text">Compatibility with track</p>
+                <p class="compatibility-text">Compatibility with <span>song</span></p>
                 <div class="compatibility-bar">
                     <div class="compatibility-filled" [style.width.%]="playlist.compatibility"></div>
                     <span class="compatibility-percentage">{{ playlist.compatibility }}%</span>
                 </div>
                 <button *ngIf="!playlist.loading" type="button" class="playlist-button" (click)="addToPlaylist(playlist)">Add to playlist</button>
                 <p *ngIf="playlist.loading" class="loading-text">Adding to playlist...</p>
-                <div class="view-more"> 
-                    <img *ngIf="!playlist.more" src="assets/svg/more.svg" alt="More" title="View more" (click)="toggleDropdown(playlist)"> 
-                </div>
-                <div class="dropdown" [ngClass]="{'open': playlist.more}">
-                    <ul class="averages-container"> 
-                        <li class="playlist-feature" *ngFor="let keyValuePair of playlist.enlargedFeatures | keyvalue; let i = index">
-                            <p class="feature-label" [class.below]="i % 2 === 0">{{ keyValuePair.key }}</p>
-                            <div class="bar-container">
-                                <div class="bar" [style.height.%]="keyValuePair.value"></div>
-                                <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
-                            </div>
-                        </li>
-                    </ul>
-                    <img class="view-less" src="assets/svg/less.svg" alt="Less" title="View less" (click)="toggleDropdown(playlist)">
-                </div>
             </li>
         </ul>
     </div>

@@ -166,8 +166,6 @@ app.get('/api/playlists/:token', function(req, res) {
         });
         // Fetch all tracks' for each playlist
         playlists.forEach((playlist) => {
-          // As an additional step, initialize the boolean of whether to show additional info
-          playlist.more = false;
           const playlistId = playlist.id;
           let offset = 0;
           const tracksOptions = {
