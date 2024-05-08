@@ -1,9 +1,12 @@
 $medium-grey: #353232;
 $dark-grey: #282626;
+$medium-light-grey: #484444;
 $light-grey: #6d6868;
 $background-color: #191414;
 $main-green: #1db954;
 $secondary-green: #1ed760;
+$pink: #af4ca2;
+$yellow: #afa04c;
 $white: #fff;
 
 @font-face {
@@ -46,6 +49,10 @@ ul {
   list-style: none;
 }
 
+span {
+  font-family: 'Nunito Bold', sans-serif;
+}
+
 button {
   background-color: $main-green; 
   color: $background-color; 
@@ -79,6 +86,7 @@ button:hover {
   opacity: 0.6;
   color: $white;
   text-decoration: none;
+  padding: none;
 }
 
 .back-link:hover {

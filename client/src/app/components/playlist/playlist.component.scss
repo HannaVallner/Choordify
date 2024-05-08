@@ -1,14 +1,10 @@
 @import '../../../styles.scss';
 
 
-span {
-    font-family: 'Nunito-Bold', sans-serif;
-}
-
 .outer-container {
     background-color: $medium-grey;
     height: 82vh;
-    width: 1000px;
+    width: 1100px;
     position: absolute;
     bottom: 0;
     left: 50%;
@@ -29,11 +25,11 @@ span {
 .playlist-cover {
     width: 80px;
     height: 80px;
-    margin-left: 60px;
+    margin-left: 55px;
 }
 
 .playlist-details {
-    margin-left: 20px;
+    margin-left: 15px;
 }
 
 .playlist-name {
@@ -44,9 +40,40 @@ span {
 }
 
 .playlist-tracks {
+    opacity: 0.7;
     margin-top: 0;
     margin-bottom: 0;
     font-size: 0.8rem;
+}
+
+.colour-blocks {
+    position: absolute;
+    top: 15px;
+    left: 400px;
+    opacity: 0.7;
+}
+
+.bestfit-block {
+    background-color: $pink; 
+    width: 15px;
+    height: 10px;
+    border-radius: 2px;
+    margin-bottom: 10px;
+}
+
+.playlist-block {
+    background-color: $yellow;
+    width: 15px;
+    height: 10px;
+    border-radius: 2px;
+    margin-bottom: 10px;
+}
+
+.song-block {
+    background-color: $main-green;
+    width: 15px;
+    height: 10px;
+    border-radius: 2px;
 }
 
 .averages-container {
@@ -58,10 +85,38 @@ span {
     display: flex;
 }
 
+.song-container {
+    left: 635px;
+    top: 0;
+    position: absolute;
+    list-style: none;
+    padding: 0;
+    display: flex;
+
+    .bar {
+        background-color: $yellow;
+    }
+}
+
+.bestfit-container {
+    left: 665px;
+    top: 0;
+    position: absolute;
+    list-style: none;
+    padding: 0;
+    display: flex;
+
+    .bar {
+        background-color: $pink;
+    }
+}
+
 .playlist-feature {
-    width: 50px;
+    width: 55px;
     text-align: center;
-    opacity: 0.7;
+    opacity: 0.5;
+    display: flex;
+    justify-content: center;
 }
 
 .playlist-feature:hover {
@@ -71,10 +126,8 @@ span {
 .feature-label {
     position: relative;
     font-size: 0.7rem;
-    left: 50%;
     top: 0;
     margin-bottom: 5px;
-    transform: translateX(-95%);
 }
 
 .feature-label.below {
@@ -86,7 +139,7 @@ span {
     border-radius: 2px;
     width: 10px;
     height: 80px; 
-    background-color: $white;
+    background-color: $light-grey;
     vertical-align: bottom; 
     position: absolute;
     top: 30px;
@@ -159,13 +212,17 @@ span {
     transition: margin-bottom 0.3s ease-in-out;
 }
 
+.track:last-child {
+    margin-bottom: 40px;
+}
+
 .track.open-dropdown {
     margin-bottom: 110px;
-    background-color: #484444;
+    background-color: $medium-light-grey;
 }
 
 .track:hover {
-    background-color: #484444;
+    background-color: $medium-light-grey;
 }
 
 .track-cover {
@@ -184,8 +241,8 @@ span {
 }
 
 .track-artist {
+    opacity: 0.7;
     font-size: 0.8rem;
-    color: #bababa;
     margin-top: 2px; 
 }
 
@@ -198,9 +255,10 @@ span {
 .bestfit-text {
     font-size: 0.8rem;
     opacity: 0.7;
-    bottom: 60px;
-    left: 510px;
+    bottom: 50px;
     position: absolute;
+    left: 65%;
+    transform: translateX(-50%);
 }
 
 .bestfit-bar {
@@ -210,15 +268,15 @@ span {
     width: 200px;
     position: absolute;
     border-radius: 10px; 
-    bottom: 49px;
-    left: 480px;
+    bottom: 40px;
+    right: 190px;
 }
 
 .compatibility-text {
     font-size: 0.8rem;
     opacity: 0.7;
     bottom: 25px;
-    right: 165px;
+    right: 195px;
     position: absolute;
 }
 
@@ -230,7 +288,7 @@ span {
     position: absolute;
     border-radius: 10px; 
     bottom: 15px;
-    right: 160px;
+    right: 190px;
 }
 
 .compatibility-filled {
@@ -267,20 +325,6 @@ span {
     opacity: 1;
 }
 
-.view-more {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0.6;
-    color: $white;
-    text-decoration: none;
-}
-
-.view-more:hover {
-    opacity: 1;
-}
-
 .loading-text {
     position: absolute;
     bottom: 6px;
@@ -290,6 +334,16 @@ span {
 .remove-button {
     position: absolute;
     bottom: 10px;
+    right: 10px;
+    width: auto;
+    height: 30px;
+    text-align: center;
+    line-height: 0;
+}
+
+.add-button {
+    position: absolute;
+    bottom: 60px;
     right: 10px;
     width: auto;
     height: 30px;
@@ -314,7 +368,6 @@ span {
 }
 
 .dropdown.open {
-    overflow: visible;
     height: 100px;
 }
 
@@ -325,16 +378,30 @@ span {
     padding: 10px;
 }
 
-.view-less {
+.view-more {
     position: absolute;
-    bottom: 5px;
-    left: 50%;
+    bottom: 0;
+    left: 47%;
     transform: translateX(-50%);
     opacity: 0.6;
     color: $white;
     text-decoration: none;
 }
+  
+.view-more:hover {
+    opacity: 1;
+}
 
+.view-less {
+    position: absolute;
+    bottom: 5px;
+    left: 47%;
+    transform: translateX(-50%);
+    opacity: 0.6;
+    color: $white;
+    text-decoration: none;
+}
+  
 .view-less:hover {
     opacity: 1;
 }

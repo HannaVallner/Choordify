@@ -9,10 +9,10 @@ import { LoadingComponent } from '../loading/loading.component';
 })
 
 export class PlaylistComponent implements OnInit {
-
   playlist: any;
   token = '';
   playlist_loading = false;
+  selectedSong: any = null;
   
   constructor(private spotify: SpotifyService) {}
 
@@ -24,30 +24,43 @@ export class PlaylistComponent implements OnInit {
     // Retrieve the chosen playlist
     this.spotify.getStoredPlaylist().subscribe((response: any) => {
       this.playlist = response;
-      this.playlist.songs.forEach((song:any) => {
-        console.log(song.current_compatibility);
-      });
     });
   }
 
+  // Open/close selected song's additional info box
   toggleDropdown(song: any) {
     song.more = !song.more;
-
-    this.playlist.songs.forEach((track: any) => {
-      if (track !== song) {
-        track.more = false;
-      }
-    });
+    if (song.more) {
+      this.selectedSong = song;
+      // Close any other song's info box
+      this.playlist.songs.forEach((other_song: any) => {
+        if (other_song !== song) {
+          other_song.more = false;
+        }
+      });
+    } else {
+      this.selectedSong = null;
+    }
   }
   
+
+  // Change selected song's playlist (remove from current playlist and add to best suited one)
   changeTrackPlaylist(track: any) {
     track.loading = true;
     this.removeFromPlaylist(track);
-    this.spotify.changeTrackPlaylist(this.token, track.best_fit.id, track).subscribe(() =>{
+    this.spotify.changeTrackPlaylist(this.token, track.best_fit.id, track).subscribe(() => {
       track.loading = false;
     });
   }
 
+  // Add selected song to best suited playlist (while keeping it in its original one)
+  addToPlaylist(track: any) {
+    this.spotify.changeTrackPlaylist(this.token, track.best_fit.id, track).subscribe(() => {
+
+    });
+  }
+
+  // Remove selected song from current playlist
   removeFromPlaylist(track: any) {
     if (!track.loading) {
       track.removing = true;

@@ -38,7 +38,7 @@ app.use(cors({
 
 app.use(express.static(__dirname + '/client'));
 app.use(cookieParser());
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
 
 
 
@@ -167,6 +167,8 @@ app.get('/api/playlists/:token', function(req, res) {
 
         // Fetch all tracks' for each playlist
         playlists.forEach((playlist) => {
+          // As an additional step, initialize the boolean of whether to show additional info
+          playlist.more = false;
           const playlistId = playlist.id;
           let offset = 0;
           const tracksOptions = {
@@ -194,7 +196,10 @@ app.get('/api/playlists/:token', function(req, res) {
                   if (!error && response.statusCode === 200) {
                     const trackFeatures = JSON.parse(body).audio_features;
                     playlist.songs.forEach((song, index) => {
-                      song.features = trackFeatures[index]; // Attach features to each track
+                      const features = trackFeatures[index];
+                      const {filteredFeatures, enlargedFeatures} = filterFeatures(features);
+                      song.features = filteredFeatures; 
+                      song.enlargedFeatures = enlargedFeatures;
                     });
                     resolve(trackFeatures);
                   } else {
@@ -332,8 +337,10 @@ app.get('/api/tracks/:trackId', function(req, res) {
         if (!featuresError && featuresResponse.statusCode === 200) {
           let features = JSON.parse(featuresBody);
 
+          const {filteredFeatures, enlargedFeatures} = filterFeatures(features);
           // Attach the normalized features to the track object
-          track.features = features;
+          track.features = filteredFeatures;
+          track.enlargedFeatures = enlargedFeatures;
 
           // Calculate compatibility of each playlist with the track features
           let playlists = req.session.playlists.slice();
@@ -434,6 +441,7 @@ app.post('/api/playlists/create', function(req, res) {
               const playlist = JSON.parse(playlistBody);
               // Update the playlist's features
               playlist.features = req.session.track.features;
+              playlist.enlargedFeatures = req.session.track.enlargedFeatures;
               // Attach the track to the playlist
               playlist.songs = [req.session.track];
               // Update the playlist's compatibility in the session
@@ -693,6 +701,7 @@ function findBestFitPlaylist(playlist, playlists) {
   playlist.songs.forEach((song) => {
     let bestFitPlaylist = null;
     let maxCompatibility = -Infinity;
+    // Initializing the boolean of whether to show additional information about a song
     song.more = false;
      // Iterate through each playlist
     playlists.forEach((playlist2) => {
@@ -753,26 +762,26 @@ function calculatePlaylistAverages(trackFeatures) {
   return {averageFeatures, enlargedFeatures};
 }
 
+// Function to filter out unnecessary features from track features
+function filterFeatures(features) {
+  const excludedFeatures = [
+    'analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms', 'key',
+    'loudness', 'tempo', 'time_signature', 'mode'
+  ];
 
+  const filteredFeatures = {};
+  const enlargedFeatures = {};
+
+  for (const key in features) {
+    if (!excludedFeatures.includes(key)) {
+      filteredFeatures[key] = features[key];
+      enlargedFeatures[key] = (features[key] * 100).toString().substring(0, 5);
+    }
+  }
+  return {filteredFeatures, enlargedFeatures};
+}
 
 /* 
-
-REMOVED, AS FILTERING OUT UNECESSARY FEATURES IS MORE EFFECTIVELY IMPLEMENTED
-IN OTHER FUNCTIONS
-
-// Function to filter out unnecessary features from track features
-function filterFeatures(trackFeatures) {
-  const filteredTrackFeatures = trackFeatures.map((track) => {
-    const filteredTrack = {};
-    for (const key in track) {
-      if (track.hasOwnProperty(key) && !['analysis_url', 'id', 'track_href', 'type', 'uri', 'duration_ms'].includes(key)) {
-        filteredTrack[key] = track[key];
-      }
-    }
-    return filteredTrack;
-  });
-  return filteredTrackFeatures;
-}
 
 // Function to normalize features
 function normalizeFeatures(features) {

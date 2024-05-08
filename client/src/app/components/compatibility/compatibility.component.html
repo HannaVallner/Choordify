@@ -2,9 +2,11 @@
 <app-loading *ngIf="playlists.length === 0 || !track"></app-loading>
 <div class="outer-container">
     <div class="left-container">
-        <a routerLink="/add" class="back-link">
-            <img src="assets/svg/back.svg" alt="Back"> 
-        </a>
+        <div>
+            <a routerLink="/add" class="back-link">
+                <img src="assets/svg/back.svg" alt="Back"> 
+            </a>
+        </div>
         <div class="track-info-container">
             <div class="track-info" *ngIf="track">
                 <img class="track-cover" *ngIf="track.album && track.album.images && track.album.images.length > 0"
@@ -36,31 +38,41 @@
     </div>
     <div class="playlists">
         <ul class="playlists-container" *ngIf="playlists.length > 0">
-            <li class="playlist-container" *ngFor="let playlist of playlists">
+            <li class="playlist-container" *ngFor="let playlist of playlists" [ngClass]="{'open-dropdown' : playlist.more}">
                 <div class="playlist-content">
                     <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist cover">
                     <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
                     <div class="playlist-details">
-                        <p class="playlist-name" [title]="playlist.name">{{ playlist.name.length > 25 ? playlist.name.slice(0, 25) + '...' : playlist.name }}</p>
-                        <p class="playlist-tracks">
-                            {{ playlist.owner['display_name'] }} 
-                            <span class="dot">&bull;</span>  
-                            {{ playlist.tracks["total"] }} {{ playlist.tracks['total'] === 1 ? 'song' : 'songs' }} 
-                        </p>
+                            <p class="playlist-name" [title]="playlist.name">{{ playlist.name.length > 25 ? playlist.name.slice(0, 25) + '...' : playlist.name }}</p>
+                            <p class="playlist-tracks">
+                                {{ playlist.owner['display_name'] }} 
+                                <span class="dot">&bull;</span>  
+                                {{ playlist.tracks["total"] }} {{ playlist.tracks['total'] === 1 ? 'song' : 'songs' }} 
+                            </p>
                     </div>
                 </div>
-                <p class="track-text">Compatibility with track </p>
+                <p class="compatibility-text">Compatibility with track</p>
                 <div class="compatibility-bar">
                     <div class="compatibility-filled" [style.width.%]="playlist.compatibility"></div>
                     <span class="compatibility-percentage">{{ playlist.compatibility }}%</span>
                 </div>
                 <button *ngIf="!playlist.loading" type="button" class="playlist-button" (click)="addToPlaylist(playlist)">Add to playlist</button>
                 <p *ngIf="playlist.loading" class="loading-text">Adding to playlist...</p>
-                <ul class="averages" *ngIf="playlist.displayAverages"> 
-                    <li class="playlist-feature" *ngFor="let keyValuePair of playlist.averages | keyvalue">
-                        <p> {{ keyValuePair.key }}: {{ keyValuePair.value }} </p>
-                    </li>
-                </ul> 
+                <div class="view-more"> 
+                    <img *ngIf="!playlist.more" src="assets/svg/more.svg" alt="More" title="View more" (click)="toggleDropdown(playlist)"> 
+                </div>
+                <div class="dropdown" [ngClass]="{'open': playlist.more}">
+                    <ul class="averages-container"> 
+                        <li class="playlist-feature" *ngFor="let keyValuePair of playlist.enlargedFeatures | keyvalue; let i = index">
+                            <p class="feature-label" [class.below]="i % 2 === 0">{{ keyValuePair.key }}</p>
+                            <div class="bar-container">
+                                <div class="bar" [style.height.%]="keyValuePair.value"></div>
+                                <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
+                            </div>
+                        </li>
+                    </ul>
+                    <img class="view-less" src="assets/svg/less.svg" alt="Less" title="View less" (click)="toggleDropdown(playlist)">
+                </div>
             </li>
         </ul>
     </div>

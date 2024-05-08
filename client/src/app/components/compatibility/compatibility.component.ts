@@ -46,15 +46,17 @@ export class CompatibilityComponent implements OnInit {
     })
   }
 
-  // for chosen track
-  toggleFeatures() {
-    this.track.displayFeatures = !this.track.displayFeatures;
-  }
+ // Open/close selected playlist's additional info box
+ toggleDropdown(playlist: any) {
+  playlist.more = !playlist.more;
+  // Close any other playlist's info box
+  this.playlists.forEach((other_playlist: any) => {
+    if (other_playlist !== playlist) {
+      other_playlist.more = false;
+    }
+  });
+}
 
-  // for playlist
-  toggleAverages(playlist: any) {
-    playlist.displayAverages = !playlist.displayAverages
-  }
 
 
   // Add selected track to selected playlist
