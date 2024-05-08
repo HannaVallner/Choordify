@@ -19,6 +19,7 @@ export class CompatibilityComponent implements OnInit {
   selectedPlaylist: any = null;
   hover_song = false;
   hover_playlist = false;
+  keys = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'speechiness', 'valence']; // to iterate over multiple dictionaries simultaneously
 
   constructor(private spotify: SpotifyService) {}
 

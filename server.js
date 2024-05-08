@@ -506,12 +506,12 @@ app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
             // Attach the newly added track to the songs
             updatedPlaylist.songs.push(req.session.track);
             // Recalculate average features for the updated playlist
-            const { updatedPlaylistFeatures, enlargedFeatures } = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
+            const { averageFeatures, enlargedFeatures } = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
             // Recalculate compatibility with the track
             const track = req.session.track;
-            updatedPlaylist.compatibility = calculateCompatibility(track.features, updatedPlaylistFeatures);
+            updatedPlaylist.compatibility = calculateCompatibility(track.features, averageFeatures);
             // Update the playlist's average features in the session
-            updatedPlaylist.features = updatedPlaylistFeatures;
+            updatedPlaylist.features = averageFeatures;
             updatedPlaylist.enlargedFeatures = enlargedFeatures;
             // Update the playlist data in the session
             req.session.playlists[playlistIndex] = updatedPlaylist;
@@ -761,7 +761,6 @@ function calculatePlaylistAverages(trackFeatures) {
       enlargedFeatures[key] = valueString.substring(0, 5);
     }
   }
-
   return {averageFeatures, enlargedFeatures};
 }
 

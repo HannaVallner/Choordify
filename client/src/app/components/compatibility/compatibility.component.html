@@ -22,31 +22,26 @@
             </div>
         </div>
         <ul class="averages-container"> 
-            <li class="song-feature" *ngFor="let keyValuePair of track.enlargedFeatures | keyvalue; let i = index">
-                <p class="feature-label" [class.below]="i % 2 === 0">{{ keyValuePair.key }}</p>
-                <div class="bar-container" [class.hover]="hover_song" (mouseover)="hover_song = true" (mouseleave)="hover_song = false">
-                    <div class="bar" [style.height.%]="keyValuePair.value"></div>
-                    <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
+            <li class="song-feature" *ngFor="let key of keys; let i = index">
+                <p class="feature-label" [class.below]="i % 2 === 0">{{ key }}</p>
+                <div class="bar-container" [class.hover]="hover_song" (mouseenter)="hover_song = true" (mouseleave)="hover_song = false">
+                    <div class="bar" [style.height.%]="track.enlargedFeatures[key]"></div>
+                    <div class="bar-tooltip">{{ track.enlargedFeatures[key] }}%</div>
                 </div>
-                <div class="empty-selected-bar bar-container" [class.above]="selectedPlaylist" (mouseover)="hover_playlist = true" (mouseleave)="hover_playlist = false"></div>
+                <div class="empty-selected-bar bar-container" [class.hover]="hover_playlist" (mouseenter)="hover_playlist = true" (mouseleave)="hover_playlist = false">
+                    <div *ngIf="selectedPlaylist">
+                        <div class="bar" [style.height.%]="selectedPlaylist.enlargedFeatures[key]"></div>
+                        <div class="bar-tooltip">{{ selectedPlaylist.enlargedFeatures[key] }}%</div>
+                    </div>
+                </div>
             </li>
         </ul>
-        <div *ngIf="selectedPlaylist">
-            <ul class="selected-container"> 
-                <li class="song-feature" *ngFor="let keyValuePair of selectedPlaylist.enlargedFeatures | keyvalue; let i = index">
-                    <div class="bar-container" [class.hover]="hover_playlist" (mouseover)="hover_playlist = true" (mouseleave)="hover_playlist = false">
-                        <div class="bar" [style.height.%]="keyValuePair.value"></div>
-                        <div class="bar-tooltip">{{ keyValuePair.value }}%</div>
-                    </div>
-                </li>
-            </ul>
-        </div>
         <div class="colour-blocks">
-            <div class="colour-block" title="Selected song's features" [class.hover]="hover_song" (mouseover)="hover_song = true" (mouseleave)="hover_song = false">
+            <div class="colour-block" title="Selected song's features" [class.hover]="hover_song" (mouseenter)="hover_song = true" (mouseleave)="hover_song = false">
                 <div class="song-colour colour"></div>
                 <p>song</p>
             </div>
-            <div class="colour-block" title="Average features of chosen playlist" [class.hover]="hover_playlist" (mouseover)="hover_playlist = true" (mouseleave)="hover_playlist = false">
+            <div class="colour-block" title="Average features of chosen playlist" [class.hover]="hover_playlist" (mouseenter)="hover_playlist = true" (mouseleave)="hover_playlist = false">
                 <div class="playlist-colour colour"></div>
                 <p>chosen playlist</p>
             </div>
@@ -55,7 +50,7 @@
             <p class="input-text">Create a new playlist with the song instead</p>
             <div *ngIf="!creatingPlaylist">
                 <input type="text" placeholder="Enter playlist name" [(ngModel)]="input" name="input" autocomplete="off">
-                <button type="button" (click)="createPlaylist()">Create</button>
+                <button type="button" [class.disabled]="input.length == 0" (click)="createPlaylist()">Create</button>
             </div>
             <div *ngIf="creatingPlaylist">
                 <p class="loading-text">Creating playlist...</p>
@@ -83,7 +78,7 @@
                     <span class="compatibility-percentage">{{ playlist.compatibility }}%</span>
                 </div>
                 <button *ngIf="!playlist.loading" type="button" class="playlist-button" (click)="addToPlaylist(playlist)">Add to playlist</button>
-                <p *ngIf="playlist.loading" class="loading-text">Adding to playlist...</p>
+                <p *ngIf="playlist.loading" class="adding-text">Adding to playlist...</p>
             </li>
         </ul>
     </div>

@@ -19,15 +19,15 @@
             </div>
             <p class="instructions"><span>Expand a song</span> to learn more</p> 
             <div class="colour-blocks">
-                <div class="colour-block" title="Average features of current playlist" [class.hover]="hover_current" (mouseover)="hover_current = true" (mouseleave)="hover_current = false">
+                <div class="colour-block" title="Average features of current playlist" [class.hover]="hover_current" (mouseenter)="hover_current = true" (mouseleave)="hover_current = false">
                     <div class="playlist-colour colour"></div>
                     <p>current playlist</p>
                 </div>
-                <div class="colour-block" title="Selected song's features" [class.hover]="hover_song" (mouseover)="hover_song = true" (mouseleave)="hover_song = false">
+                <div class="colour-block" title="Selected song's features" [class.hover]="hover_song" (mouseenter)="hover_song = true" (mouseleave)="hover_song = false">
                     <div class="song-colour colour"></div>
                     <p>chosen song</p>
                 </div>
-                <div class="colour-block" title="Average features of recommended playlist" [class.hover]="hover_recommended" (mouseover)="hover_recommended = true" (mouseleave)="hover_recommended = false">
+                <div class="colour-block" title="Average features of recommended playlist" [class.hover]="hover_recommended" (mouseenter)="hover_recommended = true" (mouseleave)="hover_recommended = false">
                     <div class="bestfit-colour colour"></div>
                     <p>recommended playlist</p>
                 </div>
