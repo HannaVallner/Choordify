@@ -211,9 +211,8 @@ app.get('/api/playlists/:token', function(req, res) {
         });
 
         // Wait for all track features to be fetched
-        Promise.all(trackFeaturePromises)
-          .then((playlistTracksFeatures) => {
-            // Calculate average features for each playlist
+        Promise.all(trackFeaturePromises).then((playlistTracksFeatures) => {
+              // Calculate average features for each playlist
               const playlistsWithAverages = playlists.map((playlist, index) => {
               const trackFeatures = playlistTracksFeatures[index];
               const { averageFeatures, enlargedFeatures } = calculatePlaylistAverages(trackFeatures);
@@ -241,8 +240,59 @@ app.get('/api/playlists/:token', function(req, res) {
 });
 
 
+// Request for 50 more tracks of selected playlist
 app.get('/api/load-more-tracks', function(req, res) {
+  const { token } = req.query;
+  const playlist = req.session.playlist;
+  const playlistId = playlist.id;
+  const offset = playlist.songs.length;
+  const tracksOptions = {
+    url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50&offset=${offset}`,
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  };
 
+  request.get(tracksOptions, (error, response, body) => {
+    if (!error && response.statusCode === 200) {
+      const trackItems = JSON.parse(body).items;
+      const songs = trackItems.map(item => item.track);
+      const trackIds = trackItems.map((item) => item.track.id).join(',');
+      // Fetch track features for all tracks
+      const featuresOptions = {
+        url: `https://api.spotify.com/v1/audio-features?ids=${trackIds}`,
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      };
+      request.get(featuresOptions, (error, response, body) => {
+        if (!error && response.statusCode === 200) {
+          const trackFeatures = JSON.parse(body).audio_features;
+          songs.forEach((song, index) => {
+            const features = trackFeatures[index];
+            const {filteredFeatures, enlargedFeatures} = filterFeatures(features);
+            song.features = filteredFeatures; 
+            song.enlargedFeatures = enlargedFeatures;
+          });
+          playlist.songs = playlist.songs.concat(songs);
+          findBestFitPlaylist(playlist, req.session.playlists);
+          const playlistIndex = req.session.playlists.findIndex(p => p.id === playlist.id);
+          req.session.playlists[playlistIndex] = playlist;
+          if (req.session.comp_playlists) {
+            const comp_playlistIndex = req.session.comp_playlists.findIndex(p => p.id === playlist.id);
+            req.session.comp_playlists[comp_playlistIndex] = playlist;
+          }
+          req.session.playlist = playlist;
+          req.session.save(); 
+          res.send(playlist);
+        } else {
+          res.status(response.statusCode).send(error);
+        }
+      });
+    } else {
+      res.status(response.statusCode).send(error);
+    }
+  });
 });
 
 // Search for tracks
@@ -263,35 +313,30 @@ app.get('/api/search/tracks', function(req, res) {
   });
 });
 
-
-// Return previously stored playlists
-app.get('/api/stored_playlists', function(req, res){
-  if (req.session.playlists) {
-    res.send(req.session.playlists);
-  } else {
-    res.status(404).send("No playlists found");
-  }
-});
-
 // Store chosen playlist
 app.post('/api/store_playlist', function(req, res) {
   const playlist = req.body; 
-  if (playlist) {
     req.session.playlist = playlist; 
-    findBestFitPlaylist(playlist, req.session.playlists);
-    const playlistIndex = req.session.playlists.findIndex(p => p.id === playlist.id);
-    req.session.playlists[playlistIndex] = playlist;
     req.session.save(); 
     res.status(200).send("Playlist stored successfully");
-  } else {
-    res.status(400).send("No playlist data provided");
-  }
 });
 
 // Return previously stored playlist
 app.get('/api/stored_playlist', function(req, res){
   if (req.session.playlist) {
-    res.send(req.session.playlist);
+    const playlist = req.session.playlist;
+    if (!playlist.songs[0].best_fit) {
+      findBestFitPlaylist(playlist, req.session.playlists);
+      const playlistIndex = req.session.playlists.findIndex(p => p.id === playlist.id);
+      req.session.playlists[playlistIndex] = playlist;
+      if (req.session.comp_playlists) {
+        const comp_playlistIndex = req.session.comp_playlists.findIndex(p => p.id === playlist.id);
+        req.session.comp_playlists[comp_playlistIndex] = playlist;
+      }
+      req.session.playlist = playlist;
+      req.session.save();
+      res.send(playlist);
+    }
   } else {
     res.status(404).send("No playlist found");
   }
@@ -701,7 +746,8 @@ function calculateCompatibility(trackFeatures, playlistAverages) {
 
 // Function to find the best suitable playlist for a track
 function findBestFitPlaylist(playlist, playlists) {
-  playlist.songs.forEach((song) => {
+  const lastSongs = playlist.songs.slice(-50);
+  lastSongs.forEach((song) => {
     let bestFitPlaylist = null;
     let maxCompatibility = -Infinity;
     // Initializing the boolean of whether to show additional information about a song

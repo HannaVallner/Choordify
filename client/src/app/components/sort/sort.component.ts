@@ -20,7 +20,7 @@ export class SortComponent implements OnInit {
     if (token) {
       this.token = token;
     }
-    this.spotify.getStoredPlaylists().subscribe((response: any) => {
+    this.spotify.getPlaylists(this.token).subscribe((response: any) => {
       this.playlists = response;
     });
   }

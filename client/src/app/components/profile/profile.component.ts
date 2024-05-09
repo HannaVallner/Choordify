@@ -28,7 +28,7 @@ export class ProfileComponent implements OnInit {
       this.userInfo = response;
     });
     
-    this.spotify.getStoredPlaylists().subscribe((response: any) => {
+    this.spotify.getPlaylists(this.token).subscribe((response: any) => {
       this.playLists = response.length;
     })
   }

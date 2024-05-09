@@ -109,21 +109,18 @@
 }
 
 .playlist-details {
-    margin-left: 20px; 
-    height: 60px;
-    bottom: 22px;
-    left: 65px;
-    position: absolute;
+    flex-grow: 1;
+    margin-left: 15px;
 }
 
 .playlist-name {
     text-decoration: none;
     font-size: 1.05rem;
-    margin-bottom: 0;
+    margin-top: 1px;
 }
 
 .playlist-tracks {
-    margin-top: 12px;
+    margin-bottom: 1px;
     opacity: 0.7;
     font-size: 0.8rem;
 }
@@ -405,6 +402,7 @@
 .playlist-colour {
     background-color: $main-green;
 }
+
 
 .disabled {
     opacity: 0.5;

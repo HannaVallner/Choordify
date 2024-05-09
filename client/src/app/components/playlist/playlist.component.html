@@ -6,7 +6,7 @@
             <img src="assets/svg/back.svg" alt="Back"> 
         </a>
         <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist Cover">
-        <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
+        <img class="playlist-cover" *ngIf="!playlist.images" src="favicon.ico" alt="Playlist Cover">
         <div class="playlist-details">
             <div class="playlist-info">
                 <p class="playlist-tracks"*ngIf="playlist.public">Public Playlist</p>
@@ -75,18 +75,16 @@
                     <span class="compatibility-percentage">{{ song.current_compatibility }}%</span>
                 </div>
             </div>
-            <div *ngIf="song.warning && !song.more" class="warning"> 
-                <img src="assets/svg/warning.svg" alt="Warning"> 
-            </div>
-            <div class="view-more">
-                <img *ngIf="!song.more" src="assets/svg/more.svg" alt="More" title="View more" (click)="toggleDropdown(song)"> 
+            <div *ngIf="!song.more" class="view-more" (click)="toggleDropdown(song)">
+                <img class="warning" *ngIf="song.warning" src="assets/svg/warning.svg" alt="Warning"> 
+                <img *ngIf="!song.more" src="assets/svg/more.svg" alt="More" title="View more"> 
             </div>
             <button *ngIf="!song.removing" type="button" class="remove-button" (click)="removeFromPlaylist(song)">Remove</button>
-            <p *ngIf="song.removing" class="loading-text">Removing from playlist...</p>
+            <p *ngIf="song.removing" class="loading-text">Removing...</p>
             <div class="dropdown" [ngClass]="{'open': song.more}">
                 <div *ngIf="song.shouldMove">
                     <p class="info-text"> This song is best suited to playlist 
-                        <span>{{ song.best_fit.name.length > 25 ? song.best_fit.name.slice(0, 25) + '...' : song.best_fit.name }}</span>. <br>
+                        <span title="{{song.best_fit.name}}" >{{ song.best_fit.name.length > 25 ? song.best_fit.name.slice(0, 25) + '...' : song.best_fit.name }}</span>. <br>
                         However, you can still keep it here if you'd like!
                     </p>
                     <p class="bestfit-text" [title]="song.best_fit.name"> Compatibility with  
@@ -106,8 +104,10 @@
                 <img class="view-less" src="assets/svg/less.svg" alt="Less" title="View less" (click)="toggleDropdown(song)">
             </div>
         </li>
+        <li *ngIf="playlist.tracks.total > playlist.songs.length">
+            <div class="load-more">
+                <p (click)="loadMoreTracks()" >load more tracks</p>
+            </div>
+        </li>
     </ul>
-    <div *ngIf="playlist.songs"> 
-        <button type="button" (click)="loadMoreTracks()"> load more</button>
-    </div>
 </div>

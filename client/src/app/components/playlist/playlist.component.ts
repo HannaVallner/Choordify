@@ -16,7 +16,9 @@ export class PlaylistComponent implements OnInit {
   hover_current = false;
   hover_song = false;
   hover_recommended = false;
-  keys = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'speechiness', 'valence']; // to iterate over multiple dictionaries simultaneously
+  displayedSongs: any;
+  keys = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'speechiness', 'valence']; 
+  // to iterate over multiple dictionaries simultaneously
   
   constructor(private spotify: SpotifyService) {}
 
@@ -28,6 +30,7 @@ export class PlaylistComponent implements OnInit {
     // Retrieve the chosen playlist
     this.spotify.getStoredPlaylist().subscribe((response: any) => {
       this.playlist = response;
+      this.displayedSongs = this.playlist.songs.slice(0, 50);
     });
   }
 
@@ -47,7 +50,6 @@ export class PlaylistComponent implements OnInit {
     }
   }
   
-
   // Change selected song's playlist (remove from current playlist and add to best suited one)
   changeTrackPlaylist(track: any) {
     track.loading = true;
@@ -78,10 +80,16 @@ export class PlaylistComponent implements OnInit {
 
   // Load more tracks from the playlist through a request to Spotify
   loadMoreTracks() {
-    this.spotify.loadMoreTracks(this.token, this.playlist).subscribe((response: any) => {
-      const new_tracks = response;
-      console.log(new_tracks);
-    });
+    const previousScrollPosition = window.scrollY;
+    if (this.playlist.songs.length < this.displayedSongs.length) {
+      this.spotify.loadMoreTracks(this.token).subscribe((response: any) => {
+        this.playlist = response;
+      });
+    }
+    this.displayedSongs = this.displayedSongs.concat(this.playlist.songs.slice(
+      this.displayedSongs.length, this.displayedSongs.length + 50));
+
+    window.scrollTo({ top: previousScrollPosition });
   }
 
 }

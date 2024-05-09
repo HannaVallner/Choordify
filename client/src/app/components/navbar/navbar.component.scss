@@ -11,12 +11,22 @@
     align-items: center;
     z-index: 999;
 }
+
 .navbar-brand {
     font-size: 2rem;
     text-decoration: none;
     color: $white;
     font-family: 'Nunito-Bold', sans-serif;
-    margin-left: 15px;
+    margin-left: 10px;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    
+    img {
+        height: 40px;
+        width: 40px;
+        margin-right: 10px;
+    }
 }
 
 .nav-items {

@@ -65,12 +65,6 @@ export class SpotifyService {
     });
   }
 
-  // Returns playlists from backend session management
-  getStoredPlaylists() {
-    return this.http.get('http://localhost:3000/api/stored_playlists', {
-      withCredentials: true
-    });
-  }
 
   // Returns playlists (with compatibility measures and matching sorting) from backend session management
   getCompPlaylists() {
@@ -121,8 +115,8 @@ export class SpotifyService {
   }
 
   // Send a request to get more of the playlist's songs
-  loadMoreTracks(token: string, playlist: any) {
-    return this.http.get(`http://localhost:3000/${token}`, {
+  loadMoreTracks(token: string) {
+    return this.http.get(`http://localhost:3000/api/load-more-tracks?token=${token}`, {
       withCredentials: true
     });
   }

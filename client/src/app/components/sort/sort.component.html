@@ -7,7 +7,7 @@
             <li class="playlist-container" *ngFor="let playlist of playlists; let i = index">   
                 <div class="playlist-content">
                     <img class="playlist-cover" *ngIf="playlist.images" [src]="playlist.images[0]?.url" alt="Playlist Cover">
-                    <img class="playlist-cover" *ngIf="!playlist.images" src="assets/svg/note.svg" alt="Playlist Cover">
+                    <img class="playlist-cover" *ngIf="!playlist.images" src="favicon.ico" alt="Playlist Cover">
                     <div class="playlist-details">
                         <p class="playlist-name" [title]="playlist.name">{{ playlist.name.length > 25 ? playlist.name.slice(0, 25) + '...' : playlist.name }}</p>
                         <p class="playlist-tracks"> {{ playlist.owner['display_name'] }} 
