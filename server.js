@@ -156,10 +156,8 @@ app.get('/api/playlists/:token', function(req, res) {
     request.get(options, (error, response, body) => {
       if (!error && response.statusCode === 200) {
         let unfiltered_playlists = JSON.parse(body).items;
-
         // Initialize an array to store promises for fetching track features
         const trackFeaturePromises = [];
-
         // Filter out playlists curated by Spotify, as they can't be modified
         const playlists = unfiltered_playlists.filter((playlist) => {
           return playlist.owner.display_name !== "Spotify";
@@ -220,8 +218,7 @@ app.get('/api/playlists/:token', function(req, res) {
               playlist.enlargedFeatures = enlargedFeatures;
               return playlist;
             });
-            if (req.session.playlists) {
-            } else {
+            if (!req.session.playlists) {
               // Save playlists with average features in the session
               req.session.playlists = playlistsWithAverages;
               req.session.save();
@@ -322,7 +319,7 @@ app.post('/api/store_playlist', function(req, res) {
 });
 
 // Return previously stored playlist
-app.get('/api/stored_playlist', function(req, res){
+app.get('/api/stored_playlist', function(req, res) {
   if (req.session.playlist) {
     const playlist = req.session.playlist;
     if (!playlist.songs[0].best_fit) {
@@ -335,6 +332,8 @@ app.get('/api/stored_playlist', function(req, res){
       }
       req.session.playlist = playlist;
       req.session.save();
+      res.send(playlist);
+    } else {
       res.send(playlist);
     }
   } else {

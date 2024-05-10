@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm-run-all --parallel start:frontend start:backend",
+    "start:frontend": "cd client && npm start",
+    "start:backend": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -20,5 +23,8 @@
     "express-session": "^1.18.0",
     "querystring": "^0.2.1",
     "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
   }
 }

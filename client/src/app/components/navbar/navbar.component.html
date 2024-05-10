@@ -9,14 +9,13 @@
                 <img class="spotify-img" src="assets/spotify.png" alt="Spotify">
             </button>
         </a>
-
         <a routerLink="/home" class="nav-link" title="Home">
             <img src="assets/svg/home.svg" alt="Home">
         </a>
         <a routerLink="/about" class="nav-link" title="About">
             <img src="assets/svg/about.svg" alt="About">
         </a>
-        <div *ngIf="display_name" class="profile" (click)="toggleDropdown()">
+        <div *ngIf="display_name" class="profile" [class.open]="isDropdown" (click)="toggleDropdown()">
             <img src="assets/svg/profile.svg" alt="Profile"> 
             <p>{{display_name}}</p>
             <div class="dropdown-menu" *ngIf="isDropdown">

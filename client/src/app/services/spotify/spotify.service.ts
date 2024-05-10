@@ -19,6 +19,7 @@ export class SpotifyService {
     });
   }
 
+  // Get current user's main info
   getUserInfo(token: string) {
     if (!this.userinfo) {
       const response = this.http.get('http://localhost:3000/api/user/info', {
@@ -45,6 +46,7 @@ export class SpotifyService {
     });
   }
 
+  // Store the selected playlist in session management
   storePlaylist(playlist: any) {
     return this.http.post('http://localhost:3000/api/store_playlist', playlist, {
       withCredentials: true,
@@ -52,6 +54,7 @@ export class SpotifyService {
     });
   }
 
+  // Retrieve the selected playlist from session managemet
   getStoredPlaylist() {
     return this.http.get('http://localhost:3000/api/stored_playlist', {
       withCredentials: true
@@ -65,14 +68,12 @@ export class SpotifyService {
     });
   }
 
-
   // Returns playlists (with compatibility measures and matching sorting) from backend session management
   getCompPlaylists() {
     return this.http.get('http://localhost:3000/api/comp_playlists', {
       withCredentials: true
     });
   }
-
 
   // Adds tracks to a given playlist
   addPlaylistTracks(token: string, playlistId: string, trackURIs: string[]) {
@@ -121,10 +122,4 @@ export class SpotifyService {
     });
   }
 
-  // Send a request to get more of the user's playlists
-  loadMorePlaylists() {
-    return this.http.get(`http://localhost:3000/api/playlists/`, {
-      withCredentials: true
-    });                                 
-  }
 }

@@ -203,7 +203,7 @@
     padding-top: 5px;
     width: 850px;
     max-height: 53vh;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .tracks-container::-webkit-scrollbar {
@@ -223,6 +223,10 @@
     background-color: #494646; 
 }
 
+.test {
+    position: absolute;
+    right: 0px;
+}
 
 .track {
     display: flex;
@@ -412,6 +416,7 @@
     opacity: 0.6;
     color: $white;
     text-decoration: none;
+    cursor: pointer;
 }
   
 .view-more:hover {
@@ -426,9 +431,41 @@
     opacity: 0.6;
     color: $white;
     text-decoration: none;
+    cursor: pointer;
 }
   
 .view-less:hover {
     opacity: 1;
 }
 
+.load-more {
+    margin-top: 10px;
+    bottom: 10px; 
+    margin-left: 340px;
+    opacity: 0.7;
+    width: 200px;
+}
+
+.load-more:hover {
+    opacity: 1;
+}
+
+.load-more-text {
+    margin-top: 10px;
+    bottom: 10px; 
+    margin-left: 340px;
+    width: 200px;
+    opacity: 0.7;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.load-more-text:hover {
+    opacity: 1;
+}
+
+.loading-more-text {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}

@@ -30,18 +30,15 @@ form {
     position: relative;
 }
 
-button {
-    width: 150px !important; 
-}
-
-.disabled-button {
-    pointer-events: none;
+.disabled {
     opacity: 0.5;
     cursor: default;
     position: relative;
+    pointer-events: none;
 }
 
 .disabled-button:hover:before {
+    cursor: default;
     content: "Please select a track first"; 
     position: absolute;
     background-color: $white;
@@ -55,6 +52,10 @@ button {
     left: 50%; 
     transform: translateX(-50%); 
     white-space: nowrap;
+}
+
+button {
+    width: 150px !important; 
 }
 
 .dropdown {

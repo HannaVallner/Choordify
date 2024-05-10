@@ -73,13 +73,16 @@
     margin-left: auto; 
     margin-bottom: 5px;
     padding-left: 20px;
-    background-color: #343131;
+    background-color: $medium-grey;
     border-radius: 30px;
     width: 180px;
     opacity: 0.6;
-    transition: opacity 0.3s ease;
-    transition: background-color 0.3s ease;
     cursor: pointer;
+}
+
+.profile.open {
+    background-color: #555;
+    opacity: 1;
 }
 
 .profile:hover {
@@ -94,9 +97,10 @@
 }
 
 .dropdown-menu {
-    background-color: #343131;
     position: absolute;
     top: calc(100% + 10px);
+    border-width: 3px;
+    border-color: $light-grey;
     right: 5px;
     width: 190px;
     z-index: 1000;
@@ -106,12 +110,16 @@
 
 
 .dropdown-item {
+    background-color: $dark-grey;
     display: block;
-    color: $white;
+    color: #d2cfcfe9;
     text-decoration: none;
     padding: 10px;
+    opacity: 0.8;
 }
 
 .dropdown-item:hover {
     background-color: #555;
+    color: $white;
+    opacity: 1;
 }

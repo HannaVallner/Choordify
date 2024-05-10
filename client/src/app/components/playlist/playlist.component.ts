@@ -17,6 +17,7 @@ export class PlaylistComponent implements OnInit {
   hover_song = false;
   hover_recommended = false;
   displayedSongs: any;
+  loading_more = false;
   keys = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'speechiness', 'valence']; 
   // to iterate over multiple dictionaries simultaneously
   
@@ -78,18 +79,25 @@ export class PlaylistComponent implements OnInit {
     });
   }
 
-  // Load more tracks from the playlist through a request to Spotify
+  // Load more tracks from the playlist
   loadMoreTracks() {
+    this.loading_more = true;
     const previousScrollPosition = window.scrollY;
-    if (this.playlist.songs.length < this.displayedSongs.length) {
+    // If the total loaded amount is equal to currently displayed amount, make a request to Spotify
+    if (this.playlist.songs.length == this.displayedSongs.length) {
       this.spotify.loadMoreTracks(this.token).subscribe((response: any) => {
         this.playlist = response;
+        this.loading_more = false;
+        this.displayedSongs = this.displayedSongs.concat(this.playlist.songs
+          .slice(this.displayedSongs.length, this.displayedSongs.length + 50));
+        window.scrollTo({ top: previousScrollPosition });
       });
-    }
-    this.displayedSongs = this.displayedSongs.concat(this.playlist.songs.slice(
-      this.displayedSongs.length, this.displayedSongs.length + 50));
 
-    window.scrollTo({ top: previousScrollPosition });
+    } else {
+        this.displayedSongs = this.displayedSongs.concat(this.playlist.songs
+          .slice(this.displayedSongs.length, this.displayedSongs.length + 50));
+        window.scrollTo({ top: previousScrollPosition });
+    }
   }
 
 }

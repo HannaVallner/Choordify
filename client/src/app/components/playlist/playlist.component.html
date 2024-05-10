@@ -58,8 +58,8 @@
             </ul>
         </div>
     </div>
-    <ul class="tracks-container" *ngIf="playlist.songs">
-        <li class="track" *ngFor="let song of playlist.songs" [ngClass]="{'open-dropdown': song.more}">  
+    <ul class="tracks-container" *ngIf="displayedSongs">
+        <li class="track" *ngFor="let song of displayedSongs" [ngClass]="{'open-dropdown': song.more}">  
             <img class="track-cover" *ngIf="song.album && song.album.images && song.album.images.length > 0"
                 [src]="song.album.images[0].url" alt="Track cover">
             <div class="track-details">
@@ -76,7 +76,7 @@
                 </div>
             </div>
             <div *ngIf="!song.more" class="view-more" (click)="toggleDropdown(song)">
-                <img class="warning" *ngIf="song.warning" src="assets/svg/warning.svg" alt="Warning"> 
+                <img class="warning" *ngIf="song.warning" src="assets/svg/warning.svg" alt="Warning" title="Much better suited playlist found"> 
                 <img *ngIf="!song.more" src="assets/svg/more.svg" alt="More" title="View more"> 
             </div>
             <button *ngIf="!song.removing" type="button" class="remove-button" (click)="removeFromPlaylist(song)">Remove</button>
@@ -104,10 +104,9 @@
                 <img class="view-less" src="assets/svg/less.svg" alt="Less" title="View less" (click)="toggleDropdown(song)">
             </div>
         </li>
-        <li *ngIf="playlist.tracks.total > playlist.songs.length">
-            <div class="load-more">
-                <p (click)="loadMoreTracks()" >load more tracks</p>
-            </div>
+        <li *ngIf="playlist.tracks.total > displayedSongs.length">
+            <p *ngIf="!loading_more" class="load-more-text" (click)="loadMoreTracks()">Load more tracks</p>
+            <p *ngIf="loading_more" class="loading-more-text">Loading more tracks...</p>
         </li>
     </ul>
 </div>
