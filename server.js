@@ -828,31 +828,4 @@ function filterFeatures(features) {
   return {filteredFeatures, enlargedFeatures};
 }
 
-/* 
-
-// Function to normalize features
-function normalizeFeatures(features) {
-  const normalizedFeatures = {};
-  const minMaxValues = {
-    "acousticness": [0, 1],
-    "danceability": [0, 1],
-    "energy": [0, 1],
-    "instrumentalness": [0, 1],
-    "liveness": [0, 1],
-    "speechiness": [0, 1],
-    "valence": [0, 1]
-  };
-  for (const feature in minMaxValues) {
-    if (features.hasOwnProperty(feature)) {
-      const value = features[feature];
-      const [min, max] = minMaxValues[feature];
-      normalizedFeatures[feature] = (value - min) / (max - min);
-    }
-  }
-  return normalizedFeatures;
-}
-*/
-
-app.listen(3000, () => { 
-	console.log('Server listening on port 3000'); 
-});
+app.listen(3000, () => console.log(`API running on localhost:`));
