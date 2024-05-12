@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../../services/spotify/spotify.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add',
@@ -15,7 +16,7 @@ export class AddComponent implements OnInit {
   filteredResults: any[] = [];
   isSelected = false;
 
-  constructor(private spotify: SpotifyService) {
+  constructor(private spotify: SpotifyService, private router: Router) {
   }
 
   ngOnInit() {
@@ -29,20 +30,19 @@ export class AddComponent implements OnInit {
     this.isSelected = false;
     sessionStorage.setItem('trackId', '');
     this.input = event.target.value;
-    this.toggleSearch();
-  }
-
-  toggleSearch() {
-    if (this.input != '') {
-      this.spotify.searchForTracks(this.token, this.input).subscribe(
-        (response: any) => {
-          this.searchResults = response.tracks.items;
-          this.filterResults();
-        },
-      );
+    if(this.input != '') {
+      this.toggleSearch();
     } else {
       this.searchResults = [];
     }
+  }
+
+  toggleSearch() {
+    this.spotify.searchForTracks(this.token, this.input).subscribe(
+      (response: any) => {
+        this.searchResults = response.tracks.items;
+        //this.filterResults();
+    });
   }
   
   filterResults() {
@@ -62,8 +62,14 @@ export class AddComponent implements OnInit {
 
     this.spotify.toggleTrack(this.token, result.id).subscribe(
       () => {
-      }
-    );
+
+      });
+  }
+
+  submitResult() {
+    if (this.isSelected) {
+      this.router.navigate(['/compatibility']);
+    }
   }
  
 }

@@ -59,8 +59,6 @@ export class CompatibilityComponent implements OnInit {
     }
   }
 
-
-
   // Add selected track to selected playlist
   addToPlaylist(playlist: any) {
     playlist.loading = true;
@@ -70,7 +68,6 @@ export class CompatibilityComponent implements OnInit {
         playlist.loading = false;
       });
   }
-  
 
   // Create a new playlist (upon "create" button click)
   createPlaylist() {

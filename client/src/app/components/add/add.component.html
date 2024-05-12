@@ -1,15 +1,14 @@
 <app-navbar></app-navbar>
 <div class="outer-container">
     <div class="inner-container">
-        <p class="instructions">To find your desired song, simply enter its <span>title or artist's name</span> in the field below</p>
+        <p class="instructions">To find your desired song, simply enter its <span>title or artist's name</span> <br> in the field below 
+        and <span>select</span> it from the results</p>
         <form>
             <input type="text" placeholder="Search for a track" [(ngModel)]="input" name="input" 
             class="search-input" (input)="onInput($event)" autocomplete="off">
-            <a routerLink="/compatibility">
-                <button type="button" [disabled]="!isSelected" [ngClass]="{'disabled-button': !isSelected}"> SUBMIT </button>
-            </a>
+            <button type="button" [ngClass]="{'disabled-button': !isSelected}" (click)="submitResult" > SUBMIT </button>
         </form>
-        <div class="dropdown" *ngIf="searchResults.length > 0">
+        <div class="dropdown" *ngIf="searchResults.length > 0 && input.length > 0">
             <ul>
                 <li *ngFor="let result of searchResults" (click)="selectResult(result)">
                     {{ result.artists[0].name }} - {{ result.name }}
