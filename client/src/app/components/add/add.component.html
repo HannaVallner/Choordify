@@ -6,7 +6,7 @@
         <form>
             <input type="text" placeholder="Search for a track" [(ngModel)]="input" name="input" 
             class="search-input" (input)="onInput($event)" autocomplete="off">
-            <button type="button" [ngClass]="{'disabled-button': !isSelected}" (click)="submitResult" > SUBMIT </button>
+            <button type="button" [ngClass]="{'disabled-button': !isSelected}" (click)="submitResult()" > SUBMIT </button>
         </form>
         <div class="dropdown" *ngIf="searchResults.length > 0 && input.length > 0">
             <ul>
