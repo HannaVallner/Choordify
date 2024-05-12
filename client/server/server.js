@@ -369,13 +369,25 @@ app.get('/api/stored_playlist', function(req, res) {
               playlists.push(doc.data());
             });
             findBestFitPlaylist(playlist, playlists);
-            const playlistIndex = playlists.findIndex(p => p.id === playlist.id);
-            console.log(playlistIndex);
-            res.send(playlist);
+             // Update the playlist in the 'playlists' collection
+            res.send(playlist); 
+            /** 
+            db.collection('playlists').doc(playlist.id).update({
+              songs: playlist.songs
+            })
+            .then(() => {
+              console.log("Playlist updated in 'playlists' collection");
+              res.send(playlist); 
+            })
+            .catch(error => {
+              console.error("Error updating playlist in 'playlists' collection:", error);
+              res.status(500).send(error);
+            });
+            */
           })
         }
         else {
-          res.send(playlist); // Send the playlist data as the response
+          res.send(playlist); 
         }
       } else {
         console.log("No playlist found");
@@ -390,11 +402,14 @@ app.get('/api/stored_playlist', function(req, res) {
 
 // Return previously stored playlists, with compatibility measures and appropriate sorting
 app.get('/api/comp_playlists', function(req, res) {
-  db.collection('comp_playlist').get()
+  db.collection('comp_playlists').get()
     .then(snapshot => {
       if (!snapshot.empty) {
-        const comp_playlistDoc = snapshot.docs[0];
-        const comp_playlists = comp_playlistDoc.data();
+        const comp_playlists = [];
+        snapshot.forEach(doc => {
+          comp_playlists.push(doc.data());
+        });
+        comp_playlists.sort((a, b) => b.compatibility - a.compatibility);
         res.send(comp_playlists);
       } else {
         res.status(404).send("No playlists found");
@@ -448,45 +463,51 @@ app.get('/api/tracks/:trackId', function(req, res) {
       request.get(featuresOptions, (featuresError, featuresResponse, featuresBody) => {
         if (!featuresError && featuresResponse.statusCode === 200) {
           let features = JSON.parse(featuresBody);
-
           const {filteredFeatures, enlargedFeatures} = filterFeatures(features);
           // Attach the normalized features to the track object
           track.features = filteredFeatures;
           track.enlargedFeatures = enlargedFeatures;
 
           // Calculate compatibility of each playlist with the track features
-          let playlists = req.session.playlists.slice();
-
-          playlists.forEach((playlist) => {
-            const compatibility = calculateCompatibility(features, playlist.features);
-            playlist.compatibility = compatibility;
-            // Store playlists and track in database
-            db.collection('comp_playlists').doc(playlist.compatibility).set(playlist)
-            .then(() => {
-              console.log("Playlist saved to Firestore:", playlist.id);
-            })
-            .catch((error) => {
-              console.error("Error saving playlist to Firestore:", error);
-            });
+          db.collection('playlists').get()
+          .then(snapshot => {
+            if (!snapshot.empty) {
+              const playlists = [];
+              snapshot.forEach(doc => {
+                playlists.push(doc.data());
+              });
+              playlists.forEach((playlist) => {
+                const compatibility = calculateCompatibility(features, playlist['features']);
+                playlist.compatibility = compatibility;
+                // Store playlists and track in database
+                db.collection('comp_playlists').doc(playlist.compatibility.toString()).set(playlist)
+                .then(() => {
+                  console.log("Playlist saved to Firestore:", playlist.id);
+                })
+                .catch((error) => {
+                  console.error("Error saving playlist to Firestore:", error);
+                });
+              });
+              /*
+              // Order playlists based on compatibility
+              playlists.sort((a, b) => {
+                // If either of the playlist has no songs, move it to the end of the list
+                if (!a.tracks || a.tracks['total'] === 0) return 1;
+                if (!b.tracks || b.tracks['total'] === 0) return -1; 
+                // Otherwise, sort based on compatibility
+                return b.compatibility - a.compatibility;
+              });
+              */
+              db.collection('track').doc('selected_track').set(track)
+              .then(() => {
+                console.log("Track saved to Firestore:", track.id);
+              })
+              .catch((error) => {
+                console.error("Error saving track to Firestore:", error);
+              });
+              res.send(track);
+            }
           });
-          /*
-          // Order playlists based on compatibility
-          playlists.sort((a, b) => {
-            // If either of the playlist has no songs, move it to the end of the list
-            if (!a.tracks || a.tracks['total'] === 0) return 1;
-            if (!b.tracks || b.tracks['total'] === 0) return -1; 
-            // Otherwise, sort based on compatibility
-            return b.compatibility - a.compatibility;
-          });
-          */
-          db.collection('track').doc('selected_track').set(track)
-          .then(() => {
-            console.log("Track saved to Firestore:", track.id);
-          })
-          .catch((error) => {
-            console.error("Error saving track to Firestore:", error);
-          });
-          res.send(track);
         } else {
           console.error("Error getting track features:", featuresError);
           res.status(featuresResponse.statusCode).send(featuresError);
@@ -497,7 +518,6 @@ app.get('/api/tracks/:trackId', function(req, res) {
       res.status(trackResponse.statusCode).send(error);
     }
   });
-  
 });
 
 // Get user info
