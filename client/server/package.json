@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm-run-all --parallel start:frontend start:backend",
-    "start:frontend": "cd client && npm start",
-    "start:backend": "node server.js"
+    "start": "npm-run-all --parallel start:frontend start:backend"
   },
   "keywords": [],
   "author": "",
@@ -15,15 +13,19 @@
   "dependencies": {
     "@angular/cli": "^17.3.2",
     "@angular/material": "^17.3.4",
+    "connect-redis": "^7.1.1",
     "cookie-parser": "^1.4.6",
+    "cookieparser": "^0.1.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "express": "^4.19.2",
     "express-rate-limit": "^7.2.0",
     "express-session": "^1.18.0",
     "http": "^0.0.1-security",
+    "mongoose": "^8.3.4",
     "path": "^0.12.7",
     "querystring": "^0.2.1",
+    "redis": "^4.6.13",
     "request": "^2.88.2"
   },
   "devDependencies": {

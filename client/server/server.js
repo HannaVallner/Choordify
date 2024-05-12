@@ -1,14 +1,12 @@
 const express = require('express'); 
 const request = require('request');
 const crypto = require('crypto');
-const cors = require('cors');
 const session = require('express-session');
 const querystring = require('querystring');
 const cookieParser = require('cookie-parser');
 const path = require('path');
-
 const app = express(); 
-const port = 3000;
+const port = 1000;
 
 var client_id = 'a52b1c6ae851463b8614c146866ecf5d';
 var client_secret = '971ded7463eb4998b5d5d269a02a3022';
@@ -26,10 +24,7 @@ const generateRandomString = (length) => {
 
 /*              MIDDLEWARE SETUP             */
 
-app.use(cors({
-  origin: ['http://localhost:3000'], 
-  credentials: true,
- }));
+
 
  app.use(session({
   secret: 'muumitroll',
@@ -37,7 +32,9 @@ app.use(cors({
   saveUninitialized: true
 }));
 
+
 app.use(express.static(path.join(__dirname, '../dist/client/browser')));
+//app.use(express.static(__dirname + '../client'));
 app.use(cookieParser());
 app.use(express.json({ limit: '100mb' }));
 
@@ -53,7 +50,6 @@ app.get("/spotify/auth", function(req, res) {
     "user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private";
   
   var redirect_uri = req.protocol + '://' + req.get('host') + '/callback';
-  console.log(redirect_uri);
   res.redirect(
     "https://accounts.spotify.com/authorize?" +
       querystring.stringify({
@@ -832,6 +828,8 @@ function filterFeatures(features) {
   }
   return {filteredFeatures, enlargedFeatures};
 }
+
+
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/client/browser/index.html'));
