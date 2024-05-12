@@ -12,8 +12,7 @@ const port = 3000;
 
 var client_id = 'a52b1c6ae851463b8614c146866ecf5d';
 var client_secret = '971ded7463eb4998b5d5d269a02a3022';
-var redirect_uri = 'http://localhost:3000/callback'; 
-var basePath = 'http://localhost:3000/home';
+var basePath = '/home';
 var stateKey = 'spotify_auth_state';
 
 
@@ -23,7 +22,6 @@ const generateRandomString = (length) => {
     .toString('hex')
     .slice(0, length);
 }
-
 
 
 /*              MIDDLEWARE SETUP             */
@@ -53,6 +51,9 @@ app.get("/spotify/auth", function(req, res) {
   res.cookie(stateKey, state);
   var scope =
     "user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private";
+  
+  var redirect_uri = req.protocol + '://' + req.get('host') + '/callback';
+  console.log(redirect_uri);
   res.redirect(
     "https://accounts.spotify.com/authorize?" +
       querystring.stringify({
@@ -71,7 +72,8 @@ app.get("/callback/", function(req, res) {
     var code = req.query.code || null;
     var state = req.query.state || null;
     var storedState = req.cookies ? req.cookies[stateKey] : null;
-  
+    var redirect_uri = req.protocol + '://' + req.get('host') + '/callback';
+
     if (state === null || state !== storedState) {
       res.redirect(
         "/#" +

@@ -9,14 +9,15 @@ import { Router } from '@angular/router';
 })
 
 export class LoginComponent implements OnInit {
+  url = window.location.href;
 
   constructor(private authService: AuthService, private router: Router) { }; 
 
 	ngOnInit() { 
+
     if (this.authService.checkAuthenticated()) {
       this.router.navigate(['/home']);
     }
 	} 
-
 
 }

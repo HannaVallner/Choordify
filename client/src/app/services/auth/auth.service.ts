@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { SpotifyService } from '../spotify/spotify.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +13,7 @@ export class AuthService {
   params = '';
   rawParams = '';
 
-  constructor(private router: Router, private spotify: SpotifyService) { }
+  constructor(private router: Router) { }
 
   
   setAuthenticated() {
