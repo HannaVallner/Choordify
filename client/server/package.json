@@ -21,6 +21,8 @@
     "express": "^4.19.2",
     "express-rate-limit": "^7.2.0",
     "express-session": "^1.18.0",
+    "firebase": "^10.11.1",
+    "firebase-admin": "^12.1.0",
     "http": "^0.0.1-security",
     "mongoose": "^8.3.4",
     "path": "^0.12.7",

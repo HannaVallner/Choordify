@@ -6,6 +6,7 @@ const querystring = require('querystring');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const app = express(); 
+
 const port = 1000;
 
 var client_id = 'a52b1c6ae851463b8614c146866ecf5d';
@@ -22,8 +23,25 @@ const generateRandomString = (length) => {
 }
 
 
-/*              MIDDLEWARE SETUP             */
+/*                DATABASE SETUP                   */
 
+const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
+const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
+
+const serviceAccount = require('./choordify-37264-633a79bc20d2.json');
+
+initializeApp({
+  credential: cert(serviceAccount)
+});
+
+const db = getFirestore();
+
+
+
+
+
+
+/*               MIDDLEWARE SETUP                */
 
 
  app.use(session({
@@ -143,98 +161,109 @@ app.get('/refresh_token', function(req, res) {
 
 // Get playlists with average features
 app.get('/api/playlists/:token', function(req, res) {
-  if (req.session.playlists) {
-    res.send(req.session.playlists);
-  } else {
-    const token = req.params.token;
-      // Get all playlists with an API call
-    const options = {
-      url: 'https://api.spotify.com/v1/me/playlists?limit=50&offset=0',
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    };
-    request.get(options, (error, response, body) => {
-      if (!error && response.statusCode === 200) {
-        let unfiltered_playlists = JSON.parse(body).items;
-        // Initialize an array to store promises for fetching track features
-        const trackFeaturePromises = [];
-        // Filter out playlists curated by Spotify, as they can't be modified
-        const playlists = unfiltered_playlists.filter((playlist) => {
-          return playlist.owner.display_name !== "Spotify";
-        });
-        // Fetch all tracks' for each playlist
-        playlists.forEach((playlist) => {
-          const playlistId = playlist.id;
-          let offset = 0;
-          const tracksOptions = {
-            url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50&offset=${offset}`,
-            headers: {
-              'Authorization': 'Bearer ' + token
-            }
-          };
-          trackFeaturePromises.push(new Promise((resolve, reject) => {
-            request.get(tracksOptions, (error, response, body) => {
-              if (!error && response.statusCode === 200) {
-                const trackItems = JSON.parse(body).items;
-                // Attach tracks to playlist
-                playlist.songs = trackItems.map(item => item.track);
-                // Extract track IDs
-                const trackIds = trackItems.map((item) => item.track.id).join(',');
-                // Fetch track features for all tracks
-                const featuresOptions = {
-                  url: `https://api.spotify.com/v1/audio-features?ids=${trackIds}`,
-                  headers: {
-                    'Authorization': 'Bearer ' + token
-                  }
-                };
-                request.get(featuresOptions, (error, response, body) => {
-                  if (!error && response.statusCode === 200) {
-                    const trackFeatures = JSON.parse(body).audio_features;
-                    playlist.songs.forEach((song, index) => {
-                      const features = trackFeatures[index];
-                      const {filteredFeatures, enlargedFeatures} = filterFeatures(features);
-                      song.features = filteredFeatures; 
-                      song.enlargedFeatures = enlargedFeatures;
-                    });
-                    resolve(trackFeatures);
-                  } else {
-                    reject(error);
-                  }
-                });
-              } else {
-                reject(error);
-              }
-            });
-          }));
-        });
-
-        // Wait for all track features to be fetched
-        Promise.all(trackFeaturePromises).then((playlistTracksFeatures) => {
-              // Calculate average features for each playlist
-              const playlistsWithAverages = playlists.map((playlist, index) => {
-              const trackFeatures = playlistTracksFeatures[index];
-              const { averageFeatures, enlargedFeatures } = calculatePlaylistAverages(trackFeatures);
-              playlist.features = averageFeatures;
-              playlist.enlargedFeatures = enlargedFeatures;
-              return playlist;
-            });
-            if (!req.session.playlists) {
-              // Save playlists with average features in the session
-              req.session.playlists = playlistsWithAverages;
-              req.session.save();
-            }
-            res.send(playlistsWithAverages);
-          })
-          .catch((error) => {
-            console.error("Error fetching track features:", error);
-            res.status(500).send(error);
+  db.collection('playlists').get()
+  .then(snapshot => {
+    if (!snapshot.empty) {
+      const playlists = [];
+      snapshot.forEach(doc => {
+        playlists.push(doc.data());
+      });
+    res.send(playlists);
+    } 
+    else {
+      const token = req.params.token;
+        // Get all playlists with an API call
+      const options = {
+        url: 'https://api.spotify.com/v1/me/playlists?limit=50&offset=0',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      };
+      request.get(options, (error, response, body) => {
+        if (!error && response.statusCode === 200) {
+          let unfiltered_playlists = JSON.parse(body).items;
+          // Initialize an array to store promises for fetching track features
+          const trackFeaturePromises = [];
+          // Filter out playlists curated by Spotify, as they can't be modified
+          const playlists = unfiltered_playlists.filter((playlist) => {
+            return playlist.owner.display_name !== "Spotify";
           });
-      } else {
-        res.status(response.statusCode).send(error);
-      }
-    });
-  }
+          // Fetch all tracks' for each playlist
+          playlists.forEach((playlist) => {
+            const playlistId = playlist.id;
+            let offset = 0;
+            const tracksOptions = {
+              url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50&offset=${offset}`,
+              headers: {
+                'Authorization': 'Bearer ' + token
+              }
+            };
+            trackFeaturePromises.push(new Promise((resolve, reject) => {
+              request.get(tracksOptions, (error, response, body) => {
+                if (!error && response.statusCode === 200) {
+                  const trackItems = JSON.parse(body).items;
+                  // Attach tracks to playlist
+                  playlist.songs = trackItems.map(item => item.track);
+                  // Extract track IDs
+                  const trackIds = trackItems.map((item) => item.track.id).join(',');
+                  // Fetch track features for all tracks
+                  const featuresOptions = {
+                    url: `https://api.spotify.com/v1/audio-features?ids=${trackIds}`,
+                    headers: {
+                      'Authorization': 'Bearer ' + token
+                    }
+                  };
+                  request.get(featuresOptions, (error, response, body) => {
+                    if (!error && response.statusCode === 200) {
+                      const trackFeatures = JSON.parse(body).audio_features;
+                      playlist.songs.forEach((song, index) => {
+                        const features = trackFeatures[index];
+                        const {filteredFeatures, enlargedFeatures} = filterFeatures(features);
+                        song.features = filteredFeatures; 
+                        song.enlargedFeatures = enlargedFeatures;
+                      });
+                      resolve(trackFeatures);
+                    } else {
+                      reject(error);
+                    }
+                  });
+                } else {
+                  reject(error);
+                }
+              });
+            }));
+          });
+
+          // Wait for all track features to be fetched
+          Promise.all(trackFeaturePromises).then((playlistTracksFeatures) => {
+                // Calculate average features for each playlist
+                const playlistsWithAverages = playlists.map((playlist, index) => {
+                const trackFeatures = playlistTracksFeatures[index];
+                const { averageFeatures, enlargedFeatures } = calculatePlaylistAverages(trackFeatures);
+                playlist.features = averageFeatures;
+                playlist.enlargedFeatures = enlargedFeatures;
+                // Save playlists in Firebase 
+                db.collection('playlists').doc(playlist.id).set(playlist)
+                  .then(() => {
+                    console.log("Playlist saved to Firestore:", playlist.id);
+                  })
+                  .catch((error) => {
+                    console.error("Error saving playlist to Firestore:", error);
+                  });
+                return playlist;
+              });
+              res.send(playlistsWithAverages);
+            })
+            .catch((error) => {
+              console.error("Error fetching track features:", error);
+              res.status(500).send(error);
+            });
+        } else {
+          res.status(response.statusCode).send(error);
+        }
+      });
+    }
+  });
 });
 
 
@@ -314,50 +343,83 @@ app.get('/api/search/tracks', function(req, res) {
 // Store chosen playlist
 app.post('/api/store_playlist', function(req, res) {
   const playlist = req.body; 
-    req.session.playlist = playlist; 
-    req.session.save(); 
+  db.collection('playlist').doc('chosen_playlist').set(playlist)
+  .then(() => {
+    console.log("Playlist stored successfully:", playlist.id);
     res.status(200).send("Playlist stored successfully");
+  })
+  .catch(error => {
+    console.error("Error storing playlist:", error);
+    res.status(500).send(error);
+  });
 });
 
 // Return previously stored playlist
 app.get('/api/stored_playlist', function(req, res) {
-  if (req.session.playlist) {
-    const playlist = req.session.playlist;
-    if (!playlist.songs[0].best_fit) {
-      findBestFitPlaylist(playlist, req.session.playlists);
-      const playlistIndex = req.session.playlists.findIndex(p => p.id === playlist.id);
-      req.session.playlists[playlistIndex] = playlist;
-      if (req.session.comp_playlists) {
-        const comp_playlistIndex = req.session.comp_playlists.findIndex(p => p.id === playlist.id);
-        req.session.comp_playlists[comp_playlistIndex] = playlist;
+  db.collection('playlist').get('chosen_playlist')
+    .then(snapshot => {
+      if (!snapshot.empty) {
+        const playlistDoc = snapshot.docs[0];
+        const playlist = playlistDoc.data();
+        if (!playlist.songs[0].best_fit){
+          db.collection('playlists').get()
+          .then(snapshot2 => {
+            const playlistsDoc = snapshot2.docs[0];
+            const playlists = playlistsDoc.data()
+            findBestFitPlaylist(playlist, playlists);
+            const playlistIndex = playlists.findIndex(p => p.id === playlist.id);
+            console.log(playlistIndex);
+            res.send(playlist);
+          })
+        }
+        else {
+          res.send(playlist); // Send the playlist data as the response
+        }
+      } else {
+        console.log("No playlist found");
+        res.status(404).send("No playlist found");
       }
-      req.session.playlist = playlist;
-      req.session.save();
-      res.send(playlist);
-    } else {
-      res.send(playlist);
-    }
-  } else {
-    res.status(404).send("No playlist found");
-  }
+    })
+    .catch(error => {
+      console.error("Error getting stored playlist:", error);
+      res.status(500).send(error);
+    });
 });
 
 // Return previously stored playlists, with compatibility measures and appropriate sorting
-app.get('/api/comp_playlists', function(req, res){
-  if (req.session.comp_playlists) {
-    res.send(req.session.comp_playlists);
-  } else {
-    res.status(404).send("No playlists found");
-  }
-})
+app.get('/api/comp_playlists', function(req, res) {
+  db.collection('comp_playlist').get()
+    .then(snapshot => {
+      if (!snapshot.empty) {
+        const comp_playlistDoc = snapshot.docs[0];
+        const comp_playlists = comp_playlistDoc.data();
+        res.send(comp_playlists);
+      } else {
+        res.status(404).send("No playlists found");
+      }
+  })
+  .catch(error => {
+    console.error("Error getting stored comp playlists:", error);
+    res.status(500).send(error);
+  });
+});
 
 // Return previously stored track
 app.get('/api/stored_track', function(req, res) {
-  if (req.session.track) {
-    res.send(req.session.track);
-  } else {
-    res.status(404).send("No track found");
-  }
+  db.collection('track').get()
+  .then(snapshot => {
+    if (!snapshot.empty) {
+      const trackDoc = snapshot.docs[0];
+      const track = trackDoc.data();
+      res.send(track);
+    } else {
+      res.status(404).send("No track found");
+    }
+  })
+  .catch(error => {
+    console.error("Error getting stored track:", error);
+    res.status(500).send(error);
+  });
 });
 
 // Get chosen track with filtered and normalized features
@@ -395,8 +457,16 @@ app.get('/api/tracks/:trackId', function(req, res) {
           playlists.forEach((playlist) => {
             const compatibility = calculateCompatibility(features, playlist.features);
             playlist.compatibility = compatibility;
+            // Store playlists and track in database
+            db.collection('comp_playlists').doc(playlist.compatibility).set(playlist)
+            .then(() => {
+              console.log("Playlist saved to Firestore:", playlist.id);
+            })
+            .catch((error) => {
+              console.error("Error saving playlist to Firestore:", error);
+            });
           });
-
+          /*
           // Order playlists based on compatibility
           playlists.sort((a, b) => {
             // If either of the playlist has no songs, move it to the end of the list
@@ -405,12 +475,14 @@ app.get('/api/tracks/:trackId', function(req, res) {
             // Otherwise, sort based on compatibility
             return b.compatibility - a.compatibility;
           });
-
-          // Store playlists and track in session management
-          req.session.comp_playlists = playlists;
-          req.session.track = track;
-          req.session.save();
-
+          */
+          db.collection('track').doc('selected_track').set(track)
+          .then(() => {
+            console.log("Track saved to Firestore:", track.id);
+          })
+          .catch((error) => {
+            console.error("Error saving track to Firestore:", error);
+          });
           res.send(track);
         } else {
           console.error("Error getting track features:", featuresError);
@@ -428,25 +500,39 @@ app.get('/api/tracks/:trackId', function(req, res) {
 // Get user info
 app.get('/api/user/info', function(req, res) {
   const token = req.query.token;
-  if (req.session.user) {
-    res.send(req.session.user);
-  } else {
-    const options = {
-      url: 'https://api.spotify.com/v1/me',
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    };
-    request.get(options, (error, response, body) => {
-      if (!error && response.statusCode === 200) {
-        req.session.user = JSON.parse(body);
-        req.session.save();
-        res.send(body);
-      } else {
-        res.status(response.statusCode).send(error);
-      }
-    });
-  }
+
+  db.collection('user').get()
+  .then(snapshot => {
+    if (!snapshot.empty) {
+      const userDoc = snapshot.docs[0];
+      const user = userDoc.data();
+      res.send(user);
+    } else {
+      const options = {
+        url: 'https://api.spotify.com/v1/me',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      };
+      request.get(options, (error, response, body) => {
+        if (!error && response.statusCode === 200) {
+          const user = JSON.parse(body);
+          db.collection('user').doc(user.id).set(user)
+          .then(() => {
+            console.log("User saved to Firestore:", user.id);
+          })
+          .catch((error) => {
+            console.error("Error saving track to Firestore:", error);
+          });
+          res.send(body);
+        } else {
+          res.status(response.statusCode).send(error);
+        }
+      });
+    }
+  }).catch((error) => {
+    console.error("Error getting user from Firestore:", error);
+  });
 });
 
 // Create a new playlist and add the selected track to it
