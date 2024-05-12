@@ -364,8 +364,10 @@ app.get('/api/stored_playlist', function(req, res) {
         if (!playlist.songs[0].best_fit){
           db.collection('playlists').get()
           .then(snapshot2 => {
-            const playlistsDoc = snapshot2.docs[0];
-            const playlists = playlistsDoc.data()
+            const playlists = [];
+            snapshot2.forEach(doc => {
+              playlists.push(doc.data());
+            });
             findBestFitPlaylist(playlist, playlists);
             const playlistIndex = playlists.findIndex(p => p.id === playlist.id);
             console.log(playlistIndex);
@@ -454,6 +456,7 @@ app.get('/api/tracks/:trackId', function(req, res) {
 
           // Calculate compatibility of each playlist with the track features
           let playlists = req.session.playlists.slice();
+
           playlists.forEach((playlist) => {
             const compatibility = calculateCompatibility(features, playlist.features);
             playlist.compatibility = compatibility;
@@ -500,7 +503,6 @@ app.get('/api/tracks/:trackId', function(req, res) {
 // Get user info
 app.get('/api/user/info', function(req, res) {
   const token = req.query.token;
-
   db.collection('user').get()
   .then(snapshot => {
     if (!snapshot.empty) {
@@ -838,10 +840,10 @@ function findBestFitPlaylist(playlist, playlists) {
     let maxCompatibility = -Infinity;
     // Initializing the boolean of whether to show additional information about a song
     song.more = false;
-     // Iterate through each playlist
+    // Iterate through each playlist
     playlists.forEach((playlist2) => {
       // Calculate compatibility of track with playlist
-      const compatibility = calculateCompatibility(song.features, playlist2.features);
+      const compatibility = calculateCompatibility(song.features, playlist2['features']);
       if (compatibility > maxCompatibility) {
         bestFitPlaylist = playlist2;
         maxCompatibility = compatibility;
