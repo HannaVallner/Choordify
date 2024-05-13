@@ -1,7 +1,6 @@
 const express = require('express'); 
 const request = require('request');
 const crypto = require('crypto');
-const session = require('express-session');
 const querystring = require('querystring');
 const cookieParser = require('cookie-parser');
 const path = require('path');
@@ -42,13 +41,6 @@ const db = getFirestore();
 
 
 /*               MIDDLEWARE SETUP                */
-
-
- app.use(session({
-  secret: 'muumitroll',
-  resave: false,
-  saveUninitialized: true
-}));
 
 
 app.use(express.static(path.join(__dirname, '../dist/client/browser')));
@@ -130,7 +122,6 @@ app.get("/callback/", function(req, res) {
       });
     }
 });
-
 
 app.get('/refresh_token', function(req, res) {
     var refresh_token = req.query.refresh_token;
@@ -266,59 +257,66 @@ app.get('/api/playlists/:token', function(req, res) {
   });
 });
 
-
 // Request for 50 more tracks of selected playlist
 app.get('/api/load-more-tracks', function(req, res) {
   const { token } = req.query;
-  const playlist = req.session.playlist;
-  const playlistId = playlist.id;
-  const offset = playlist.songs.length;
-  const tracksOptions = {
-    url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50&offset=${offset}`,
-    headers: {
-      'Authorization': 'Bearer ' + token
-    }
-  };
-
-  request.get(tracksOptions, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      const trackItems = JSON.parse(body).items;
-      const songs = trackItems.map(item => item.track);
-      const trackIds = trackItems.map((item) => item.track.id).join(',');
-      // Fetch track features for all tracks
-      const featuresOptions = {
-        url: `https://api.spotify.com/v1/audio-features?ids=${trackIds}`,
-        headers: {
-          'Authorization': 'Bearer ' + token
-        }
-      };
-      request.get(featuresOptions, (error, response, body) => {
-        if (!error && response.statusCode === 200) {
-          const trackFeatures = JSON.parse(body).audio_features;
-          songs.forEach((song, index) => {
-            const features = trackFeatures[index];
-            const {filteredFeatures, enlargedFeatures} = filterFeatures(features);
-            song.features = filteredFeatures; 
-            song.enlargedFeatures = enlargedFeatures;
-          });
-          playlist.songs = playlist.songs.concat(songs);
-          findBestFitPlaylist(playlist, req.session.playlists);
-          const playlistIndex = req.session.playlists.findIndex(p => p.id === playlist.id);
-          req.session.playlists[playlistIndex] = playlist;
-          if (req.session.comp_playlists) {
-            const comp_playlistIndex = req.session.comp_playlists.findIndex(p => p.id === playlist.id);
-            req.session.comp_playlists[comp_playlistIndex] = playlist;
+  db.collection('playlist').doc('chosen_playlist').get()
+  .then(snapshotPL => {
+    const playlist = snapshotPL.data();
+    const playlistId = playlist.id;
+    const offset = playlist.songs.length;
+    const tracksOptions = {
+      url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50&offset=${offset}`,
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    };
+    request.get(tracksOptions, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        const trackItems = JSON.parse(body).items;
+        const songs = trackItems.map(item => item.track);
+        const trackIds = trackItems.map((item) => item.track.id).join(',');
+        // Fetch track features for all tracks
+        const featuresOptions = {
+          url: `https://api.spotify.com/v1/audio-features?ids=${trackIds}`,
+          headers: {
+            'Authorization': 'Bearer ' + token
           }
-          req.session.playlist = playlist;
-          req.session.save(); 
-          res.send(playlist);
-        } else {
-          res.status(response.statusCode).send(error);
-        }
-      });
-    } else {
-      res.status(response.statusCode).send(error);
-    }
+        };
+        request.get(featuresOptions, (error, response, body) => {
+          if (!error && response.statusCode === 200) {
+            const trackFeatures = JSON.parse(body).audio_features;
+            songs.forEach((song, index) => {
+              const features = trackFeatures[index];
+              const {filteredFeatures, enlargedFeatures} = filterFeatures(features);
+              song.features = filteredFeatures; 
+              song.enlargedFeatures = enlargedFeatures;
+            });
+            playlist.songs = playlist.songs.concat(songs);
+            db.collection('playlists').get()
+            .then(snapshot => {
+              const playlists = [];
+              snapshot.forEach(doc => {
+                playlists.push(doc.data());
+              });
+              findBestFitPlaylist(playlist, playlists);
+              db.collection('playlists').doc(playlist.id).set(playlist)
+              .then(() => {
+                res.send(playlist);
+              })
+              .catch(error => {
+                console.error("Error storing playlist:", error);
+                res.status(500).send(error);
+              });
+            });
+          } else {
+            res.status(response.statusCode).send(error);
+          }
+        });
+      } else {
+        res.status(response.statusCode).send(error);
+      }
+    });
   });
 });
 
@@ -356,12 +354,11 @@ app.post('/api/store_playlist', function(req, res) {
 
 // Return previously stored playlist
 app.get('/api/stored_playlist', function(req, res) {
-  db.collection('playlist').get('chosen_playlist')
+  db.collection('playlist').doc('chosen_playlist').get()
     .then(snapshot => {
       if (!snapshot.empty) {
-        const playlistDoc = snapshot.docs[0];
-        const playlist = playlistDoc.data();
-        if (!playlist.songs[0].best_fit){
+        const playlist = snapshot.data();
+        if (!playlist.songs[0] || !playlist.songs[0].best_fit){
           db.collection('playlists').get()
           .then(snapshot2 => {
             const playlists = [];
@@ -727,31 +724,25 @@ app.delete('/api/playlists/:playlistId/remove-tracks', function(req, res) {
       request.get(playlistOptions, (playlistError, playlistResponse, playlistBody) => {
         if (!playlistError && playlistResponse.statusCode === 200) {
           const updatedPlaylist = JSON.parse(playlistBody);
-          // Find the index of the playlist in the session data
-          const playlistIndex = req.session.playlists.findIndex(p => p.id === playlistId);
-          if (playlistIndex !== -1) {
-            // Find the original playlist from session data, remove the removed song
-            const originalPlaylist = req.session.playlists[playlistIndex];
+          db.collection('playlists').doc(updatedPlaylist.id).get()
+          .then(snapshot => {
+            const originalPlaylist = snapshot.data();
             const updatedSongs = originalPlaylist.songs.filter(song => song.uri !== trackURI);
             updatedPlaylist.songs = updatedSongs;
             // Recalculate average features for the updated playlist
             const { averageFeatures, enlargedFeatures } = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
             updatedPlaylist.features = averageFeatures;
             updatedPlaylist.enlargedFeatures = enlargedFeatures;
-            // Update the playlist data in the session
-            req.session.playlists[playlistIndex] = updatedPlaylist;
-            req.session.playlist = updatedPlaylist;
-            if (req.session.comp_playlists) {
-              const comp_playlistIndex = req.session.comp_playlists.findIndex(p => p.id === playlistId);
-              req.session.comp_playlists[comp_playlistIndex] = updatedPlaylist;
-            }
-            req.session.save();
-            // Send the updated playlist data back to the client
-            res.send(req.session.playlist);
-          }
-          else {
-            res.status(404).send("Playlist not found");
-          }
+            // Update the playlist data in the Firestore database
+            db.collection('playlists').doc(updatedPlaylist.id).set(updatedPlaylist)
+            .then(() => {
+              console.log("Playlist saved to Firestore:", updatedPlaylist.id);
+              res.send(updatedPlaylist);
+            })
+            .catch((error) => {
+              console.error("Error saving playlist to Firestore:", error);
+            });
+          });
         } else {
           console.error("Error fetching updated playlist:", playlistError);
           res.status(playlistResponse.statusCode).send(playlistError);
@@ -788,32 +779,36 @@ app.post('/api/playlists/:playlistId/add-track', function(req, res) {
       request.get(playlistOptions, (playlistError, playlistResponse, playlistBody) => {
         if (!playlistError && playlistResponse.statusCode === 200) {
           const updatedPlaylist = JSON.parse(playlistBody);
-          // Find the index of the playlist in the session data
-          const playlistIndex = req.session.playlists.findIndex(p => p.id === playlistId);
-          if (playlistIndex !== -1) {
+
+          db.collection('playlists').doc(updatedPlaylist.id).get()
+          .then(snapshot => {
+            const oldPlaylist = snapshot.data();
             // Attach the songs property from the previous playlist
-            updatedPlaylist.songs = req.session.playlists[playlistIndex].songs;
+            updatedPlaylist.songs = oldPlaylist.songs;
             // Attach the newly added track to the songs property
             updatedPlaylist.songs.push(track);
             // Recalculate average features for the updated playlist
             const { averageFeatures, enlargedFeatures } = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
             updatedPlaylist.features = averageFeatures;
             updatedPlaylist.enlargedFeatures = enlargedFeatures;
-            // Update the playlist data in the session
-            req.session.playlists[playlistIndex] = updatedPlaylist;
-            if (req.session.comp_playlists) {
-              const comp_playlistIndex = req.session.comp_playlists.findIndex(p => p.id === playlistId);
-              req.session.comp_playlists[comp_playlistIndex] = updatedPlaylist;
-            }
-            req.session.save();
-            // Send the updated playlists data back to the client
-            res.send(req.session.comp_playlists);
-          } else {
-            res.status(404).send("Playlist not found");
-          }
+            // Update the playlist data in the Firebase database
+            db.collection('playlists').doc(updatedPlaylist.id).set(updatedPlaylist)
+            .then(() => {
+              console.log("Playlist saved to Firestore:", updatedPlaylist.id);
+              db.collection('playlists').get()
+              .then(snapshot2 => {
+                const playlists = [];
+                snapshot2.forEach(doc => {
+                  playlists.push(doc.data());
+                });
+              res.send(playlists);
+              }).catch((error) => {
+                console.error("Error saving playlist to Firestore:", error);
+              })
+            });
+          });
         } else {
-          console.error("Error fetching updated playlist:", playlistError);
-          res.status(playlistResponse.statusCode).send(playlistError);
+          res.status(404).send("Playlist not found");
         }
       });
     } else {
@@ -952,8 +947,6 @@ function filterFeatures(features) {
   }
   return {filteredFeatures, enlargedFeatures};
 }
-
-
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/client/browser/index.html'));
