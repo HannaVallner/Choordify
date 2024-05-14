@@ -46,7 +46,7 @@ export class SpotifyService {
   }
 
   // Returns a track from Spotify Web API (with its features, filtered and normalized)
-  toggleTrack(token: string, trackId: string) {
+  getTrack(token: string, trackId: string) {
     return this.http.get(`/api/tracks/${trackId}?token=${token}`, {
       withCredentials: true
     });
@@ -58,7 +58,6 @@ export class SpotifyService {
       withCredentials: true
     });
   }
-
 
   /*
   // Store the selected playlist in session management
@@ -122,11 +121,12 @@ export class SpotifyService {
       withCredentials: true
     });
   }
-
   //added
   // Deletes the session's data from the database
   logout(token: string) {
-    return this.http.get(`/api/log_out?token=${token}`, {
+    console.log("in spot method");
+    return this.http.delete(`/api/log_out?token=${token}`, {
+      withCredentials: true
     });
   }
 

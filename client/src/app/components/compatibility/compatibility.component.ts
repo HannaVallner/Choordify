@@ -29,19 +29,16 @@ export class CompatibilityComponent implements OnInit {
       this.token = storedToken;
     }
     this.trackId = this.route.snapshot.paramMap.get('id');
-
     if (this.trackId != '') {
       // Get selected track and its features (normalized and filtered)
-      this.spotify.toggleTrack(this.token, this.trackId).subscribe((response: any) => {
+      this.spotify.getTrack(this.token, this.trackId).subscribe((response: any) => {
         this.track = response;
-
         // Get playlists and their average features (normalized and filtered)
         this.spotify.getCompPlaylists(this.token).subscribe((response: any) => {
           this.playlists = response;
         });
       });
     }
-
     // Get userID (needed for adding a new playlist)
     this.spotify.getUserInfo(this.token).subscribe((response: any) => {
       this.userId = response.id;

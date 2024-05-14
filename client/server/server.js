@@ -21,7 +21,6 @@ const generateRandomString = (length) => {
     .slice(0, length);
 }
 
-
 /*                DATABASE SETUP                   */
 
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
@@ -152,13 +151,10 @@ app.get('/api/playlists/:token', function(req, res) {
   db.collection('session').doc(token).collection('playlists').get()
   .then(snapshot => {
     if (!snapshot.empty) {
-      const playlists = [];
-      snapshot.forEach(doc => {
-        playlists.push(doc.data());
-      });
-    res.send(playlists);
-    } 
-    else {        
+      const playlistPromises = snapshot.docs.map(doc => Promise.resolve(doc.data()));
+      return Promise.all(playlistPromises);
+    } else {    
+      console.log("getting playlists with api call");    
       // Get all playlists with an API call
       const options = {
         url: 'https://api.spotify.com/v1/me/playlists?limit=50&offset=0',
@@ -177,6 +173,8 @@ app.get('/api/playlists/:token', function(req, res) {
           });
           // Fetch all tracks' for each playlist
           playlists.forEach((playlist) => {
+            filterPlaylistFields(playlist);
+
             const playlistId = playlist.id;
             let offset = 0;
             const tracksOptions = {
@@ -206,6 +204,7 @@ app.get('/api/playlists/:token', function(req, res) {
                       playlist.songs.forEach((song, index) => {
                         const features = trackFeatures[index];
                         const {filteredFeatures, enlargedFeatures} = filterFeatures(features);
+                        filterTrackFields(song);
                         song.features = filteredFeatures; 
                         song.enlargedFeatures = enlargedFeatures;
                       });
@@ -224,7 +223,7 @@ app.get('/api/playlists/:token', function(req, res) {
           // Wait for all track features to be fetched
           Promise.all(trackFeaturePromises).then((playlistTracksFeatures) => {
                 // Calculate average features for each playlist
-                const playlistsWithAverages = playlists.map((playlist, index) => {
+                playlists.map((playlist, index) => {
                 const trackFeatures = playlistTracksFeatures[index];
                 const { averageFeatures, enlargedFeatures } = calculatePlaylistAverages(trackFeatures);
                 playlist.features = averageFeatures;
@@ -247,7 +246,9 @@ app.get('/api/playlists/:token', function(req, res) {
         }
       });
     }
-  });
+  }).then(playlists => {
+    res.send(playlists);
+  })
 });
 
 // Request for 50 more tracks of selected playlist
@@ -284,16 +285,16 @@ app.get('/api/load-more-tracks', function(req, res) {
               const {filteredFeatures, enlargedFeatures} = filterFeatures(features);
               song.features = filteredFeatures; 
               song.enlargedFeatures = enlargedFeatures;
+              filterTrackFields(song);
             });
             playlist.songs = playlist.songs.concat(songs);
             db.collection('session').doc(token).collection('playlists').get()
             .then(snapshot => {
-              const playlists = [];
-              snapshot.forEach(doc => {
-                playlists.push(doc.data());
-              });
-              findBestFitPlaylist(playlist, playlists);
-              db.collection('session').doc(token).collection('playlists').doc(playlist.id).set(playlist)
+              const playlistPromises = snapshot.docs.map(doc => Promise.resolve(doc.data()));
+              return Promise.all(playlistPromises);
+            }).then(playlists => {      
+               findBestFitPlaylist(playlist, playlists);
+                db.collection('session').doc(token).collection('playlists').doc(playlist.id).set(playlist)
               .then(() => {
                 res.send(playlist);
               })
@@ -301,7 +302,7 @@ app.get('/api/load-more-tracks', function(req, res) {
                 console.error("Error storing playlist:", error);
                 res.status(500).send(error);
               });
-            });
+            });  
           } else {
             res.status(response.statusCode).send(error);
           }
@@ -331,8 +332,7 @@ app.get('/api/search/tracks', function(req, res) {
   });
 });
 
-
-// Return previously stored playlist
+// Return chosen playlist
 app.get('/api/playlist/:playlistId', function(req, res) {
   const { playlistId } = req.params;
   const { token } = req.query;
@@ -344,13 +344,13 @@ app.get('/api/playlist/:playlistId', function(req, res) {
           const { token } = req.query;
           db.collection('session').doc(token).collection('playlists').get()
           .then(snapshot2 => {
-            const playlists = [];
-            snapshot2.forEach(doc => {
-              playlists.push(doc.data());
-            });
+            const playlistPromises = snapshot2.docs.map(doc => Promise.resolve(doc.data()));
+            return Promise.all(playlistPromises);
+          }).then(playlists => {
             findBestFitPlaylist(playlist, playlists);
-             // Update the playlist in the 'playlists' collection
             res.send(playlist); 
+          })
+             // Update the playlist in the 'playlists' collection
             /** 
             db.collection('playlists').doc(playlist.id).update({
               songs: playlist.songs
@@ -364,7 +364,6 @@ app.get('/api/playlist/:playlistId', function(req, res) {
               res.status(500).send(error);
             });
             */
-          })
         } else {
           res.send(playlist);
         }
@@ -385,39 +384,20 @@ app.get('/api/comp_playlists', function(req, res) {
   db.collection('session').doc(token).collection('playlists').get()
     .then(snapshot => {
       if (!snapshot.empty) {
-        const playlists = [];
-        snapshot.forEach(doc => {
-          playlists.push(doc.data());
-        });
-        playlists.sort((a, b) => (b.compatibility || 0) - (a.compatibility || 0));
-        res.send(playlists);
+        const playlistPromises = snapshot2.docs.map(doc => Promise.resolve(doc.data()));
+        return Promise.all(playlistPromises);
       } else {
         res.status(404).send("No playlists found");
       }
-  })
-  .catch(error => {
+    }).then(playlists => {
+      playlists.sort((a, b) => (b.compatibility || 0) - (a.compatibility || 0));
+      res.send(playlists);
+    }).catch(error => {
     console.error("Error getting stored comp playlists:", error);
     res.status(500).send(error);
   });
 });
 
-// Return previously stored track
-app.get('/api/stored_track', function(req, res) {
-  const { token } = req.query;
-  db.collection('session').doc(token).collection('track').doc('selected_track').get()
-  .then(snapshot => {
-    if (!snapshot.empty) {
-      const track = snapshot.data();
-      res.send(track);
-    } else {
-      res.status(404).send("No track found");
-    }
-  })
-  .catch(error => {
-    console.error("Error getting stored track:", error);
-    res.status(500).send(error);
-  });
-});
 
 // Get chosen track with filtered and normalized features
 app.get('/api/tracks/:trackId', function(req, res) {
@@ -447,32 +427,31 @@ app.get('/api/tracks/:trackId', function(req, res) {
           // Attach the normalized features to the track object
           track.features = filteredFeatures;
           track.enlargedFeatures = enlargedFeatures;
-
+          filterTrackFields(track);
           // Calculate compatibility of each playlist with the track features
           db.collection('session').doc(token).collection('playlists').get()
           .then(snapshot => {
             if (!snapshot.empty) {
-              const playlists = [];
-              snapshot.forEach(doc => {
-                playlists.push(doc.data());
-              });
-              playlists.forEach((playlist) => {
-                const compatibility = calculateCompatibility(features, playlist['features']);
-                playlist.compatibility = compatibility;
-                // Store playlists and track in database
-                db.collection('session').doc(token).collection('playlists').doc(playlist.id).set(playlist)
-                .then(() => {})
-                .catch((error) => {
-                  console.error("Error saving playlist to Firestore:", error);
-                });
-              });
-              db.collection('session').doc(token).collection('track').doc('selected_track').set(track)
+              const playlistPromises = snapshot.docs.map(doc => Promise.resolve(doc.data()));
+              return Promise.all(playlistPromises);
+            }
+          }).then(playlists => {
+            playlists.forEach((playlist) => {
+              const compatibility = calculateCompatibility(features, playlist['features']);
+              playlist.compatibility = compatibility;
+              // Store playlists and track in database
+              db.collection('session').doc(token).collection('playlists').doc(playlist.id).set(playlist)
               .then(() => {})
               .catch((error) => {
-                console.error("Error saving track to Firestore:", error);
+                console.error("Error saving playlist to Firestore:", error);
               });
-              res.send(track);
-            }
+            });
+            db.collection('session').doc(token).collection('track').doc(trackId).set(track)
+            .then(() => {})
+            .catch((error) => {
+              console.error("Error saving track to Firestore:", error);
+            });
+            res.send(track);
           });
         } else {
           console.error("Error getting track features:", featuresError);
@@ -496,6 +475,7 @@ app.get('/api/user/info', function(req, res) {
       const user = userDoc.data();
       res.send(user);
     } else {
+      console.log("getting user with api call");
       const options = {
         url: 'https://api.spotify.com/v1/me',
         headers: {
@@ -566,6 +546,7 @@ app.post('/api/playlists/create', function(req, res) {
                   // Update the playlist's features
                   playlist.features = track.features;
                   playlist.enlargedFeatures = track.enlargedFeatures;
+                  filterPlaylistFields(playlist);
                   // Attach the track to the playlist
                   playlist.songs = [track];
                   // Update the playlist's compatibility in the session
@@ -632,6 +613,7 @@ app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
             db.collection('session').doc(token).collection('track').doc('selected_track').get()
             .then(songSnapshot => {
               const track = songSnapshot.data();
+              filterTrackFields(track);
               // Attach the newly added track to the songs
               updatedPlaylist.songs.push(track);
               // Recalculate average features for the updated playlist
@@ -641,7 +623,6 @@ app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
               // Update the playlist's average features
               updatedPlaylist.features = averageFeatures;
               updatedPlaylist.enlargedFeatures = enlargedFeatures;
-
               // Update the playlist data in the db
               db.collection('session').doc(token).collection('playlists').doc(updatedPlaylist).set(updatedPlaylist)
               .then(() => {
@@ -649,13 +630,12 @@ app.post('/api/playlists/:playlistId/add-tracks', function(req, res) {
                 db.collection('session').doc(token).collection('playlists').get()
                 .then(snapshot => {
                   if (!snapshot.empty) {
-                    const playlists = [];
-                    snapshot.forEach(doc => {
-                      playlists.push(doc.data());
-                    });
-                    playlists.sort((a, b) => b.compatibility - a.compatibility);
-                    res.send(playlists);
-                  };
+                    const playlistPromises = snapshot2.docs.map(doc => Promise.resolve(doc.data()));
+                    return Promise.all(playlistPromises);
+                    }
+                }).then(playlists => {
+                  playlists.sort((a, b) => b.compatibility - a.compatibility);
+                  res.send(playlists);
                 });
               })
               .catch((error) => {
@@ -708,6 +688,7 @@ app.delete('/api/playlists/:playlistId/remove-tracks', function(req, res) {
             const { averageFeatures, enlargedFeatures } = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
             updatedPlaylist.features = averageFeatures;
             updatedPlaylist.enlargedFeatures = enlargedFeatures;
+            filterPlaylistFields(updatedPlaylist);
             // Update the playlist data in the Firestore database
             db.collection('session').doc(token).collection('playlists').doc(updatedPlaylist.id).set(updatedPlaylist)
             .then(() => {
@@ -764,16 +745,16 @@ app.post('/api/playlists/:playlistId/add-track', function(req, res) {
             const { averageFeatures, enlargedFeatures } = calculatePlaylistAverages(updatedPlaylist.songs.map(item => item.features));
             updatedPlaylist.features = averageFeatures;
             updatedPlaylist.enlargedFeatures = enlargedFeatures;
+            filterPlaylistFields(updatedPlaylist);
             // Update the playlist data in the Firebase database
             db.collection('session').doc(token).collection('playlists').doc(updatedPlaylist.id).set(updatedPlaylist)
             .then(() => {
               db.collection('session').doc(token).collection('playlists').get()
               .then(snapshot2 => {
-                const playlists = [];
-                snapshot2.forEach(doc => {
-                  playlists.push(doc.data());
-                });
-              res.send(playlists);
+                const playlistPromises = snapshot2.docs.map(doc => Promise.resolve(doc.data()));
+                return Promise.all(playlistPromises);
+              }).then(playlists => {
+                res.send(playlists);
               }).catch((error) => {
                 console.error("Error saving playlist to Firestore:", error);
               })
@@ -790,17 +771,18 @@ app.post('/api/playlists/:playlistId/add-track', function(req, res) {
   });
 });
 
-
 // Deletes the session's data from the database
-app.get('/api/log_out', function(req, res) {
+app.delete('/api/log_out', function(req, res) {
   const { token } = req.query;
+  console.log("here")
   db.collection('session').doc(token).delete();
   db.collection('session').doc(token).collection('playlist').delete();
   db.collection('session').doc(token).collection('playlists').delete();
   db.collection('session').doc(token).collection('user').delete();
   db.collection('session').doc(token).collection('track').delete();
-
+  res.send("done");
 });
+
 
 /*                      REGULAR FUNCTIONS                         */
 
@@ -907,6 +889,68 @@ function filterFeatures(features) {
   }
   return {filteredFeatures, enlargedFeatures};
 }
+
+// Function to filter out unnecessary fields from the playlist Object as received from Spotify
+function filterPlaylistFields(playlist) {
+  delete playlist.collaborative;
+  delete playlist.description;
+  delete playlist.external_urls;
+  delete playlist.href;
+  delete playlist.primary_color;
+  delete playlist.snapshot_id;
+  delete playlist.type;
+  delete playlist.uri;
+  delete playlist.owner.external_urls
+  delete playlist.owner.href;
+  delete playlist.owner.id;
+  delete playlist.owner.type;
+  delete playlist.owner.uri;
+  delete playlist.uri;
+  // kontrolli kas on enne pilt, aga see ka lisada
+}
+
+// Function to filter out unnecessary fields from the track Object as received from Spotify
+function filterTrackFields(track) {
+  delete track.available_markets;
+  delete track.disc_number;
+  delete track.explicit;
+  delete track.external_ids;
+  delete track.external_urls;
+  delete track.available_markets;
+  delete track.href;
+  delete track.is_local;
+  delete track.popularity;
+  delete track.preview_url;
+  delete track.track_number;
+  delete track.type;
+  delete track.uri;
+  delete track.duration_ms;
+  delete track.album.available_markets;
+  delete track.album.external_urls;
+  delete track.album.href;
+  delete track.album.id;
+  delete track.album.uri;
+  delete track.album.album_type;
+  delete track.album.artists;
+  delete track.album.release_date;
+  delete track.album.release_date_precision;
+  delete track.album.total_tracks;
+
+  // artisti nimi + kui on rohkem kui 1 artist
+
+}
+
+// Function to filter out unnecessary fields from the user Object as received from Spotify
+function filterUserFields(user) {
+  delete user.country;
+  delete user.email;
+  delete user.explicit_content;
+  delete user.followers;
+  delete user.product;
+  delete user.type;
+  delete user.uri;
+}
+
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/client/browser/index.html'));

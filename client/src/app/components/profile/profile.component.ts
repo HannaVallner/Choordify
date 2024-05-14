@@ -34,7 +34,9 @@ export class ProfileComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout();
-    this.spotify.logout(this.token);
+    this.spotify.logout(this.token).subscribe((response: any) => {
+      console.log(response);
+      this.authService.logout();
+    })
   }
 }
