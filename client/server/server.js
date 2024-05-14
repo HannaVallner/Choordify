@@ -353,7 +353,8 @@ app.get('/api/stored_playlist', function(req, res) {
       if (!snapshot.empty) {
         const playlist = snapshot.data();
         if (!playlist.songs[0] || !playlist.songs[0].best_fit){
-          db.collection('playlists').get()
+          const { token } = req.query;
+          db.collection('session').doc(token).collection('playlists').get()
           .then(snapshot2 => {
             const playlists = [];
             snapshot2.forEach(doc => {
@@ -473,7 +474,7 @@ app.get('/api/tracks/:trackId', function(req, res) {
                 const compatibility = calculateCompatibility(features, playlist['features']);
                 playlist.compatibility = compatibility;
                 // Store playlists and track in database
-                db.collection('session').doc(token).collection('playlists').doc(playlist-id).set(playlist)
+                db.collection('session').doc(token).collection('playlists').doc(playlist.id).set(playlist)
                 .then(() => {})
                 .catch((error) => {
                   console.error("Error saving playlist to Firestore:", error);
@@ -780,7 +781,7 @@ app.post('/api/playlists/:playlistId/add-track', function(req, res) {
             // Update the playlist data in the Firebase database
             db.collection('session').doc(token).collection('playlists').doc(updatedPlaylist.id).set(updatedPlaylist)
             .then(() => {
-              db.collection('playlists').get()
+              db.collection('session').doc(token).collection('playlists').get()
               .then(snapshot2 => {
                 const playlists = [];
                 snapshot2.forEach(doc => {
@@ -804,6 +805,16 @@ app.post('/api/playlists/:playlistId/add-track', function(req, res) {
 });
 
 
+// Deletes the session's data from the database
+app.get('/api/log_out', function(req, res) {
+  const { token } = req.query;
+  db.collection('session').doc(token).delete();
+  db.collection('session').doc(token).collection('playlist').delete();
+  db.collection('session').doc(token).collection('playlists').delete();
+  db.collection('session').doc(token).collection('user').delete();
+  db.collection('session').doc(token).collection('track').delete();
+
+});
 
 /*                      REGULAR FUNCTIONS                         */
 

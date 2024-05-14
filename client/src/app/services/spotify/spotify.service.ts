@@ -124,4 +124,11 @@ export class SpotifyService {
     });
   }
 
+  //added
+  // Deletes the session's data from the database
+  logout(token: string) {
+    return this.http.get(`/api/log_out?token=${token}`, {
+    });
+  }
+
 }

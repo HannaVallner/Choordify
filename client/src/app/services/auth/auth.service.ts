@@ -15,7 +15,7 @@ export class AuthService {
 
   constructor(private router: Router) { }
 
-  
+  // Confirms the authentication of an user, sets the token in session storage and navigates to home page
   setAuthenticated() {
     this.url = window.location.href;
 		this.rawParams = this.url.split('?')[1];
@@ -28,11 +28,12 @@ export class AuthService {
 		}
 	}
   
-
+  // Returns whether an user is authenticated through a boolean
   checkAuthenticated() {
     return this.isAuthenticated;
   }
 
+  // Logs the user out
   logout() {
     sessionStorage.setItem('token', '');
     this.isAuthenticated = false;
