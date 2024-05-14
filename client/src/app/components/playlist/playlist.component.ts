@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../../services/spotify/spotify.service';
-import { LoadingComponent } from '../loading/loading.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-playlist',
@@ -10,6 +10,7 @@ import { LoadingComponent } from '../loading/loading.component';
 
 export class PlaylistComponent implements OnInit {
   playlist: any;
+  playlistId: any = '';
   token = '';
   playlist_loading = false;
   selectedSong: any = null;
@@ -21,18 +22,23 @@ export class PlaylistComponent implements OnInit {
   keys = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'speechiness', 'valence']; 
   // to iterate over multiple dictionaries simultaneously
   
-  constructor(private spotify: SpotifyService) {}
+  constructor(private spotify: SpotifyService, private route: ActivatedRoute) {}
 
   ngOnInit() {
     const token = sessionStorage.getItem('token');
     if (token) {
       this.token = token;
     }
-    // Retrieve the chosen playlist
-    this.spotify.getStoredPlaylist(this.token).subscribe((response: any) => {
-      this.playlist = response;
-      this.displayedSongs = this.playlist.songs.slice(0, 50);
-    });
+
+    this.playlistId = this.route.snapshot.paramMap.get('id');
+
+    if (this.playlistId != '') {
+      // Retrieve the chosen playlist
+      this.spotify.getPlaylist(this.token, this.playlistId).subscribe((response: any) => {
+        this.playlist = response;
+        this.displayedSongs = this.playlist.songs.slice(0, 50);
+      });
+    }
   }
 
   // Open/close selected song's additional info box

@@ -52,7 +52,15 @@ export class SpotifyService {
     });
   }
 
-  // TOKEN ADDED
+  // Retrieve the selected playlist 
+  getPlaylist(token: string, playlistId: string) {
+    return this.http.get(`/api/playlist/${playlistId}?token=${token}`, {
+      withCredentials: true
+    });
+  }
+
+
+  /*
   // Store the selected playlist in session management
   storePlaylist(token: string, playlist: any) {
     return this.http.post(`/api/store_playlist?token=${token}`, playlist, {
@@ -61,22 +69,13 @@ export class SpotifyService {
     });
   }
 
-  // TOKEN ADDDED
-  // Retrieve the selected playlist from session managemet
-  getStoredPlaylist(token: string) {
-    return this.http.get(`/api/stored_playlist?token=${token}`, {
-      withCredentials: true
-    });
-  }
-
-  //TOKEN ADDED
   // Returns a track from backend session management
   getStoredTrack(token: string) {
     return this.http.get(`/api/stored_track?token=${token}`, {
       withCredentials: true
     });
   }
-
+*/
   // Adds tracks to a given playlist
   addPlaylistTracks(token: string, playlistId: string, trackURIs: string[]) {
     return this.http.post(`/api/playlists/${playlistId}/add-tracks`, 

@@ -331,24 +331,12 @@ app.get('/api/search/tracks', function(req, res) {
   });
 });
 
-// Store chosen playlist
-app.post('/api/store_playlist', function(req, res) {
-  const playlist = req.body; 
-  const { token } = req.query;
-  db.collection('session').doc(token).collection('playlist').doc('chosen_playlist').set(playlist)
-  .then(() => {
-    res.status(200).send("Playlist stored successfully");
-  })
-  .catch(error => {
-    console.error("Error storing playlist:", error);
-    res.status(500).send(error);
-  });
-});
 
 // Return previously stored playlist
-app.get('/api/stored_playlist', function(req, res) {
+app.get('/api/playlist/:playlistId', function(req, res) {
+  const { playlistId } = req.params;
   const { token } = req.query;
-  db.collection('session').doc(token).collection('playlist').doc('chosen_playlist').get()
+  db.collection('session').doc(token).collection('playlists').doc(playlistId).get()
     .then(snapshot => {
       if (!snapshot.empty) {
         const playlist = snapshot.data();
@@ -362,7 +350,6 @@ app.get('/api/stored_playlist', function(req, res) {
             });
             findBestFitPlaylist(playlist, playlists);
              // Update the playlist in the 'playlists' collection
-            console.log(playlist);
             res.send(playlist); 
             /** 
             db.collection('playlists').doc(playlist.id).update({
@@ -378,9 +365,8 @@ app.get('/api/stored_playlist', function(req, res) {
             });
             */
           })
-        }
-        else {
-          res.send(playlist); 
+        } else {
+          res.send(playlist);
         }
       } else {
         console.log("No playlist found");

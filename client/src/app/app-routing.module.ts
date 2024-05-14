@@ -16,8 +16,8 @@ const routes: Routes = [
   { path: 'add', component: AddComponent },
   { path: 'sort', component: SortComponent },
   { path: 'about', component: AboutComponent },
-  { path: 'compatibility', component: CompatibilityComponent },
-  { path: 'playlist', component: PlaylistComponent }
+  { path: 'compatibility/:id', component: CompatibilityComponent },
+  { path: 'playlist/:id', component: PlaylistComponent }
 ];
 
 @NgModule({

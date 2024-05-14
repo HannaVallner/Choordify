@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../../services/spotify/spotify.service';
-import { LoadingComponent } from '../loading/loading.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-compatibility',
@@ -9,9 +9,9 @@ import { LoadingComponent } from '../loading/loading.component';
 })
 export class CompatibilityComponent implements OnInit {
   playlists: any[] = [];
+  trackId: any = '';
   track: any;
   token = '';
-  trackId = '';
   input = ''; // For new playlist's name
   result: any;
   userId = '';
@@ -21,27 +21,26 @@ export class CompatibilityComponent implements OnInit {
   hover_playlist = false;
   keys = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'speechiness', 'valence']; // to iterate over multiple dictionaries simultaneously
 
-  constructor(private spotify: SpotifyService) {}
+  constructor(private spotify: SpotifyService, private route: ActivatedRoute) {}
 
   ngOnInit() {
     const storedToken = sessionStorage.getItem('token');
-    const storedId = sessionStorage.getItem("trackId");
     if (storedToken) {
       this.token = storedToken;
     }
-    if (storedId) {
-      this.trackId = storedId;
-    }
+    this.trackId = this.route.snapshot.paramMap.get('id');
 
-    // Get playlists and their average features (normalized and filtered)
-    this.spotify.getCompPlaylists(this.token).subscribe((response: any) => {
-      this.playlists = response;
-    });
-      
-    // Get selected track and its features (normalized and filtered)
-    this.spotify.getStoredTrack(this.token).subscribe((response: any) => {
-      this.track = response;
-    });
+    if (this.trackId != '') {
+      // Get selected track and its features (normalized and filtered)
+      this.spotify.toggleTrack(this.token, this.trackId).subscribe((response: any) => {
+        this.track = response;
+
+        // Get playlists and their average features (normalized and filtered)
+        this.spotify.getCompPlaylists(this.token).subscribe((response: any) => {
+          this.playlists = response;
+        });
+      });
+    }
 
     // Get userID (needed for adding a new playlist)
     this.spotify.getUserInfo(this.token).subscribe((response: any) => {

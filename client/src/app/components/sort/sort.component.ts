@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpotifyService } from '../../services/spotify/spotify.service';
-import { LoadingComponent } from '../loading/loading.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sort',
@@ -13,7 +13,7 @@ export class SortComponent implements OnInit {
   playlists: any[] = [];
   token = '';
   
-  constructor(private spotify: SpotifyService) {}
+  constructor(private spotify: SpotifyService, private router: Router) {}
 
   ngOnInit() {
     const token = sessionStorage.getItem('token');
@@ -25,13 +25,8 @@ export class SortComponent implements OnInit {
     });
   }
 
-
   selectPlaylist(playlist: any) {
-    this.spotify.storePlaylist(this.token, playlist).subscribe(() => {});
-  }
-
-  deletePlaylist(playlist: any) {
-
+    this.router.navigate(['/playlist', playlist.id]);
   }
 
 }

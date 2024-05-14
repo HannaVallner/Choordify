@@ -58,17 +58,11 @@ export class AddComponent implements OnInit {
     this.searchResults = [];
     this.isSelected = true;
     this.selectedTrack = result;
-    sessionStorage.setItem("trackId", result.id);
-
-    this.spotify.toggleTrack(this.token, result.id).subscribe(
-      () => {
-
-      });
   }
 
   submitResult() {
-    if (this.isSelected) {
-      this.router.navigate(['/compatibility']);
+    if (this.isSelected && this.selectedTrack) {
+      this.router.navigate(['/compatibility', this.selectedTrack.id]);
     }
   }
  
