@@ -38,6 +38,12 @@ export class SpotifyService {
     });
   }
 
+  // TOKEN ADDED
+  getCompPlaylists(token: string) {
+    return this.http.get(`/api/comp_playlists?token=${token}`, {
+      withCredentials: true
+    });
+  }
 
   // Returns a track from Spotify Web API (with its features, filtered and normalized)
   toggleTrack(token: string, trackId: string) {
@@ -46,31 +52,27 @@ export class SpotifyService {
     });
   }
 
+  // TOKEN ADDED
   // Store the selected playlist in session management
-  storePlaylist(playlist: any) {
-    return this.http.post('/api/store_playlist', playlist, {
+  storePlaylist(token: string, playlist: any) {
+    return this.http.post(`/api/store_playlist?token=${token}`, playlist, {
       withCredentials: true,
       responseType: 'text'
     });
   }
 
+  // TOKEN ADDDED
   // Retrieve the selected playlist from session managemet
-  getStoredPlaylist() {
-    return this.http.get('/api/stored_playlist', {
+  getStoredPlaylist(token: string) {
+    return this.http.get(`/api/stored_playlist?token=${token}`, {
       withCredentials: true
     });
   }
 
+  //TOKEN ADDED
   // Returns a track from backend session management
-  getStoredTrack() {
-    return this.http.get('/api/stored_track', {
-      withCredentials: true
-    });
-  }
-
-  // Returns playlists (with compatibility measures and matching sorting) from backend session management
-  getCompPlaylists() {
-    return this.http.get('/api/comp_playlists', {
+  getStoredTrack(token: string) {
+    return this.http.get(`/api/stored_track?token=${token}`, {
       withCredentials: true
     });
   }

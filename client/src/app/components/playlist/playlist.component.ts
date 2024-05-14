@@ -29,7 +29,7 @@ export class PlaylistComponent implements OnInit {
       this.token = token;
     }
     // Retrieve the chosen playlist
-    this.spotify.getStoredPlaylist().subscribe((response: any) => {
+    this.spotify.getStoredPlaylist(this.token).subscribe((response: any) => {
       this.playlist = response;
       this.displayedSongs = this.playlist.songs.slice(0, 50);
     });
@@ -92,7 +92,6 @@ export class PlaylistComponent implements OnInit {
           .slice(this.displayedSongs.length, this.displayedSongs.length + 50));
         window.scrollTo({ top: previousScrollPosition });
       });
-
     } else {
         this.displayedSongs = this.displayedSongs.concat(this.playlist.songs
           .slice(this.displayedSongs.length, this.displayedSongs.length + 50));

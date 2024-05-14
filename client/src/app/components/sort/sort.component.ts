@@ -27,7 +27,7 @@ export class SortComponent implements OnInit {
 
 
   selectPlaylist(playlist: any) {
-    this.spotify.storePlaylist(playlist).subscribe(() => {});
+    this.spotify.storePlaylist(this.token, playlist).subscribe(() => {});
   }
 
   deletePlaylist(playlist: any) {

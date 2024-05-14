@@ -34,12 +34,12 @@ export class CompatibilityComponent implements OnInit {
     }
 
     // Get playlists and their average features (normalized and filtered)
-    this.spotify.getCompPlaylists().subscribe((response: any) => {
+    this.spotify.getCompPlaylists(this.token).subscribe((response: any) => {
       this.playlists = response;
     });
       
     // Get selected track and its features (normalized and filtered)
-    this.spotify.getStoredTrack().subscribe((response: any) => {
+    this.spotify.getStoredTrack(this.token).subscribe((response: any) => {
       this.track = response;
     });
 
@@ -75,7 +75,7 @@ export class CompatibilityComponent implements OnInit {
     this.spotify.createPlaylist(this.token, this.userId, this.input).subscribe(
       () => {
         // Update the playlists array with the updated playlist data
-        this.spotify.getCompPlaylists().subscribe((response: any) => {
+        this.spotify.getCompPlaylists(this.token).subscribe((response: any) => {
           this.playlists = response;
           this.input = '';
           this.creatingPlaylist = false;

@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     <div class="empty-bestfit-bar bar-container" (mouseenter)="hover_recommended = true" (mouseleave)="hover_recommended = false" [class.hover]="hover_recommended">
-                        <div *ngIf="selectedSong && selectedSong.best_fit != playlist">
+                        <div *ngIf="selectedSong && selectedSong.best_fit.name != playlist.name">
                             <div class="bar" [style.height.%]="selectedSong.best_fit.enlargedFeatures[key]"></div>
                             <div class="bar-tooltip">{{ selectedSong.best_fit.enlargedFeatures[key] }}%</div>
                         </div>
