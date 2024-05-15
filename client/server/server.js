@@ -8,8 +8,8 @@ const app = express();
 
 const port = 1000;
 
-var client_id = '9b1341ad97eb49edb522d1fe01ce6975';
-var client_secret = 'c3fb73030dbe483a8e47046793d59670';
+var client_id = '6cf9fa29aa1d4e38a2f96eb731fb9573';
+var client_secret = 'f7784942e1b148aa97827e0b71424164';
 var basePath = '/home';
 var stateKey = 'spotify_auth_state';
 
@@ -485,6 +485,7 @@ app.get('/api/comp_playlists', function(req, res) {
     });
 });
 
+
 // Get user info
 app.get('/api/user/info', function(req, res) {
   const token = req.query.token;
@@ -935,7 +936,6 @@ function filterPlaylistFields(playlist) {
   delete playlist.owner.uri;
   delete playlist.uri;
   delete playlist.tracks.href;
-  // kontrolli kas on enne pilt, aga see ka lisada
 }
 
 // Function to filter out unnecessary fields from the track Object as received from Spotify
@@ -969,7 +969,6 @@ function filterTrackFields(track) {
   delete track.artists.href;
   delete track.artists.type;
   delete track.artists.uri;
-  // artisti nimi + kui on rohkem kui 1 artist
 }
 
 // Function to filter out unnecessary fields from the user Object as received from Spotify
@@ -982,12 +981,6 @@ function filterUserFields(user) {
   delete user.type;
   delete user.uri;
   delete user.href;
-
-
-  delete user.images[0].url;
-    
-
-  // kui piltide pikkus >1 jätta alles vaid teine
 }
 
 
