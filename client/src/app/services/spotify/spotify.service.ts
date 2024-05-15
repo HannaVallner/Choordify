@@ -39,7 +39,6 @@ export class SpotifyService {
     });
   }
 
-  // TOKEN ADDED
   getCompPlaylists(token: string) {
     return this.http.get(`/api/comp_playlists?token=${token}`, {
       withCredentials: true
@@ -60,22 +59,6 @@ export class SpotifyService {
     });
   }
 
-  /*
-  // Store the selected playlist in session management
-  storePlaylist(token: string, playlist: any) {
-    return this.http.post(`/api/store_playlist?token=${token}`, playlist, {
-      withCredentials: true,
-      responseType: 'text'
-    });
-  }
-
-  // Returns a track from backend session management
-  getStoredTrack(token: string) {
-    return this.http.get(`/api/stored_track?token=${token}`, {
-      withCredentials: true
-    });
-  }
-*/
   // Adds tracks to a given playlist
   addPlaylistTracks(token: string, playlistId: string, trackURIs: string[]) {
     return this.http.post(`/api/playlists/${playlistId}/add-tracks`, 

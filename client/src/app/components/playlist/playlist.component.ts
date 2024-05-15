@@ -31,7 +31,6 @@ export class PlaylistComponent implements OnInit {
     }
 
     this.playlistId = this.route.snapshot.paramMap.get('id');
-
     if (this.playlistId != '') {
       // Retrieve the chosen playlist
       this.spotify.getPlaylist(this.token, this.playlistId).subscribe((response: any) => {
@@ -46,7 +45,6 @@ export class PlaylistComponent implements OnInit {
     song.more = !song.more;
     if (song.more) {
       this.selectedSong = song;
-      console.log(song.compatibility);
       console.log(song);
       // Close any other song's info box
       this.playlist.songs.forEach((other_song: any) => {
@@ -78,12 +76,15 @@ export class PlaylistComponent implements OnInit {
 
   // Remove selected song from current playlist
   removeFromPlaylist(track: any) {
+    this.selectedSong = null;
     if (!track.loading) {
       track.removing = true;
     }
     this.spotify.removePlaylistTracks(this.token, this.playlist.id, track.uri).subscribe((response: any) => {
-      this.playlist = response;  
+      track.more = false;
       track.removing = false;
+      this.playlist = response;
+      this.displayedSongs = this.playlist.songs.slice(0, 50);  
     });
   }
 

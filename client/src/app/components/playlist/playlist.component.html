@@ -14,7 +14,7 @@
                 <p class="playlist-name" [title]="playlist.name">{{ playlist.name.length > 25 ? playlist.name.slice(0, 25) + '...' : playlist.name }}</p>
                 <p class="playlist-tracks"> 
                     {{ playlist.owner['display_name'] }} <span class="dot">&bull;</span>  
-                    {{ playlist.tracks['total'] }} {{ playlist.tracks['total'] === 1 ? 'song' : 'songs' }}
+                    {{ playlist.tracks.total }} {{ playlist.tracks.total === 1 ? 'song' : 'songs' }}
                 </p>
             </div>
             <p class="instructions"><span>Expand a song</span> to learn more</p> 
@@ -100,10 +100,6 @@
                 </div>
                 <img class="view-less" src="assets/svg/less.svg" alt="Less" title="View less" (click)="toggleDropdown(song)">
             </div>
-        </li>
-        <li *ngIf="playlist.tracks.total > displayedSongs.length">
-            <p *ngIf="!loading_more" class="load-more-text" (click)="loadMoreTracks()">Load more tracks</p>
-            <p *ngIf="loading_more" class="loading-more-text">Loading more tracks...</p>
         </li>
     </ul>
 </div>

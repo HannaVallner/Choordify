@@ -342,6 +342,7 @@
 }
 
 .loading-text {
+    opacity: 0.7;
     position: absolute;
     bottom: 6px;
     right: 25px;
@@ -358,6 +359,7 @@
 }
 
 .adding-text {
+    opacity: 0.7;
     position: absolute;
     top: 0;
     right: 10px;
@@ -466,6 +468,7 @@
 }
 
 .loading-more-text {
+    opacity: 0.7;
     font-size: 1.1rem;
     margin-bottom: 10px;
     margin-left: 340px;

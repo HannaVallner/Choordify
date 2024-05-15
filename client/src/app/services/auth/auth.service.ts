@@ -30,7 +30,11 @@ export class AuthService {
   
   // Returns whether an user is authenticated through a boolean
   checkAuthenticated() {
-    return this.isAuthenticated;
+    const token = sessionStorage.getItem('token');
+    if (token != '') {
+      return true;
+    }
+    return false;
   }
 
   // Logs the user out

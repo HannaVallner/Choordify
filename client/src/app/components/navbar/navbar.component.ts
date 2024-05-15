@@ -26,11 +26,9 @@ export class NavbarComponent implements OnInit {
         sessionStorage.setItem('display_name', this.display_name);
       });
     }
-
   }
 
   logout() {
-    this.spotify.logout(this.token);
     this.authService.logout();
   }
 

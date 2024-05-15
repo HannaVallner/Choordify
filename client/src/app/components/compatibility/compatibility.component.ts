@@ -52,7 +52,6 @@ export class CompatibilityComponent implements OnInit {
       this.selectedPlaylist = null;
     } else {
       this.selectedPlaylist = playlist;
-      console.log(playlist.compatibility);
     }
   }
 

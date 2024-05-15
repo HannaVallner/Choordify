@@ -22,6 +22,7 @@ export class SortComponent implements OnInit {
     }
     this.spotify.getPlaylists(this.token).subscribe((response: any) => {
       this.playlists = response;
+      console.log(token);
     });
   }
 
