@@ -20,10 +20,6 @@ export class AppComponent implements OnInit {
 		if (this.url.includes('?')) {
 			this.authService.setAuthenticated();
 		}
-		// Redirect unauthenticated users to loginpage
-		else if (!this.authService.checkAuthenticated()) {
-			//this.router.navigate(['']);
-		}
 	}
 
 }

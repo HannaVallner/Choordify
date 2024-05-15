@@ -19,7 +19,6 @@ export class NavbarComponent implements OnInit {
     if (storedToken != null) {
       this.token = storedToken; 
     }
-
     this.display_name = sessionStorage.getItem('display_name');
     if (!this.display_name) {
       this.spotify.getUserInfo(this.token).subscribe((response: any) => {
@@ -31,6 +30,7 @@ export class NavbarComponent implements OnInit {
   }
 
   logout() {
+    this.spotify.logout(this.token);
     this.authService.logout();
   }
 

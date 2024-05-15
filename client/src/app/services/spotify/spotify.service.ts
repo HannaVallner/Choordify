@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -121,13 +122,13 @@ export class SpotifyService {
       withCredentials: true
     });
   }
-  //added
+
   // Deletes the session's data from the database
-  logout(token: string) {
-    console.log("in spot method");
+  logout(token: string): Observable<any> {
+    console.log("in spot-service method");
     return this.http.delete(`/api/log_out?token=${token}`, {
-      withCredentials: true
+      withCredentials: true,
+      responseType: 'text'
     });
   }
-
 }

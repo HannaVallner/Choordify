@@ -39,6 +39,7 @@ export class CompatibilityComponent implements OnInit {
         });
       });
     }
+
     // Get userID (needed for adding a new playlist)
     this.spotify.getUserInfo(this.token).subscribe((response: any) => {
       this.userId = response.id;
@@ -51,7 +52,7 @@ export class CompatibilityComponent implements OnInit {
       this.selectedPlaylist = null;
     } else {
       this.selectedPlaylist = playlist;
-      console.log(this.selectedPlaylist.enlargedFeatures);
+      console.log(playlist.compatibility);
     }
   }
 

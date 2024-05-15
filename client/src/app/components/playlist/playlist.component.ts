@@ -46,6 +46,8 @@ export class PlaylistComponent implements OnInit {
     song.more = !song.more;
     if (song.more) {
       this.selectedSong = song;
+      console.log(song.compatibility);
+      console.log(song);
       // Close any other song's info box
       this.playlist.songs.forEach((other_song: any) => {
         if (other_song !== song) {

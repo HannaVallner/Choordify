@@ -40,13 +40,12 @@ export class AddComponent implements OnInit {
   toggleSearch() {
     this.spotify.searchForTracks(this.token, this.input).subscribe(
       (response: any) => {
-        this.searchResults = response.tracks.items;
-        //this.filterResults();
+        this.searchResults = this.filterResults(response.tracks.items);
     });
   }
   
-  filterResults() {
-    this.searchResults = this.searchResults.filter((track: any, index: number, self: any[]) => {
+  filterResults(results: any[]) {
+    return results.filter((track: any, index: number, self: any[]) => {
       return index === self.findIndex((t: any) => (
         t.artists[0].name === track.artists[0].name && t.name === track.name
       ));
