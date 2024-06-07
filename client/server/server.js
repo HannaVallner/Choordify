@@ -8,8 +8,8 @@ const app = express();
 
 const port = 1000;
 
-var client_id = '6cf9fa29aa1d4e38a2f96eb731fb9573';
-var client_secret = 'f7784942e1b148aa97827e0b71424164';
+var client_id = 'a52b1c6ae851463b8614c146866ecf5d';
+var client_secret = '971ded7463eb4998b5d5d269a02a3022';
 var basePath = '/home';
 var stateKey = 'spotify_auth_state';
 
